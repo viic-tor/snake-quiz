@@ -1,7 +1,7 @@
 /**
  * @file QuizModal.jsx
- * @description Modal que aparece cada 3 comidas con una pregunta de quiz.
- * Muestra la pregunta, 4 opciones y retroalimentación inmediata.
+ * @description Modal de preguntas con soporte para límite de tiempo configurable.
+ * En modo difícil el tiempo límite es 10s; en fácil, 15s.
  */
 
 import { useState, useEffect } from "react";
@@ -16,26 +16,29 @@ const CATEGORY_COLORS = {
   prog: "#a855f7",
 };
 
-export default function QuizModal({ question, onAnswer, questionsAnswered, questionsCorrect }) {
+export default function QuizModal({
+  question,
+  onAnswer,
+  questionsAnswered,
+  questionsCorrect,
+  timeLimit = 15,   // ← 15s fácil, 10s difícil
+  difficulty = "easy",
+}) {
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
 
-  // Reset al cambiar de pregunta
+  // Reset al cambiar pregunta
   useEffect(() => {
     setSelected(null);
     setRevealed(false);
-    setTimeLeft(15);
-  }, [question?.id]);
+    setTimeLeft(timeLimit);
+  }, [question?.id, timeLimit]);
 
-  // Temporizador de 15 segundos por pregunta
+  // Temporizador
   useEffect(() => {
     if (revealed) return;
-    if (timeLeft <= 0) {
-      // Tiempo agotado → respuesta incorrecta automática
-      handleSelect(-1);
-      return;
-    }
+    if (timeLeft <= 0) { handleSelect(-1); return; }
     const t = setTimeout(() => setTimeLeft((p) => p - 1), 1000);
     return () => clearTimeout(t);
   }, [timeLeft, revealed]);
@@ -44,22 +47,25 @@ export default function QuizModal({ question, onAnswer, questionsAnswered, quest
     if (revealed) return;
     setSelected(idx);
     setRevealed(true);
-    const isCorrect = idx === question.answer;
-    // Espera 1.8s para que el usuario vea la respuesta antes de continuar
-    setTimeout(() => {
-      onAnswer(idx);
-    }, 1800);
+    setTimeout(() => onAnswer(idx), 1800);
   };
 
   if (!question) return null;
 
   const catColor = CATEGORY_COLORS[question.category] || "#00ff88";
-  const timerPct = (timeLeft / 15) * 100;
-  const timerColor = timeLeft > 8 ? "#00ff88" : timeLeft > 4 ? "#ffd700" : "#ff4d6d";
+  const timerPct = (timeLeft / timeLimit) * 100;
+  const timerColor = timerPct > 50 ? "#00ff88" : timerPct > 25 ? "#ffd700" : "#ff4d6d";
+  const isHard = difficulty === "hard";
 
   return (
-    <div className="quiz-overlay">
+    <div className={`quiz-overlay ${isHard ? "quiz-overlay-hard" : ""}`}>
       <div className="quiz-modal" role="dialog" aria-modal="true" aria-label="Pregunta de quiz">
+
+        {/* Badge de dificultad */}
+        {isHard && (
+          <div className="quiz-diff-badge">🔴 MODO DIFÍCIL — Puntos ×2</div>
+        )}
+
         {/* Header */}
         <div className="quiz-header">
           <div className="quiz-badge" style={{ borderColor: catColor, color: catColor }}>
@@ -75,13 +81,14 @@ export default function QuizModal({ question, onAnswer, questionsAnswered, quest
                 style={{
                   width: `${timerPct}%`,
                   background: `linear-gradient(90deg, ${timerColor}, ${timerColor}88)`,
+                  transition: "width 1s linear, background 0.3s",
                 }}
               />
             </div>
           </div>
         </div>
 
-        {/* Estadísticas mini */}
+        {/* Stats mini */}
         <div className="quiz-stats-row">
           <span>Preguntas: <b>{questionsAnswered}</b></span>
           <span>Correctas: <b style={{ color: "#00ff88" }}>{questionsCorrect}</b></span>
@@ -96,11 +103,9 @@ export default function QuizModal({ question, onAnswer, questionsAnswered, quest
             let cls = "quiz-option";
             if (revealed) {
               if (i === question.answer) cls += " correct";
-              else if (i === selected && i !== question.answer) cls += " wrong";
+              else if (i === selected) cls += " wrong";
               else cls += " dim";
-            } else if (selected === i) {
-              cls += " selected";
-            }
+            } else if (selected === i) cls += " selected";
             return (
               <button
                 key={i}
@@ -109,23 +114,17 @@ export default function QuizModal({ question, onAnswer, questionsAnswered, quest
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="quiz-option-letter">
-                  {["A", "B", "C", "D"][i]}
-                </span>
+                <span className="quiz-option-letter">{["A","B","C","D"][i]}</span>
                 <span className="quiz-option-text">{opt}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Explicación tras responder */}
+        {/* Explicación */}
         {revealed && (
-          <div
-            className={`quiz-explanation ${selected === question.answer ? "correct-exp" : "wrong-exp"}`}
-          >
-            <span className="quiz-exp-icon">
-              {selected === question.answer ? "✅" : "❌"}
-            </span>
+          <div className={`quiz-explanation ${selected === question.answer ? "correct-exp" : "wrong-exp"}`}>
+            <span className="quiz-exp-icon">{selected === question.answer ? "✅" : "❌"}</span>
             <span>{question.explanation}</span>
           </div>
         )}

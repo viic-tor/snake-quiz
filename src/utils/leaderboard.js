@@ -1,29 +1,33 @@
 /**
  * @file leaderboard.js
- * @description Utilidades para gestionar el leaderboard en localStorage.
+ * @description Gestión del leaderboard local (localStorage) con soporte
+ * para dos modos de juego: "easy" y "hard".
  *
- * Estructura de cada entrada:
- * {
- *   id: string (timestamp único),
- *   name: string,
- *   score: number,
- *   level: number,
- *   questionsCorrect: number,
- *   foodEaten: number,
- *   date: string (ISO),
- * }
+ * Claves de localStorage:
+ *   snake-quiz-lb-easy  → ranking modo fácil
+ *   snake-quiz-lb-hard  → ranking modo difícil
+ *
+ * Si se configura Supabase (ver supabase.js), las funciones
+ * saveScore / getLeaderboard intentan primero la API remota
+ * y caen al localStorage como fallback.
  */
 
-const STORAGE_KEY = "snake-quiz-leaderboard";
+import { saveScoreRemote, getLeaderboardRemote, SUPABASE_ENABLED } from "./supabase.js";
+
+const STORAGE_KEYS = {
+  easy: "snake-quiz-lb-easy",
+  hard: "snake-quiz-lb-hard",
+};
 const MAX_ENTRIES = 10;
 
 /**
- * Obtiene el leaderboard completo ordenado por score descendente.
+ * Obtiene el leaderboard local para un modo dado.
+ * @param {"easy"|"hard"} mode
  * @returns {object[]}
  */
-export function getLeaderboard() {
+export function getLeaderboardLocal(mode = "easy") {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEYS[mode] ?? STORAGE_KEYS.easy);
     if (!raw) return [];
     return JSON.parse(raw);
   } catch {
@@ -32,39 +36,74 @@ export function getLeaderboard() {
 }
 
 /**
- * Guarda una nueva entrada en el leaderboard.
- * Si ya hay MAX_ENTRIES, descarta la de menor puntaje si esta es mayor.
+ * Guarda una entrada en el leaderboard local.
  * @param {object} entry
- * @returns {number} posición en el ranking (1-based), -1 si no entró
+ * @param {"easy"|"hard"} mode
+ * @returns {number} posición (1-based) o -1 si no entró al top 10
  */
-export function saveScore(entry) {
-  const board = getLeaderboard();
+export function saveScoreLocal(entry, mode = "easy") {
+  const board = getLeaderboardLocal(mode);
   const newEntry = {
     id: Date.now().toString(),
+    mode,
     ...entry,
     date: new Date().toISOString(),
   };
 
   board.push(newEntry);
   board.sort((a, b) => b.score - a.score);
-
   const trimmed = board.slice(0, MAX_ENTRIES);
   const position = trimmed.findIndex((e) => e.id === newEntry.id) + 1;
 
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
-  } catch {
-    // localStorage lleno — ignorar
-  }
+    const key = STORAGE_KEYS[mode] ?? STORAGE_KEYS.easy;
+    localStorage.setItem(key, JSON.stringify(trimmed));
+  } catch { /* localStorage lleno */ }
 
   return position > 0 ? position : -1;
 }
 
 /**
- * Borra el leaderboard completo.
+ * Obtiene el leaderboard (remoto si Supabase está activo, local si no).
+ * @param {"easy"|"hard"} mode
+ * @returns {Promise<object[]>}
  */
-export function clearLeaderboard() {
-  localStorage.removeItem(STORAGE_KEY);
+export async function getLeaderboard(mode = "easy") {
+  if (SUPABASE_ENABLED) {
+    try {
+      const remote = await getLeaderboardRemote(mode);
+      if (remote && remote.length > 0) return remote;
+    } catch { /* fallback a local */ }
+  }
+  return getLeaderboardLocal(mode);
+}
+
+/**
+ * Guarda un score (remoto si Supabase está activo, siempre local también).
+ * @param {object} entry
+ * @param {"easy"|"hard"} mode
+ * @returns {Promise<number>} posición
+ */
+export async function saveScore(entry, mode = "easy") {
+  // Siempre guarda local como fallback
+  const localPos = saveScoreLocal(entry, mode);
+
+  if (SUPABASE_ENABLED) {
+    try {
+      await saveScoreRemote({ ...entry, mode });
+    } catch { /* error silencioso, queda en local */ }
+  }
+
+  return localPos;
+}
+
+/**
+ * Borra el leaderboard local de un modo.
+ * @param {"easy"|"hard"} mode
+ */
+export function clearLeaderboard(mode = "easy") {
+  const key = STORAGE_KEYS[mode] ?? STORAGE_KEYS.easy;
+  localStorage.removeItem(key);
 }
 
 /**

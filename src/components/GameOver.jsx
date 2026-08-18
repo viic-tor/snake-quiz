@@ -1,7 +1,7 @@
 /**
  * @file GameOver.jsx
- * @description Pantalla de Game Over con resumen de estadísticas,
- * posición en el leaderboard y opciones para reintentar o volver al menú.
+ * @description Pantalla de Game Over con stats finales, modo de juego jugado
+ * y acceso al leaderboard del modo correspondiente.
  */
 
 import { useEffect, useState } from "react";
@@ -13,8 +13,10 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
   const [savedEntryId, setSavedEntryId] = useState(null);
   const [showLb, setShowLb] = useState(false);
 
+  const difficulty = state.difficulty || "easy";
+  const isHard = difficulty === "hard";
+
   useEffect(() => {
-    // Guardar puntuación al montar
     const entry = {
       name: playerName,
       score: state.score,
@@ -22,21 +24,23 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
       questionsCorrect: state.questionsCorrect,
       foodEaten: state.foodEaten,
     };
-    const pos = saveScore(entry);
-    setLbPosition(pos);
 
-    // Obtener el id de la entrada guardada para resaltarla en el leaderboard
-    const board = getLeaderboard();
-    const saved = board.find(
-      (e) => e.name === playerName && e.score === state.score
-    );
-    if (saved) setSavedEntryId(saved.id);
+    saveScore(entry, difficulty).then((pos) => {
+      setLbPosition(pos);
+    });
+
+    // Obtener id de la entrada guardada para resaltarla
+    getLeaderboard(difficulty).then((board) => {
+      const saved = board.find(
+        (e) => e.name === playerName && e.score === state.score
+      );
+      if (saved) setSavedEntryId(saved.id);
+    });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const accuracy =
-    state.questionsAnswered > 0
-      ? Math.round((state.questionsCorrect / state.questionsAnswered) * 100)
-      : 0;
+  const accuracy = state.questionsAnswered > 0
+    ? Math.round((state.questionsCorrect / state.questionsAnswered) * 100)
+    : 0;
 
   const getRankLabel = (pos) => {
     if (!pos || pos < 1) return null;
@@ -47,86 +51,60 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
     return null;
   };
 
-  const rankLabel = getRankLabel(lbPosition);
-
   return (
-    <div className="gameover-screen">
+    <div className={`gameover-screen ${isHard ? "gameover-hard" : ""}`}>
       <div className="gameover-content">
-        {/* Título */}
+
+        {/* Header */}
         <div className="gameover-header">
-          <div className="gameover-icon">💀</div>
-          <h1 className="gameover-title">Game Over</h1>
+          <div className="gameover-icon">{isHard ? "💀🔥" : "💀"}</div>
+          <h1 className={`gameover-title ${isHard ? "gameover-title-hard" : ""}`}>
+            Game Over
+          </h1>
           <p className="gameover-name">{playerName}</p>
+          <span className={`gameover-mode-badge ${isHard ? "mode-hard" : "mode-easy"}`}>
+            {isHard ? "🔴 Modo Difícil" : "🟢 Modo Fácil"}
+          </span>
         </div>
 
         {/* Posición en ranking */}
-        {rankLabel && (
+        {getRankLabel(lbPosition) && (
           <div className="gameover-rank">
-            <span className="rank-badge">{rankLabel}</span>
+            <span className="rank-badge">{getRankLabel(lbPosition)}</span>
           </div>
         )}
 
-        {/* Stats finales */}
+        {/* Stats */}
         <div className="gameover-stats">
-          <div className="go-stat">
-            <span className="go-stat-icon">⭐</span>
-            <div>
-              <span className="go-stat-label">Puntuación Final</span>
-              <span className="go-stat-value score-val">
-                {state.score.toLocaleString()}
-              </span>
+          {[
+            { icon: "⭐", label: "Puntuación", value: state.score.toLocaleString(), cls: isHard ? "" : "score-val" },
+            { icon: "🏅", label: "Nivel", value: state.level },
+            { icon: "🍎", label: "Comidas", value: state.foodEaten },
+            { icon: "🧠", label: "Preguntas", value: state.questionsAnswered },
+            { icon: "✅", label: "Correctas", value: state.questionsCorrect, cls: "correct-count" },
+            { icon: "🎯", label: "Precisión", value: `${accuracy}%` },
+          ].map(({ icon, label, value, cls }) => (
+            <div className="go-stat" key={label}>
+              <span className="go-stat-icon">{icon}</span>
+              <div>
+                <span className="go-stat-label">{label}</span>
+                <span className={`go-stat-value ${cls || ""}`}>{value}</span>
+              </div>
             </div>
-          </div>
-          <div className="go-stat">
-            <span className="go-stat-icon">🏅</span>
-            <div>
-              <span className="go-stat-label">Nivel Alcanzado</span>
-              <span className="go-stat-value">{state.level}</span>
-            </div>
-          </div>
-          <div className="go-stat">
-            <span className="go-stat-icon">🍎</span>
-            <div>
-              <span className="go-stat-label">Comidas</span>
-              <span className="go-stat-value">{state.foodEaten}</span>
-            </div>
-          </div>
-          <div className="go-stat">
-            <span className="go-stat-icon">🧠</span>
-            <div>
-              <span className="go-stat-label">Preguntas</span>
-              <span className="go-stat-value">{state.questionsAnswered}</span>
-            </div>
-          </div>
-          <div className="go-stat">
-            <span className="go-stat-icon">✅</span>
-            <div>
-              <span className="go-stat-label">Correctas</span>
-              <span className="go-stat-value correct-count">
-                {state.questionsCorrect}
-              </span>
-            </div>
-          </div>
-          <div className="go-stat">
-            <span className="go-stat-icon">🎯</span>
-            <div>
-              <span className="go-stat-label">Precisión</span>
-              <span className="go-stat-value">{accuracy}%</span>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Acciones */}
         <div className="gameover-actions">
-          <button id="go-restart-btn" className="btn btn-primary" onClick={onRestart}>
+          <button
+            id="go-restart-btn"
+            className={`btn ${isHard ? "btn-danger" : "btn-primary"}`}
+            onClick={onRestart}
+          >
             🔄 Jugar de nuevo
           </button>
-          <button
-            id="go-lb-btn"
-            className="btn btn-secondary"
-            onClick={() => setShowLb(true)}
-          >
-            🏆 Ver Leaderboard
+          <button id="go-lb-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
+            🏆 Ver Leaderboard {isHard ? "Difícil" : "Fácil"}
           </button>
           <button id="go-menu-btn" className="btn btn-ghost" onClick={onMenu}>
             🏠 Menú principal
@@ -138,6 +116,7 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
         <Leaderboard
           onClose={() => setShowLb(false)}
           highlightId={savedEntryId}
+          initialMode={difficulty}
         />
       )}
     </div>

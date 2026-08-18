@@ -1,14 +1,11 @@
 /**
  * @file App.jsx
- * @description Componente raíz que gestiona las vistas principales:
- *   - StartScreen  → pantalla de inicio
- *   - Game         → juego activo (tablero + stats + quiz)
- *   - GameOver     → pantalla final
+ * @description Raíz de la aplicación. Gestiona vistas y pasa la dificultad
+ * seleccionada a todos los componentes hijos.
  *
  * Flujo:
- *   "start" → onStart(name) → "game" → gameOver → "gameover"
- *            ← onMenu ←────────────────────────────────────
- *            ← onRestart ←─────────────────────────────────
+ *   StartScreen → onStart(name, difficulty) → GameView → onGameOver(state) → GameOver
+ *              ←── onMenu ────────────────────────────────────────────────────────
  */
 
 import { useState, useEffect } from "react";
@@ -19,40 +16,26 @@ import QuizModal from "./components/QuizModal";
 import GameOver from "./components/GameOver";
 import Leaderboard from "./components/Leaderboard";
 import RulesModal from "./components/RulesModal";
-import useSnakeGame from "./hooks/useSnakeGame";
-import { saveScore, getLeaderboard } from "./utils/leaderboard";
+import useSnakeGame, { DIFFICULTY_CONFIG } from "./hooks/useSnakeGame";
+import { saveScore } from "./utils/leaderboard";
 
-// ── Vista enum ──────────────────────────────────────────────────────────────
-const VIEWS = {
-  START: "start",
-  GAME: "game",
-  GAMEOVER: "gameover",
-};
+const VIEWS = { START: "start", GAME: "game", GAMEOVER: "gameover" };
 
-// ── Componente de juego (extrae lógica de useSnakeGame) ───────────────────
-function GameView({ playerName, onGameOver, onMenu }) {
+// ── Componente de juego ──────────────────────────────────────────────────────
+function GameView({ playerName, difficulty, onGameOver, onMenu }) {
   const { state, startGame, togglePause, answerQuestion, setDirection } =
-    useSnakeGame();
+    useSnakeGame(difficulty);
   const [showLb, setShowLb] = useState(false);
   const [showRules, setShowRules] = useState(false);
 
-  // Iniciar juego al montar
-  useEffect(() => {
-    startGame();
-  }, []);
+  const cfg = DIFFICULTY_CONFIG[difficulty];
+  const isHard = difficulty === "hard";
 
-  // Detectar game over y guardar puntuación
+  useEffect(() => { startGame(); }, []);
+
+  // Detectar game over
   useEffect(() => {
     if (state.gameOver) {
-      const entry = {
-        name: playerName,
-        score: state.score,
-        level: state.level,
-        questionsCorrect: state.questionsCorrect,
-        foodEaten: state.foodEaten,
-      };
-      saveScore(entry);
-      // Notificar al padre para cambiar vista
       setTimeout(() => onGameOver(state), 2000);
     }
   }, [state.gameOver]);
@@ -60,11 +43,16 @@ function GameView({ playerName, onGameOver, onMenu }) {
   const isPaused = !state.running && !state.showQuiz && !state.gameOver;
 
   return (
-    <div className="game-view">
-      {/* Barra superior */}
-      <header className="game-topbar">
+    <div className={`game-view ${isHard ? "game-view-hard" : ""}`}>
+      {/* Topbar */}
+      <header className={`game-topbar ${isHard ? "game-topbar-hard" : ""}`}>
         <div className="topbar-left">
-          <span className="topbar-logo">🐍 SnakeQuiz</span>
+          <span className="topbar-logo">
+            {isHard ? "🔥" : "🐍"} SnakeQuiz
+          </span>
+          <span className={`topbar-mode ${isHard ? "topbar-mode-hard" : "topbar-mode-easy"}`}>
+            {isHard ? "DIFÍCIL" : "FÁCIL"}
+          </span>
           <span className="topbar-player">👤 {playerName}</span>
         </div>
         <div className="topbar-right">
@@ -76,58 +64,32 @@ function GameView({ playerName, onGameOver, onMenu }) {
           >
             {isPaused ? "▶ Reanudar" : "⏸ Pausar"}
           </button>
-          <button
-            id="game-rules-btn"
-            className="btn btn-sm btn-ghost"
-            onClick={() => setShowRules(true)}
-          >
-            📋 Reglas
-          </button>
-          <button
-            id="game-lb-btn"
-            className="btn btn-sm btn-ghost"
-            onClick={() => setShowLb(true)}
-          >
-            🏆
-          </button>
-          <button
-            id="game-menu-btn"
-            className="btn btn-sm btn-ghost"
-            onClick={onMenu}
-          >
-            🏠
-          </button>
+          <button id="game-rules-btn" className="btn btn-sm btn-ghost" onClick={() => setShowRules(true)}>📋</button>
+          <button id="game-lb-btn" className="btn btn-sm btn-ghost" onClick={() => setShowLb(true)}>🏆</button>
+          <button id="game-menu-btn" className="btn btn-sm btn-ghost" onClick={onMenu}>🏠</button>
         </div>
       </header>
 
       {/* Área principal */}
       <main className="game-main">
-        {/* Panel de stats */}
         <StatsPanel state={state} />
 
-        {/* Canvas del juego */}
         <div className="board-wrap">
           <GameBoard state={state} />
 
-          {/* Overlay de pausa */}
+          {/* Overlay pausa */}
           {isPaused && (
             <div className="board-overlay">
               <div className="overlay-content">
                 <span className="overlay-icon">⏸</span>
                 <h2>Pausado</h2>
                 <p>Presiona <b>P</b> o <b>Espacio</b> para continuar</p>
-                <button
-                  id="resume-btn"
-                  className="btn btn-primary"
-                  onClick={togglePause}
-                >
-                  ▶ Continuar
-                </button>
+                <button id="resume-btn" className="btn btn-primary" onClick={togglePause}>▶ Continuar</button>
               </div>
             </div>
           )}
 
-          {/* Overlay de game over (breve) */}
+          {/* Overlay game over */}
           {state.gameOver && (
             <div className="board-overlay">
               <div className="overlay-content">
@@ -139,42 +101,14 @@ function GameView({ playerName, onGameOver, onMenu }) {
           )}
         </div>
 
-        {/* Controles móviles / D-pad */}
+        {/* D-pad */}
         <div className="dpad-wrap" aria-label="Controles de dirección">
           <div className="dpad">
-            <button
-              id="dpad-up"
-              className="dpad-btn dpad-up"
-              onClick={() => setDirection({ x: 0, y: -1 })}
-              aria-label="Arriba"
-            >
-              ▲
-            </button>
-            <button
-              id="dpad-left"
-              className="dpad-btn dpad-left"
-              onClick={() => setDirection({ x: -1, y: 0 })}
-              aria-label="Izquierda"
-            >
-              ◄
-            </button>
+            <button id="dpad-up" className="dpad-btn dpad-up" onClick={() => setDirection({ x: 0, y: -1 })} aria-label="Arriba">▲</button>
+            <button id="dpad-left" className="dpad-btn dpad-left" onClick={() => setDirection({ x: -1, y: 0 })} aria-label="Izquierda">◄</button>
             <div className="dpad-center" />
-            <button
-              id="dpad-right"
-              className="dpad-btn dpad-right"
-              onClick={() => setDirection({ x: 1, y: 0 })}
-              aria-label="Derecha"
-            >
-              ►
-            </button>
-            <button
-              id="dpad-down"
-              className="dpad-btn dpad-down"
-              onClick={() => setDirection({ x: 0, y: 1 })}
-              aria-label="Abajo"
-            >
-              ▼
-            </button>
+            <button id="dpad-right" className="dpad-btn dpad-right" onClick={() => setDirection({ x: 1, y: 0 })} aria-label="Derecha">►</button>
+            <button id="dpad-down" className="dpad-btn dpad-down" onClick={() => setDirection({ x: 0, y: 1 })} aria-label="Abajo">▼</button>
           </div>
         </div>
       </main>
@@ -186,10 +120,12 @@ function GameView({ playerName, onGameOver, onMenu }) {
           onAnswer={answerQuestion}
           questionsAnswered={state.questionsAnswered}
           questionsCorrect={state.questionsCorrect}
+          timeLimit={cfg.quizTimeLimit}
+          difficulty={difficulty}
         />
       )}
 
-      {/* Feedback de respuesta (toast) */}
+      {/* Toast de respuesta */}
       {state.showAnswerFeedback && (
         <div
           className={`answer-toast ${state.lastAnswerCorrect ? "toast-correct" : "toast-wrong"}`}
@@ -199,25 +135,29 @@ function GameView({ playerName, onGameOver, onMenu }) {
           {state.flashEffect === "bonus-life"
             ? "💎 ¡+1 Vida Bonus! ❤️"
             : state.lastAnswerCorrect
-            ? "✅ ¡Correcto! +Puntos"
-            : "❌ Incorrecto — -1 Vida"}
+            ? `✅ ¡Correcto! +${cfg.pointsPerQuiz(state.level)} pts`
+            : "❌ Incorrecto — −1 Vida"}
         </div>
       )}
 
-      {showLb && <Leaderboard onClose={() => setShowLb(false)} />}
-      {showRules && <RulesModal onClose={() => setShowRules(false)} />}
+      {showLb && <Leaderboard onClose={() => setShowLb(false)} initialMode={difficulty} />}
+      {showRules && <RulesModal onClose={() => setShowRules(false)} difficulty={difficulty} />}
     </div>
   );
 }
 
-// ── App Root ─────────────────────────────────────────────────────────────────
+// ── App Root ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [view, setView] = useState(VIEWS.START);
   const [playerName, setPlayerName] = useState("");
+  const [difficulty, setDifficulty] = useState("easy");
   const [finalState, setFinalState] = useState(null);
+  const [gameKey, setGameKey] = useState(0); // forzar remount
 
-  const handleStart = (name) => {
+  const handleStart = (name, diff) => {
     setPlayerName(name);
+    setDifficulty(diff);
+    setGameKey((k) => k + 1);
     setView(VIEWS.GAME);
   };
 
@@ -227,12 +167,11 @@ export default function App() {
   };
 
   const handleRestart = () => {
+    setGameKey((k) => k + 1);
     setView(VIEWS.GAME);
   };
 
-  const handleMenu = () => {
-    setView(VIEWS.START);
-  };
+  const handleMenu = () => setView(VIEWS.START);
 
   return (
     <div className="app-root">
@@ -240,8 +179,9 @@ export default function App() {
 
       {view === VIEWS.GAME && (
         <GameView
-          key={playerName + Date.now()} // forzar remount en restart
+          key={gameKey}
           playerName={playerName}
+          difficulty={difficulty}
           onGameOver={handleGameOver}
           onMenu={handleMenu}
         />
