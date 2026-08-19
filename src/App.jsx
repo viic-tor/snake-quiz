@@ -108,11 +108,7 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
           <div className="board-wrap">
             <GameBoard state={state} size={canvasSize} snakeColor={snakeColor} />
 
-            {/* Zona de swipe táctil — cubre el canvas en móvil */}
-            <SwipeZone
-              onSwipe={setDirection}
-              className="swipe-overlay"
-            />
+
 
             {isPaused && (
               <div className="board-overlay">
@@ -136,15 +132,23 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
             )}
           </div>
 
-          {/* D-pad táctil — dentro de la columna central, debajo del canvas */}
-          <div className="dpad-wrap" aria-label="Controles de dirección">
-            <div className="dpad">
-              <button id="dpad-up"    className="dpad-btn dpad-up"    onClick={() => setDirection({ x: 0, y: -1 })} aria-label="Arriba">▲</button>
-              <button id="dpad-left"  className="dpad-btn dpad-left"  onClick={() => setDirection({ x: -1, y: 0 })} aria-label="Izquierda">◄</button>
-              <div className="dpad-center" />
-              <button id="dpad-right" className="dpad-btn dpad-right" onClick={() => setDirection({ x: 1, y: 0 })} aria-label="Derecha">►</button>
-              <button id="dpad-down"  className="dpad-btn dpad-down"  onClick={() => setDirection({ x: 0, y: 1 })} aria-label="Abajo">▼</button>
+          {/* Controles: Desktop inline, Mobile flotante */}
+          <div className="game-controls-container">
+            <div className="dpad-wrap" aria-label="Controles de dirección">
+              <div className="dpad">
+                <button id="dpad-up"    className="dpad-btn dpad-up"    onClick={() => setDirection({ x: 0, y: -1 })} aria-label="Arriba">▲</button>
+                <button id="dpad-left"  className="dpad-btn dpad-left"  onClick={() => setDirection({ x: -1, y: 0 })} aria-label="Izquierda">◄</button>
+                <div className="dpad-center" />
+                <button id="dpad-right" className="dpad-btn dpad-right" onClick={() => setDirection({ x: 1, y: 0 })} aria-label="Derecha">►</button>
+                <button id="dpad-down"  className="dpad-btn dpad-down"  onClick={() => setDirection({ x: 0, y: 1 })} aria-label="Abajo">▼</button>
+              </div>
             </div>
+
+            {/* Zona de swipe táctil dedicada en móvil (superpuesta al D-Pad) */}
+            <SwipeZone
+              onSwipe={setDirection}
+              className="swipe-box-mobile"
+            />
           </div>
         </div>
 
