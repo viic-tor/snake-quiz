@@ -27,11 +27,24 @@ export async function getLeaderboardRemote(mode = "easy") {
     .select("*")
     .eq("mode", mode)
     .order("score", { ascending: false })
-    .limit(10);
+    .limit(50); // Fetch extra for deduplication
 
   if (error) throw error;
 
-  return data.map((row) => ({
+  // Deduplicar nombres (quedarnos con el mejor puntaje por jugador)
+  const uniqueData = [];
+  const seen = new Set();
+  
+  for (const row of data) {
+    const nameLower = row.name.toLowerCase();
+    if (!seen.has(nameLower)) {
+      uniqueData.push(row);
+      seen.add(nameLower);
+      if (uniqueData.length === 10) break;
+    }
+  }
+
+  return uniqueData.map((row) => ({
     id: row.id.toString(),
     name: row.name,
     score: row.score,
@@ -84,7 +97,7 @@ export async function saveScoreRemote(entry) {
   if (existing) {
     // Si ya existe, solo actualizar si el puntaje nuevo es mayor
     if (entry.score > existing.score) {
-      const { error: updateErr } = await supabase
+      const { data: updateData, error: updateErr } = await supabase
         .from("leaderboard")
         .update({
           score:              entry.score,
@@ -93,11 +106,27 @@ export async function saveScoreRemote(entry) {
           food_eaten:         entry.foodEaten ?? 0,
           date:               new Date().toISOString() // Actualiza la fecha
         })
-        .eq("id", existing.id);
+        .eq("id", existing.id)
+        .select();
 
       if (updateErr) {
         lastSavedSignature = "";
         throw updateErr;
+      }
+
+      // Si RLS bloqueó el UPDATE, updateData estará vacío, así que forzamos un INSERT
+      if (!updateData || updateData.length === 0) {
+        await supabase.from("leaderboard").insert([
+          {
+            name:              entry.name,
+            score:             entry.score,
+            level:             entry.level ?? 1,
+            questions_correct: entry.questionsCorrect ?? 0,
+            food_eaten:        entry.foodEaten ?? 0,
+            mode:              entry.mode ?? "easy",
+            date:              new Date().toISOString()
+          }
+        ]);
       }
     }
   } else {
