@@ -237,7 +237,7 @@ export default function StartScreen({ onStart }) {
           </div>
 
           {/* Color de la culebra */}
-          <div className="menu-section">
+          <div className="menu-section section-color-culebra">
             <p className="menu-section-label">Color de la culebra</p>
             <div className="menu-color-swatches">
               {/* Opción "auto" = color del modo */}
@@ -282,7 +282,7 @@ export default function StartScreen({ onStart }) {
           </div>
 
           {/* Botones secundarios */}
-          <div className="menu-secondary">
+          <div className="menu-secondary section-botones-secundarios">
             <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
               📋 Reglas
             </button>

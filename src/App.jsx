@@ -130,13 +130,6 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
         {/* Columna derecha: Info / mini stats extra */}
         <aside className="game-col-right">
           <div className="right-panel">
-            {/* Puntos (solo móvil, en desktop están en la izq) */}
-            <div className="right-stat mobile-only-stat">
-              <span className="right-stat-icon">⭐</span>
-              <span className="right-stat-label">Puntos</span>
-              <span className="right-stat-value">{state.score.toLocaleString()}</span>
-            </div>
-
             {/* Vidas (solo móvil, en desktop están en la izq) */}
             <div className="right-stat mobile-only-stat mobile-vidas">
               <span className="right-stat-icon">❤️</span>
@@ -146,6 +139,13 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
                   <span key={i} style={{fontSize: '0.6rem'}}>{i < state.lives ? "❤️" : "🖤"}</span>
                 ))}
               </span>
+            </div>
+
+            {/* Puntos extra (solo móvil) */}
+            <div className="right-stat mobile-only-stat mobile-puntos">
+              <span className="right-stat-icon">🌟</span>
+              <span className="right-stat-label">Puntos</span>
+              <span className="right-stat-value">{state.score.toLocaleString()}</span>
             </div>
 
             {/* Nivel y comidas */}
