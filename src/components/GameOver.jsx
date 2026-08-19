@@ -2,34 +2,55 @@
  * @file GameOver.jsx
  * @description Pantalla de Game Over con stats finales, modo de juego jugado
  * y acceso al leaderboard del modo correspondiente.
+ *
+ * REGLA LEADERBOARD:
+ *   - Solo se guarda el score cuando se juega con el banco de preguntas BASE.
+ *   - Si el jugador importó preguntas personalizadas (Excel), la partida NO
+ *     cuenta para el ranking. Esto garantiza la equidad de la competencia.
  */
 
 import { useEffect, useState } from "react";
 import { saveScore, getLeaderboard } from "../utils/leaderboard";
+import { hasCustomQuestions, getCustomMeta } from "../utils/questionStore";
+import { updatePlayerStats } from "../utils/playerStats";
 import Leaderboard from "./Leaderboard";
 
 export default function GameOver({ state, playerName, onRestart, onMenu }) {
-  const [lbPosition, setLbPosition] = useState(null);
+  const [lbPosition, setLbPosition]   = useState(null);
   const [savedEntryId, setSavedEntryId] = useState(null);
-  const [showLb, setShowLb] = useState(false);
+  const [showLb, setShowLb]           = useState(false);
 
   const difficulty = state.difficulty || "easy";
-  const isHard = difficulty === "hard";
+  const isHard     = difficulty === "hard";
+
+  // ── ¿Partida con banco personalizado? ────────────────────────────────────
+  const usingCustom = hasCustomQuestions();
+  const customMeta  = usingCustom ? getCustomMeta() : null;
 
   useEffect(() => {
+    if (usingCustom) return; // ← No guardar si hay preguntas personalizadas
+
     const entry = {
-      name: playerName,
-      score: state.score,
-      level: state.level,
+      name:             playerName,
+      score:            state.score,
+      level:            state.level,
       questionsCorrect: state.questionsCorrect,
-      foodEaten: state.foodEaten,
+      foodEaten:        state.foodEaten,
     };
+
+    // Actualizar estadísticas personales del jugador
+    updatePlayerStats({
+      score:             state.score,
+      questionsCorrect:  state.questionsCorrect,
+      questionsAnswered: state.questionsAnswered,
+      level:             state.level,
+    });
 
     saveScore(entry, difficulty).then((pos) => {
       setLbPosition(pos);
     });
 
-    // Obtener id de la entrada guardada para resaltarla
+    // Obtener id de la entrada guardada para resaltarla en el leaderboard
     getLeaderboard(difficulty).then((board) => {
       const saved = board.find(
         (e) => e.name === playerName && e.score === state.score
@@ -67,8 +88,23 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
           </span>
         </div>
 
-        {/* Posición en ranking */}
-        {getRankLabel(lbPosition) && (
+        {/* Aviso: partida con preguntas personalizadas — no cuenta para ranking */}
+        {usingCustom && (
+          <div className="gameover-custom-notice">
+            <span className="custom-notice-icon">📂</span>
+            <div>
+              <p className="custom-notice-title">Partida con banco personalizado</p>
+              <p className="custom-notice-sub">
+                «{customMeta?.name ?? "Personalizado"}» · Esta partida{" "}
+                <strong>no cuenta para el leaderboard</strong> para mantener
+                la equidad del ranking.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Posición en ranking (solo si jugó con banco base) */}
+        {!usingCustom && getRankLabel(lbPosition) && (
           <div className="gameover-rank">
             <span className="rank-badge">{getRankLabel(lbPosition)}</span>
           </div>
@@ -78,11 +114,11 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
         <div className="gameover-stats">
           {[
             { icon: "⭐", label: "Puntuación", value: state.score.toLocaleString(), cls: isHard ? "" : "score-val" },
-            { icon: "🏅", label: "Nivel", value: state.level },
-            { icon: "🍎", label: "Comidas", value: state.foodEaten },
-            { icon: "🧠", label: "Preguntas", value: state.questionsAnswered },
-            { icon: "✅", label: "Correctas", value: state.questionsCorrect, cls: "correct-count" },
-            { icon: "🎯", label: "Precisión", value: `${accuracy}%` },
+            { icon: "🏅", label: "Nivel",      value: state.level },
+            { icon: "🍎", label: "Comidas",    value: state.foodEaten },
+            { icon: "🧠", label: "Preguntas",  value: state.questionsAnswered },
+            { icon: "✅", label: "Correctas",  value: state.questionsCorrect, cls: "correct-count" },
+            { icon: "🎯", label: "Precisión",  value: `${accuracy}%` },
           ].map(({ icon, label, value, cls }) => (
             <div className="go-stat" key={label}>
               <span className="go-stat-icon">{icon}</span>
@@ -103,9 +139,14 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
           >
             🔄 Jugar de nuevo
           </button>
-          <button id="go-lb-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
-            🏆 Ver Leaderboard {isHard ? "Difícil" : "Fácil"}
-          </button>
+
+          {/* Solo mostrar botón de leaderboard si jugó con banco base */}
+          {!usingCustom && (
+            <button id="go-lb-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
+              🏆 Ver Leaderboard {isHard ? "Difícil" : "Fácil"}
+            </button>
+          )}
+
           <button id="go-menu-btn" className="btn btn-ghost" onClick={onMenu}>
             🏠 Menú principal
           </button>

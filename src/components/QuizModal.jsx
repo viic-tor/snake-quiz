@@ -1,7 +1,6 @@
 /**
  * @file QuizModal.jsx
- * @description Modal de preguntas con soporte para límite de tiempo configurable.
- * En modo difícil el tiempo límite es 10s; en fácil, 15s.
+ * @description Modal de quiz con soporte para 4, 5 o 6 opciones de respuesta.
  */
 
 import { useState, useEffect } from "react";
@@ -9,33 +8,35 @@ import { useState, useEffect } from "react";
 const CATEGORY_LABELS = {
   sistemas: "🖥️ Teoría de Sistemas",
   prog: "💻 Programación",
+  custom: "📂 Banco Personalizado",
 };
 
 const CATEGORY_COLORS = {
   sistemas: "#4facfe",
   prog: "#a855f7",
+  custom: "#ffd700",
 };
+
+const LETTERS = ["A", "B", "C", "D", "E", "F"];
 
 export default function QuizModal({
   question,
   onAnswer,
   questionsAnswered,
   questionsCorrect,
-  timeLimit = 15,   // ← 15s fácil, 10s difícil
+  timeLimit = 15,
   difficulty = "easy",
 }) {
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState(false);
   const [timeLeft, setTimeLeft] = useState(timeLimit);
 
-  // Reset al cambiar pregunta
   useEffect(() => {
     setSelected(null);
     setRevealed(false);
     setTimeLeft(timeLimit);
   }, [question?.id, timeLimit]);
 
-  // Temporizador
   useEffect(() => {
     if (revealed) return;
     if (timeLeft <= 0) { handleSelect(-1); return; }
@@ -52,36 +53,33 @@ export default function QuizModal({
 
   if (!question) return null;
 
+  const options = question.options || [];
+  const isHard = difficulty === "hard";
   const catColor = CATEGORY_COLORS[question.category] || "#00ff88";
   const timerPct = (timeLeft / timeLimit) * 100;
   const timerColor = timerPct > 50 ? "#00ff88" : timerPct > 25 ? "#ffd700" : "#ff4d6d";
-  const isHard = difficulty === "hard";
 
   return (
     <div className={`quiz-overlay ${isHard ? "quiz-overlay-hard" : ""}`}>
-      <div className="quiz-modal" role="dialog" aria-modal="true" aria-label="Pregunta de quiz">
+      <div className={`quiz-modal quiz-modal-${options.length}opts`} role="dialog" aria-modal="true">
 
-        {/* Badge de dificultad */}
-        {isHard && (
-          <div className="quiz-diff-badge">🔴 MODO DIFÍCIL — Puntos ×2</div>
-        )}
+        {/* Badge difícil */}
+        {isHard && <div className="quiz-diff-badge">🔴 MODO DIFÍCIL — Puntos ×2</div>}
 
         {/* Header */}
         <div className="quiz-header">
           <div className="quiz-badge" style={{ borderColor: catColor, color: catColor }}>
-            {CATEGORY_LABELS[question.category]}
+            {CATEGORY_LABELS[question.category] || `📂 ${question.category}`}
           </div>
           <div className="quiz-timer-wrap">
-            <span className="quiz-timer-num" style={{ color: timerColor }}>
-              {timeLeft}s
-            </span>
+            <span className="quiz-timer-num" style={{ color: timerColor }}>{timeLeft}s</span>
             <div className="quiz-timer-bar">
               <div
                 className="quiz-timer-fill"
                 style={{
                   width: `${timerPct}%`,
                   background: `linear-gradient(90deg, ${timerColor}, ${timerColor}88)`,
-                  transition: "width 1s linear, background 0.3s",
+                  transition: "width 1s linear",
                 }}
               />
             </div>
@@ -92,14 +90,15 @@ export default function QuizModal({
         <div className="quiz-stats-row">
           <span>Preguntas: <b>{questionsAnswered}</b></span>
           <span>Correctas: <b style={{ color: "#00ff88" }}>{questionsCorrect}</b></span>
+          <span className="quiz-opts-count">{options.length} opciones</span>
         </div>
 
         {/* Pregunta */}
         <h2 className="quiz-question">{question.question}</h2>
 
-        {/* Opciones */}
-        <div className="quiz-options">
-          {question.options.map((opt, i) => {
+        {/* Opciones: 4, 5 o 6 */}
+        <div className={`quiz-options quiz-options-${options.length}`}>
+          {options.map((opt, i) => {
             let cls = "quiz-option";
             if (revealed) {
               if (i === question.answer) cls += " correct";
@@ -114,7 +113,7 @@ export default function QuizModal({
                 onClick={() => handleSelect(i)}
                 disabled={revealed}
               >
-                <span className="quiz-option-letter">{["A","B","C","D"][i]}</span>
+                <span className="quiz-option-letter">{LETTERS[i]}</span>
                 <span className="quiz-option-text">{opt}</span>
               </button>
             );
@@ -122,7 +121,7 @@ export default function QuizModal({
         </div>
 
         {/* Explicación */}
-        {revealed && (
+        {revealed && question.explanation && (
           <div className={`quiz-explanation ${selected === question.answer ? "correct-exp" : "wrong-exp"}`}>
             <span className="quiz-exp-icon">{selected === question.answer ? "✅" : "❌"}</span>
             <span>{question.explanation}</span>

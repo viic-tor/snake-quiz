@@ -1,17 +1,19 @@
 /**
  * @file GameBoard.jsx
- * @description Canvas del juego. Adapta colores según la dificultad:
- *   - easy: serpiente verde neón sobre fondo azul oscuro
- *   - hard: serpiente naranja/roja sobre fondo rojo oscuro + marcadores de pared
+ * @description Canvas del juego responsivo.
+ * Acepta `size` prop para escalar dinámicamente al espacio disponible.
+ * La resolución lógica siempre es GRID_SIZE × GRID_SIZE celdas,
+ * escaladas al tamaño de píxeles solicitado.
  */
 
 import { useEffect, useRef } from "react";
 import { GRID_SIZE, DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 
-const CELL = 20;
-const W = GRID_SIZE * CELL;
+const LOGICAL = 400; // resolución interna fija (20 × 20px)
+const CELL    = LOGICAL / GRID_SIZE; // 20px
 
-function draw(ctx, state, t) {
+function draw(ctx, state, t, W) {
+  const CELL = W / GRID_SIZE;
   const isHard = state.difficulty === "hard";
   const cfg = DIFFICULTY_CONFIG[state.difficulty] || DIFFICULTY_CONFIG.easy;
   const C = cfg.color;
@@ -22,8 +24,10 @@ function draw(ctx, state, t) {
 
   // ── Flash de respuesta ────────────────────────────────────────────────────
   if (state.flashEffect) {
-    const fc = state.flashEffect === "correct" || state.flashEffect === "bonus-life"
-      ? (state.flashEffect === "bonus-life" ? "rgba(255,215,0,0.15)" : "rgba(0,255,136,0.12)")
+    const fc = state.flashEffect === "bonus-life"
+      ? "rgba(255,215,0,0.15)"
+      : state.flashEffect === "correct"
+      ? "rgba(0,255,136,0.12)"
       : "rgba(255,77,109,0.18)";
     ctx.fillStyle = fc;
     ctx.fillRect(0, 0, W, W);
@@ -43,8 +47,6 @@ function draw(ctx, state, t) {
     ctx.strokeStyle = `rgba(255,50,50,${0.3 + pulse * 0.3})`;
     ctx.lineWidth = 3;
     ctx.strokeRect(1, 1, W - 2, W - 2);
-
-    // Marcadores de esquina (⚠️ visual)
     ctx.fillStyle = `rgba(255,80,50,${0.4 + pulse * 0.3})`;
     const cs = 10;
     [[0,0],[W-cs,0],[0,W-cs],[W-cs,W-cs]].forEach(([x,y]) => {
@@ -58,34 +60,32 @@ function draw(ctx, state, t) {
   const fy = food.y * CELL + CELL / 2;
   const pulse = 1 + 0.18 * Math.sin(t / 300);
   const foodR = (CELL / 2 - 2) * pulse;
-  const foodColor = C.food;
 
-  // Halo
   const foodGrad = ctx.createRadialGradient(fx, fy, foodR * 0.2, fx, fy, foodR * 2.2);
-  foodGrad.addColorStop(0, foodColor + "66");
+  foodGrad.addColorStop(0, C.food + "66");
   foodGrad.addColorStop(1, "transparent");
   ctx.fillStyle = foodGrad;
   ctx.beginPath(); ctx.arc(fx, fy, foodR * 2.2, 0, Math.PI * 2); ctx.fill();
 
-  // Núcleo
-  ctx.fillStyle = foodColor;
+  ctx.fillStyle = C.food;
   ctx.beginPath(); ctx.arc(fx, fy, foodR, 0, Math.PI * 2); ctx.fill();
 
-  // Brillo
   ctx.fillStyle = "rgba(255,255,255,0.3)";
   ctx.beginPath(); ctx.arc(fx - foodR * 0.25, fy - foodR * 0.25, foodR * 0.3, 0, Math.PI * 2); ctx.fill();
 
   // ── Serpiente ─────────────────────────────────────────────────────────────
   const len = state.snake.length;
+  const eyeOff = Math.max(2, CELL * 0.3);
+  const eyeR   = Math.max(1.2, CELL * 0.12);
+
   state.snake.forEach((seg, i) => {
     const isHead = i === 0;
     const x = seg.x * CELL;
     const y = seg.y * CELL;
     const alpha = isHead ? 1 : Math.max(0.35, 1 - (i / len) * 0.6);
-    const r = isHead ? 7 : 4;
+    const r = isHead ? Math.max(4, CELL * 0.35) : Math.max(2, CELL * 0.2);
     const color = isHead ? C.snake : C.snakeDim;
 
-    // Glow cabeza
     if (isHead) {
       const glow = ctx.createRadialGradient(x+CELL/2, y+CELL/2, 0, x+CELL/2, y+CELL/2, CELL * 1.2);
       glow.addColorStop(0, color + "44");
@@ -101,19 +101,17 @@ function draw(ctx, state, t) {
     else ctx.rect(x+1, y+1, CELL-2, CELL-2);
     ctx.fill();
 
-    // Ojos
     if (isHead) {
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#0a0a0f";
       ctx.beginPath();
-      ctx.arc(x+7, y+7, 2.5, 0, Math.PI * 2);
-      ctx.arc(x+CELL-7, y+7, 2.5, 0, Math.PI * 2);
+      ctx.arc(x + eyeOff, y + eyeOff, eyeR, 0, Math.PI * 2);
+      ctx.arc(x + CELL - eyeOff, y + eyeOff, eyeR, 0, Math.PI * 2);
       ctx.fill();
-      // Pupila brillante
       ctx.fillStyle = "rgba(255,255,255,0.8)";
       ctx.beginPath();
-      ctx.arc(x+7.8, y+6.2, 1, 0, Math.PI * 2);
-      ctx.arc(x+CELL-6.2, y+6.2, 1, 0, Math.PI * 2);
+      ctx.arc(x + eyeOff + eyeR * 0.3, y + eyeOff - eyeR * 0.3, eyeR * 0.45, 0, Math.PI * 2);
+      ctx.arc(x + CELL - eyeOff + eyeR * 0.3, y + eyeOff - eyeR * 0.3, eyeR * 0.45, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -121,12 +119,14 @@ function draw(ctx, state, t) {
   });
 }
 
-export default function GameBoard({ state }) {
+export default function GameBoard({ state, size = 400 }) {
   const canvasRef = useRef(null);
-  const stateRef = useRef(state);
+  const stateRef  = useRef(state);
   const animIdRef = useRef(null);
+  const sizeRef   = useRef(size);
 
   stateRef.current = state;
+  sizeRef.current  = size;
 
   const isHard = state.difficulty === "hard";
 
@@ -135,7 +135,7 @@ export default function GameBoard({ state }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     const loop = (t) => {
-      draw(ctx, stateRef.current, t);
+      draw(ctx, stateRef.current, t, sizeRef.current);
       animIdRef.current = requestAnimationFrame(loop);
     };
     animIdRef.current = requestAnimationFrame(loop);
@@ -145,18 +145,9 @@ export default function GameBoard({ state }) {
   return (
     <canvas
       ref={canvasRef}
-      width={W}
-      height={W}
-      style={{
-        display: "block",
-        borderRadius: "12px",
-        border: isHard
-          ? "1px solid rgba(255,100,50,0.4)"
-          : "1px solid rgba(0,255,136,0.15)",
-        boxShadow: isHard
-          ? "0 0 40px rgba(255,100,50,0.15), 0 0 80px rgba(255,50,20,0.08)"
-          : "0 0 40px rgba(0,255,136,0.12), 0 0 80px rgba(0,255,136,0.05)",
-      }}
+      width={size}
+      height={size}
+      className={`game-canvas ${isHard ? "game-canvas-hard" : "game-canvas-easy"}`}
       aria-label="Tablero del juego Snake"
     />
   );

@@ -1,131 +1,320 @@
 /**
  * @file StartScreen.jsx
- * @description Pantalla de inicio con selector de dificultad (Fácil / Difícil),
- * formulario de nombre, botones de Reglas y Leaderboard.
+ * @description Menú principal estilo Dashboard con 3 columnas:
+ *
+ *   Izquierda: Configuración integrada (modo, respuestas, banco Excel)
+ *   Centro:    Logo, nombre y botón de inicio
+ *   Derecha:   Top 3 leaderboard + stats personales del jugador
+ *
+ * Fondo: serpiente animada semi-transparente (MenuSnakeCanvas)
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Leaderboard from "./Leaderboard";
 import RulesModal from "./RulesModal";
+import QuestionImporter from "./QuestionImporter";
+import MenuSnakeCanvas from "./MenuSnakeCanvas";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
+import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../utils/questionStore";
+import { getLeaderboardLocal } from "../utils/leaderboard";
+import { getPlayerStats, getAccuracy } from "../utils/playerStats";
 
 export default function StartScreen({ onStart }) {
-  const [name, setName] = useState("");
-  const [difficulty, setDifficulty] = useState("easy");
-  const [showLb, setShowLb] = useState(false);
-  const [showRules, setShowRules] = useState(false);
-  const [error, setError] = useState("");
+  const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
+  const [difficulty,     setDifficulty]     = useState("easy");
+  const [answerCount,    setAnswerCount]    = useState(4);
+  const [showLb,         setShowLb]         = useState(false);
+  const [showRules,      setShowRules]      = useState(false);
+  const [showImporter,   setShowImporter]   = useState(false);
+  const [customMeta,     setCustomMeta]     = useState(() => getCustomMeta());
+  const [hasCustom,      setHasCustom]      = useState(() => hasCustomQuestions());
+  const [error,          setError]          = useState("");
+  const [top3,           setTop3]           = useState([]);
+  const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats());
+
+  const isHard = difficulty === "hard";
+  const cfg    = DIFFICULTY_CONFIG[difficulty];
+
+  // Cargar top 3 del leaderboard del modo seleccionado
+  useEffect(() => {
+    const board = getLeaderboardLocal(difficulty);
+    setTop3(board.slice(0, 3));
+  }, [difficulty]);
+
+  // Refrescar stats personales al montar
+  useEffect(() => {
+    setPlayerStats(getPlayerStats());
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { setError("Por favor ingresa tu nombre."); return; }
     if (trimmed.length > 20) { setError("Máximo 20 caracteres."); return; }
-    onStart(trimmed, difficulty);
+    localStorage.setItem("snake-quiz-last-name", trimmed);
+    onStart(trimmed, difficulty, answerCount);
   };
 
-  const isHard = difficulty === "hard";
+  const handleImported = () => {
+    setCustomMeta(getCustomMeta());
+    setHasCustom(hasCustomQuestions());
+  };
+
+  const handleClearCustom = () => {
+    clearCustomQuestions();
+    setCustomMeta(null);
+    setHasCustom(false);
+  };
+
+  const rankMedal = (i) => ["🥇", "🥈", "🥉"][i] ?? `#${i + 1}`;
+  const accuracy  = getAccuracy(playerStats);
 
   return (
-    <div className={`start-screen ${isHard ? "start-hard" : ""}`}>
-      {/* Partículas */}
-      <div className="start-particles" aria-hidden="true">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className={`particle particle-${i % 4}`} />
-        ))}
-      </div>
+    <div className={`menu-dashboard ${isHard ? "menu-dashboard-hard" : ""}`}>
 
-      <div className="start-content">
-        {/* Logo */}
-        <div className="start-logo" aria-label="Snake Quiz">
-          <div className="snake-logo-icon">{isHard ? "🔥" : "🐍"}</div>
-          <h1 className="start-title">
-            Snake<span className={`title-accent ${isHard ? "title-hard" : ""}`}>Quiz</span>
-          </h1>
-          <p className="start-subtitle">Sistemas · Programación · Estrategia</p>
-        </div>
+      {/* Fondo animado */}
+      <MenuSnakeCanvas color={isHard ? "#ff6b35" : "#00ff88"} />
 
-        {/* Selector de dificultad */}
-        <div className="difficulty-selector" role="group" aria-label="Seleccionar dificultad">
-          <p className="difficulty-label">Selecciona el modo de juego:</p>
-          <div className="difficulty-btns">
-            <button
-              id="mode-easy-btn"
-              type="button"
-              className={`diff-btn ${difficulty === "easy" ? "diff-active diff-easy-active" : ""}`}
-              onClick={() => setDifficulty("easy")}
-            >
-              <span className="diff-icon">🟢</span>
-              <span className="diff-name">Fácil</span>
-              <span className="diff-desc">Paredes traspasables · Quiz c/3</span>
+      {/* ── Grid principal ─────────────────────────────────────────────── */}
+      <div className="menu-grid">
+
+        {/* ══ COLUMNA IZQUIERDA — Configuración ══ */}
+        <aside className="menu-col menu-col-left">
+
+          {/* Título columna */}
+          <p className="menu-col-title">⚙️ Configuración</p>
+
+          {/* Modo de juego */}
+          <div className="menu-section">
+            <p className="menu-section-label">Modo de juego</p>
+            <div className="menu-diff-btns">
+              <button
+                id="mode-easy-btn" type="button"
+                className={`menu-diff-btn ${difficulty === "easy" ? "menu-diff-easy-active" : ""}`}
+                onClick={() => setDifficulty("easy")}
+              >
+                <span className="menu-diff-icon">🟢</span>
+                <div>
+                  <span className="menu-diff-name">Fácil</span>
+                  <span className="menu-diff-desc">Paredes traspasables · Quiz c/3</span>
+                </div>
+              </button>
+              <button
+                id="mode-hard-btn" type="button"
+                className={`menu-diff-btn ${difficulty === "hard" ? "menu-diff-hard-active" : ""}`}
+                onClick={() => setDifficulty("hard")}
+              >
+                <span className="menu-diff-icon">🔴</span>
+                <div>
+                  <span className="menu-diff-name">Difícil</span>
+                  <span className="menu-diff-desc">Paredes mortales · ×2 pts · 10s</span>
+                </div>
+              </button>
+            </div>
+            {isHard && (
+              <div className="menu-diff-warning">
+                ⚠️ Las paredes quitan vida · Quiz c/2 comidas · 10s por pregunta
+              </div>
+            )}
+          </div>
+
+          {/* Opciones de respuesta */}
+          <div className="menu-section">
+            <p className="menu-section-label">Opciones de respuesta</p>
+            <div className="menu-answer-btns">
+              {[4, 5, 6].map((n) => (
+                <button
+                  key={n}
+                  id={`answers-${n}-btn`}
+                  type="button"
+                  className={`menu-answer-btn ${answerCount === n ? "menu-answer-active" : ""}`}
+                  onClick={() => setAnswerCount(n)}
+                >
+                  <span className="menu-answer-num">{n}</span>
+                  <span className="menu-answer-label">
+                    {n === 4 ? "Estándar" : n === 5 ? "Medio" : "Difícil"}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Banco de preguntas */}
+          <div className="menu-section">
+            <p className="menu-section-label">Banco de preguntas</p>
+            {hasCustom && customMeta ? (
+              <div className="menu-bank-active">
+                <span>📂</span>
+                <div className="menu-bank-info">
+                  <span className="menu-bank-name">{customMeta.name}</span>
+                  <span className="menu-bank-count">{customMeta.count} preguntas · <span className="menu-no-lb">no cuenta para ranking</span></span>
+                </div>
+                <div className="menu-bank-actions">
+                  <button id="import-change-btn" className="btn btn-sm btn-ghost" title="Cambiar archivo" onClick={() => setShowImporter(true)}>🔄</button>
+                  <button id="import-clear-btn"  className="btn btn-sm btn-ghost" title="Usar banco base"  onClick={handleClearCustom}>✕</button>
+                </div>
+              </div>
+            ) : (
+              <button id="open-importer-btn" className="menu-bank-upload" onClick={() => setShowImporter(true)}>
+                <span>📊</span>
+                <div>
+                  <span className="menu-bank-upload-title">Importar desde Excel</span>
+                  <span className="menu-bank-upload-sub">Sube tu propio banco de preguntas</span>
+                </div>
+                <span className="menu-bank-upload-arrow">→</span>
+              </button>
+            )}
+            {!hasCustom && (
+              <div className="menu-bank-base">
+                ✅ Banco oficial · <strong>200 preguntas</strong> de Sistemas y Programación
+              </div>
+            )}
+          </div>
+
+          {/* Botones secundarios */}
+          <div className="menu-secondary">
+            <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
+              📋 Reglas
             </button>
+            <button id="show-lb-full-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
+              🏆 Ranking completo
+            </button>
+          </div>
+        </aside>
 
+        {/* ══ COLUMNA CENTRO — Hero ══ */}
+        <main className="menu-col menu-col-center">
+
+          {/* Logo */}
+          <div className="menu-logo">
+            <div className={`menu-logo-icon ${isHard ? "menu-logo-hard" : ""}`}>
+              {isHard ? "🔥" : "🐍"}
+            </div>
+            <h1 className="menu-title">
+              Snake<span className={`menu-title-accent ${isHard ? "menu-title-hard" : ""}`}>Quiz</span>
+            </h1>
+            <p className="menu-subtitle">Sistemas · Programación · Estrategia</p>
+          </div>
+
+          {/* Mini feature pills */}
+          <div className="menu-pills">
+            {[
+              { icon: "🧠", text: `Quiz c/${cfg.quizEvery}` },
+              { icon: "❤️", text: "3 vidas" },
+              { icon: "⚡", text: "Velocidad creciente" },
+              { icon: "📊", text: `${answerCount} respuestas` },
+              { icon: isHard ? "💀" : "✨", text: isHard ? "×2 puntos" : "Paredes seguras" },
+            ].map(({ icon, text }) => (
+              <span key={text} className="menu-pill">{icon} {text}</span>
+            ))}
+          </div>
+
+          {/* Formulario de inicio */}
+          <form className="menu-form" onSubmit={handleSubmit} noValidate>
+            <label htmlFor="player-name" className="menu-form-label">Tu nombre</label>
+            <input
+              id="player-name"
+              type="text"
+              className={`menu-input ${isHard ? "menu-input-hard" : ""}`}
+              placeholder="Ingresa tu nombre…"
+              value={name}
+              maxLength={20}
+              onChange={(e) => { setName(e.target.value); setError(""); }}
+              autoComplete="off"
+              autoFocus
+            />
+            {error && <p className="menu-error" role="alert">{error}</p>}
             <button
-              id="mode-hard-btn"
-              type="button"
-              className={`diff-btn ${difficulty === "hard" ? "diff-active diff-hard-active" : ""}`}
-              onClick={() => setDifficulty("hard")}
+              id="start-btn"
+              type="submit"
+              className={`btn menu-start-btn ${isHard ? "btn-danger" : "btn-primary"}`}
             >
-              <span className="diff-icon">🔴</span>
-              <span className="diff-name">Difícil</span>
-              <span className="diff-desc">Paredes mortales · Quiz c/2 · ×2 pts</span>
+              <span>{isHard ? "🔥 Jugar en Difícil" : "🎮 Jugar en Fácil"}</span>
+              <span className="menu-start-opts">· {answerCount} opciones</span>
+            </button>
+          </form>
+        </main>
+
+        {/* ══ COLUMNA DERECHA — Stats + Top 3 ══ */}
+        <aside className="menu-col menu-col-right">
+
+          {/* Tus estadísticas personales */}
+          <p className="menu-col-title">📈 Tus Estadísticas</p>
+          <div className="menu-stats-grid">
+            <div className="menu-stat-card">
+              <span className="menu-stat-icon">🏆</span>
+              <span className="menu-stat-value">{playerStats.bestScore.toLocaleString()}</span>
+              <span className="menu-stat-label">Mejor Score</span>
+            </div>
+            <div className="menu-stat-card">
+              <span className="menu-stat-icon">🎮</span>
+              <span className="menu-stat-value">{playerStats.gamesPlayed}</span>
+              <span className="menu-stat-label">Partidas</span>
+            </div>
+            <div className="menu-stat-card">
+              <span className="menu-stat-icon">🎯</span>
+              <span className="menu-stat-value">{accuracy}%</span>
+              <span className="menu-stat-label">Precisión</span>
+            </div>
+            <div className="menu-stat-card">
+              <span className="menu-stat-icon">🏅</span>
+              <span className="menu-stat-value">{playerStats.bestLevel}</span>
+              <span className="menu-stat-label">Mejor Nivel</span>
+            </div>
+          </div>
+
+          {/* Último score */}
+          {playerStats.gamesPlayed > 0 && (
+            <div className="menu-last-score">
+              <span className="menu-last-label">Última partida</span>
+              <span className="menu-last-val">{playerStats.lastScore.toLocaleString()} pts</span>
+            </div>
+          )}
+
+          {/* Divisor */}
+          <div className="menu-divider" />
+
+          {/* Top 3 Leaderboard */}
+          <div className="menu-top3">
+            <p className="menu-col-title">
+              🏆 Top 3 — {isHard ? "Difícil" : "Fácil"}
+            </p>
+            {top3.length === 0 ? (
+              <div className="menu-top3-empty">
+                <span>🎯</span>
+                <p>¡Sé el primero en el ranking!</p>
+              </div>
+            ) : (
+              <div className="menu-top3-list">
+                {top3.map((entry, i) => (
+                  <div key={entry.id} className={`menu-top3-row menu-top3-row-${i}`}>
+                    <span className="menu-top3-medal">{rankMedal(i)}</span>
+                    <span className="menu-top3-name">{entry.name}</span>
+                    <span className="menu-top3-score">{entry.score.toLocaleString()}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button className="menu-top3-more" onClick={() => setShowLb(true)}>
+              Ver ranking completo →
             </button>
           </div>
 
-          {/* Detalles del modo seleccionado */}
-          {isHard && (
-            <div className="diff-warning" role="alert">
-              ⚠️ <b>Modo Difícil</b>: las paredes quitan vida, quiz cada 2 comidas,
-              10s por pregunta. ¡Los puntos valen el doble!
-            </div>
-          )}
-        </div>
-
-        {/* Formulario */}
-        <form className="start-form" onSubmit={handleSubmit} noValidate>
-          <label htmlFor="player-name" className="start-label">¿Cómo te llamas?</label>
-          <input
-            id="player-name"
-            type="text"
-            className={`start-input ${isHard ? "start-input-hard" : ""}`}
-            placeholder="Ingresa tu nombre"
-            value={name}
-            maxLength={20}
-            onChange={(e) => { setName(e.target.value); setError(""); }}
-            autoComplete="off"
-          />
-          {error && <p className="start-error" role="alert">{error}</p>}
-
-          <button
-            id="start-btn"
-            type="submit"
-            className={`btn ${isHard ? "btn-danger" : "btn-primary"}`}
-          >
-            {isHard ? "🔥 Jugar en Difícil" : "🎮 Jugar en Fácil"}
-          </button>
-        </form>
-
-        {/* Botones secundarios */}
-        <div className="start-secondary">
-          <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
-            📋 Reglas
-          </button>
-          <button id="show-lb-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
-            🏆 Leaderboard
-          </button>
-        </div>
-
-        {/* Features */}
-        <div className="start-features">
-          <div className="feature-card"><span>🧠</span><p>Quiz cada {DIFFICULTY_CONFIG[difficulty].quizEvery} comidas</p></div>
-          <div className="feature-card"><span>❤️</span><p>3 vidas — bonus cada {DIFFICULTY_CONFIG[difficulty].bonusLifeAt} ✅</p></div>
-          <div className="feature-card"><span>⚡</span><p>Velocidad creciente</p></div>
-          <div className="feature-card"><span>{isHard ? "💀" : "🏆"}</span><p>{isHard ? "Paredes letales" : "Leaderboard global"}</p></div>
-        </div>
+          {/* Tip del modo */}
+          <div className={`menu-tip ${isHard ? "menu-tip-hard" : "menu-tip-easy"}`}>
+            {isHard ? (
+              <><span>💡</span><p>En modo difícil cada respuesta correcta vale el doble. ¡Pero cuidado con las paredes!</p></>
+            ) : (
+              <><span>💡</span><p>Cada 10 preguntas correctas sin perder vidas ganas una vida extra.</p></>
+            )}
+          </div>
+        </aside>
       </div>
 
-      {showLb && <Leaderboard onClose={() => setShowLb(false)} initialMode={difficulty} />}
-      {showRules && <RulesModal onClose={() => setShowRules(false)} difficulty={difficulty} />}
+      {/* Modales */}
+      {showLb       && <Leaderboard     onClose={() => setShowLb(false)}       initialMode={difficulty} />}
+      {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} />}
+      {showImporter && <QuestionImporter onClose={() => setShowImporter(false)} onImported={handleImported} />}
     </div>
   );
 }

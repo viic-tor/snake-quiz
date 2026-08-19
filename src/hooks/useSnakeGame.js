@@ -20,7 +20,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getRandomQuestion } from "../data/questions";
+import { getNextQuestion } from "../utils/questionStore";
 
 // ── Constantes del tablero ─────────────────────────────────────────────────
 export const GRID_SIZE = 20;
@@ -76,7 +76,7 @@ const randomCell = (snake = []) => {
   return pos;
 };
 
-const buildInitialState = (difficulty = "easy") => {
+const buildInitialState = (difficulty = "easy", answerCount = 4) => {
   const cfg = DIFFICULTY_CONFIG[difficulty];
   return {
     snake: INITIAL_SNAKE,
@@ -101,13 +101,14 @@ const buildInitialState = (difficulty = "easy") => {
     showAnswerFeedback: false,
     flashEffect: null,
     difficulty,
+    answerCount,   // número de opciones por pregunta: 4, 5 o 6
   };
 };
 
 // ── Hook ───────────────────────────────────────────────────────────────────
-export default function useSnakeGame(difficulty = "easy") {
+export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
   const cfg = DIFFICULTY_CONFIG[difficulty];
-  const [state, setState] = useState(() => buildInitialState(difficulty));
+  const [state, setState] = useState(() => buildInitialState(difficulty, answerCount));
   const stateRef = useRef(state);
   const intervalRef = useRef(null);
   const feedbackTimerRef = useRef(null);
@@ -117,11 +118,11 @@ export default function useSnakeGame(difficulty = "easy") {
   // ── Iniciar / reiniciar ────────────────────────────────────────────────
   const startGame = useCallback(() => {
     setState({
-      ...buildInitialState(difficulty),
+      ...buildInitialState(difficulty, answerCount),
       food: randomCell(INITIAL_SNAKE),
       running: true,
     });
-  }, [difficulty]);
+  }, [difficulty, answerCount]);
 
   // ── Pausa ──────────────────────────────────────────────────────────────
   const togglePause = useCallback(() => {
@@ -315,7 +316,7 @@ export default function useSnakeGame(difficulty = "easy") {
       const triggerQuiz = newFoodEaten % localCfg.quizEvery === 0;
       let quizState = {};
       if (triggerQuiz) {
-        const question = getRandomQuestion(prev.usedQuestionIds);
+        const question = getNextQuestion(prev.usedQuestionIds, prev.answerCount);
         quizState = {
           showQuiz: true,
           running: false,
