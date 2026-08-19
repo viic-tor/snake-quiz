@@ -12,11 +12,18 @@ import { GRID_SIZE, DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 const LOGICAL = 400; // resolución interna fija (20 × 20px)
 const CELL    = LOGICAL / GRID_SIZE; // 20px
 
-function draw(ctx, state, t, W) {
+function draw(ctx, state, t, W, snakeColor) {
   const CELL = W / GRID_SIZE;
   const isHard = state.difficulty === "hard";
   const cfg = DIFFICULTY_CONFIG[state.difficulty] || DIFFICULTY_CONFIG.easy;
-  const C = cfg.color;
+  const C = { ...cfg.color };
+
+  // Override del color de la culebra si el usuario eligió uno
+  if (snakeColor) {
+    C.snake    = snakeColor;
+    // snakeDim: version más oscura del color elegido (70% de opacidad)
+    C.snakeDim = snakeColor + "b3";
+  }
 
   // ── Fondo ─────────────────────────────────────────────────────────────────
   ctx.fillStyle = C.boardBg;
@@ -119,7 +126,7 @@ function draw(ctx, state, t, W) {
   });
 }
 
-export default function GameBoard({ state, size = 400 }) {
+export default function GameBoard({ state, size = 400, snakeColor = null }) {
   const canvasRef = useRef(null);
   const stateRef  = useRef(state);
   const animIdRef = useRef(null);
@@ -134,13 +141,13 @@ export default function GameBoard({ state, size = 400 }) {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
-    const loop = (t) => {
-      draw(ctx, stateRef.current, t, sizeRef.current);
-      animIdRef.current = requestAnimationFrame(loop);
+    const render = (ts) => {
+      animIdRef.current = requestAnimationFrame(render);
+      draw(ctx, stateRef.current, ts, sizeRef.current, snakeColor);
     };
-    animIdRef.current = requestAnimationFrame(loop);
+    animIdRef.current = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animIdRef.current);
-  }, []);
+  }, [snakeColor]);
 
   return (
     <canvas

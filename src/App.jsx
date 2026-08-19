@@ -38,7 +38,7 @@ function useCanvasSize(containerRef) {
 }
 
 // ── Componente de juego ──────────────────────────────────────────────────────
-function GameView({ playerName, difficulty, answerCount, onGameOver, onMenu }) {
+function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver, onMenu }) {
   const { state, startGame, togglePause, answerQuestion, setDirection } =
     useSnakeGame(difficulty, answerCount);
   const [showLb, setShowLb] = useState(false);
@@ -105,7 +105,7 @@ function GameView({ playerName, difficulty, answerCount, onGameOver, onMenu }) {
         {/* Columna central: Canvas + overlays */}
         <div className="game-col-center" ref={boardContainerRef}>
           <div className="board-wrap">
-            <GameBoard state={state} size={canvasSize} />
+            <GameBoard state={state} size={canvasSize} snakeColor={snakeColor} />
 
             {isPaused && (
               <div className="board-overlay">
@@ -230,13 +230,15 @@ export default function App() {
   const [playerName, setPlayerName] = useState("");
   const [difficulty, setDifficulty] = useState("easy");
   const [answerCount, setAnswerCount] = useState(4);
-  const [finalState, setFinalState] = useState(null);
-  const [gameKey, setGameKey] = useState(0);
+  const [finalState,   setFinalState]   = useState(null);
+  const [gameKey,      setGameKey]      = useState(0);
+  const [snakeColor,   setSnakeColor]   = useState(null); // null = usar color del modo
 
-  const handleStart = (name, diff, count) => {
+  const handleStart = (name, diff, count, color) => {
     setPlayerName(name);
     setDifficulty(diff);
     setAnswerCount(count);
+    if (color) setSnakeColor(color);
     setGameKey((k) => k + 1);
     setView(VIEWS.GAME);
   };
@@ -251,6 +253,7 @@ export default function App() {
           playerName={playerName}
           difficulty={difficulty}
           answerCount={answerCount}
+          snakeColor={snakeColor}
           onGameOver={(s) => { setFinalState(s); setView(VIEWS.GAMEOVER); }}
           onMenu={() => setView(VIEWS.START)}
         />

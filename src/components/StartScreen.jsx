@@ -16,13 +16,15 @@ import QuestionImporter from "./QuestionImporter";
 import MenuSnakeCanvas from "./MenuSnakeCanvas";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../utils/questionStore";
-import { getLeaderboardLocal } from "../utils/leaderboard";
+import { getLeaderboardLocal, getLeaderboard } from "../utils/leaderboard";
+import { SUPABASE_ENABLED } from "../utils/supabase";
 import { getPlayerStats, getAccuracy } from "../utils/playerStats";
 
 export default function StartScreen({ onStart }) {
   const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
   const [difficulty,     setDifficulty]     = useState("easy");
   const [answerCount,    setAnswerCount]    = useState(4);
+  const [snakeColor,     setSnakeColor]     = useState(null); // null = color del modo
   const [showLb,         setShowLb]         = useState(false);
   const [showRules,      setShowRules]      = useState(false);
   const [showImporter,   setShowImporter]   = useState(false);
@@ -30,15 +32,23 @@ export default function StartScreen({ onStart }) {
   const [hasCustom,      setHasCustom]      = useState(() => hasCustomQuestions());
   const [error,          setError]          = useState("");
   const [top3,           setTop3]           = useState([]);
+  const [top3Loading,    setTop3Loading]    = useState(true);
   const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats());
 
   const isHard = difficulty === "hard";
   const cfg    = DIFFICULTY_CONFIG[difficulty];
 
-  // Cargar top 3 del leaderboard del modo seleccionado
+  // Cargar top 3 usando Supabase si está activo, si no localStorage
   useEffect(() => {
-    const board = getLeaderboardLocal(difficulty);
-    setTop3(board.slice(0, 3));
+    setTop3Loading(true);
+    getLeaderboard(difficulty)
+      .then((board) => {
+        setTop3(board.slice(0, 3));
+      })
+      .catch(() => {
+        setTop3(getLeaderboardLocal(difficulty).slice(0, 3));
+      })
+      .finally(() => setTop3Loading(false));
   }, [difficulty]);
 
   // Refrescar stats personales al montar
@@ -52,7 +62,7 @@ export default function StartScreen({ onStart }) {
     if (!trimmed) { setError("Por favor ingresa tu nombre."); return; }
     if (trimmed.length > 20) { setError("Máximo 20 caracteres."); return; }
     localStorage.setItem("snake-quiz-last-name", trimmed);
-    onStart(trimmed, difficulty, answerCount);
+    onStart(trimmed, difficulty, answerCount, snakeColor);
   };
 
   const handleImported = () => {
@@ -139,35 +149,48 @@ export default function StartScreen({ onStart }) {
             </div>
           </div>
 
-          {/* Banco de preguntas */}
+          {/* Color de la culebra */}
           <div className="menu-section">
-            <p className="menu-section-label">Banco de preguntas</p>
-            {hasCustom && customMeta ? (
-              <div className="menu-bank-active">
-                <span>📂</span>
-                <div className="menu-bank-info">
-                  <span className="menu-bank-name">{customMeta.name}</span>
-                  <span className="menu-bank-count">{customMeta.count} preguntas · <span className="menu-no-lb">no cuenta para ranking</span></span>
-                </div>
-                <div className="menu-bank-actions">
-                  <button id="import-change-btn" className="btn btn-sm btn-ghost" title="Cambiar archivo" onClick={() => setShowImporter(true)}>🔄</button>
-                  <button id="import-clear-btn"  className="btn btn-sm btn-ghost" title="Usar banco base"  onClick={handleClearCustom}>✕</button>
-                </div>
-              </div>
-            ) : (
-              <button id="open-importer-btn" className="menu-bank-upload" onClick={() => setShowImporter(true)}>
-                <span>📊</span>
-                <div>
-                  <span className="menu-bank-upload-title">Importar desde Excel</span>
-                  <span className="menu-bank-upload-sub">Sube tu propio banco de preguntas</span>
-                </div>
-                <span className="menu-bank-upload-arrow">→</span>
+            <p className="menu-section-label">Color de la culebra</p>
+            <div className="menu-color-swatches">
+              {/* Opción "auto" = color del modo */}
+              <button
+                type="button"
+                className={`menu-swatch menu-swatch-auto ${snakeColor === null ? "menu-swatch-active" : ""}`}
+                onClick={() => setSnakeColor(null)}
+                title="Color automático del modo"
+              >
+                <span>🐍</span>
+                <span className="menu-swatch-label">Auto</span>
               </button>
-            )}
-            {!hasCustom && (
-              <div className="menu-bank-base">
-                ✅ Banco oficial · <strong>200 preguntas</strong> de Sistemas y Programación
-              </div>
+              {[
+                { color: "#00ff88", label: "Verde",   title: "Verde neón" },
+                { color: "#00cfff", label: "Cyan",    title: "Cyan eléctrico" },
+                { color: "#a855f7", label: "Violeta", title: "Violeta" },
+                { color: "#f59e0b", label: "Dorado",  title: "Dorado" },
+                { color: "#ff6b35", label: "Naranja", title: "Naranja fuego" },
+                { color: "#ff2d78", label: "Rosa",    title: "Rosa neón" },
+                { color: "#ffffff", label: "Blanco",  title: "Blanco" },
+                { color: "#ff4444", label: "Rojo",    title: "Rojo" },
+              ].map(({ color, label, title }) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`menu-swatch ${snakeColor === color ? "menu-swatch-active" : ""}`}
+                  style={{ "--swatch-color": color }}
+                  onClick={() => setSnakeColor(color)}
+                  title={title}
+                >
+                  <span className="menu-swatch-dot" />
+                  <span className="menu-swatch-label">{label}</span>
+                </button>
+              ))}
+            </div>
+            {snakeColor && (
+              <p className="menu-color-preview">
+                Vista previa:&nbsp;
+                <span style={{ color: snakeColor, fontWeight: 700 }}>■■■■■</span>
+              </p>
             )}
           </div>
 
@@ -233,6 +256,15 @@ export default function StartScreen({ onStart }) {
               <span className="menu-start-opts">· {answerCount} opciones</span>
             </button>
           </form>
+
+          {/* Tip del modo — debajo del botón de inicio */}
+          <div className={`menu-tip menu-tip-center ${isHard ? "menu-tip-hard" : "menu-tip-easy"}`}>
+            {isHard ? (
+              <><span>💡</span><p>En modo difícil cada respuesta correcta vale el doble. ¡Pero cuidado con las paredes!</p></>
+            ) : (
+              <><span>💡</span><p>Cada 10 preguntas correctas sin perder vidas ganas una vida extra.</p></>
+            )}
+          </div>
         </main>
 
         {/* ══ COLUMNA DERECHA — Stats + Top 3 ══ */}
@@ -278,8 +310,14 @@ export default function StartScreen({ onStart }) {
           <div className="menu-top3">
             <p className="menu-col-title">
               🏆 Top 3 — {isHard ? "Difícil" : "Fácil"}
+              {SUPABASE_ENABLED && <span className="menu-global-badge">🌐 Global</span>}
             </p>
-            {top3.length === 0 ? (
+            {top3Loading ? (
+              <div className="menu-top3-empty">
+                <span style={{fontSize:"1.2rem"}}>⏳</span>
+                <p>Cargando ranking…</p>
+              </div>
+            ) : top3.length === 0 ? (
               <div className="menu-top3-empty">
                 <span>🎯</span>
                 <p>¡Sé el primero en el ranking!</p>
@@ -300,12 +338,38 @@ export default function StartScreen({ onStart }) {
             </button>
           </div>
 
-          {/* Tip del modo */}
-          <div className={`menu-tip ${isHard ? "menu-tip-hard" : "menu-tip-easy"}`}>
-            {isHard ? (
-              <><span>💡</span><p>En modo difícil cada respuesta correcta vale el doble. ¡Pero cuidado con las paredes!</p></>
+          {/* Divisor */}
+          <div className="menu-divider" />
+
+          {/* Banco de preguntas / Excel — debajo del Top 3 */}
+          <div className="menu-section">
+            <p className="menu-section-label">📊 Banco de preguntas</p>
+            {hasCustom && customMeta ? (
+              <div className="menu-bank-active">
+                <span>📂</span>
+                <div className="menu-bank-info">
+                  <span className="menu-bank-name">{customMeta.name}</span>
+                  <span className="menu-bank-count">{customMeta.count} preguntas · <span className="menu-no-lb">no cuenta para ranking</span></span>
+                </div>
+                <div className="menu-bank-actions">
+                  <button id="import-change-btn-r" className="btn btn-sm btn-ghost" title="Cambiar archivo" onClick={() => setShowImporter(true)}>🔄</button>
+                  <button id="import-clear-btn-r"  className="btn btn-sm btn-ghost" title="Usar banco base"  onClick={handleClearCustom}>✕</button>
+                </div>
+              </div>
             ) : (
-              <><span>💡</span><p>Cada 10 preguntas correctas sin perder vidas ganas una vida extra.</p></>
+              <button id="open-importer-btn-r" className="menu-bank-upload" onClick={() => setShowImporter(true)}>
+                <span>📊</span>
+                <div>
+                  <span className="menu-bank-upload-title">Importar desde Excel</span>
+                  <span className="menu-bank-upload-sub">Carga tu propio banco de preguntas</span>
+                </div>
+                <span className="menu-bank-upload-arrow">→</span>
+              </button>
+            )}
+            {!hasCustom && (
+              <div className="menu-bank-base">
+                ✅ Banco oficial · <strong>200 preguntas</strong>
+              </div>
             )}
           </div>
         </aside>
