@@ -362,8 +362,8 @@ body {
 
 /* ── Topbar ──────────────────────────────────────────────────────────────────*/
 .game-topbar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 0 1rem;
   height: 52px;
@@ -1698,6 +1698,42 @@ body {
 .answer-count-active { border-color: var(--accent-green) !important; background: rgba(0,255,136,0.08) !important; box-shadow: 0 0 12px rgba(0,255,136,0.2); }
 .answer-count-num { font-size: 1.3rem; font-weight: 800; color: var(--accent-green); font-family: "Orbitron", sans-serif; }
 .answer-count-label { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; }
+
+/* Botón flotante estilo WhatsApp para scroll en el menú */
+.menu-fab-scroll {
+  display: none; /* Oculto por defecto en PC */
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent-green);
+  color: #000;
+  border: none;
+  font-size: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.4);
+  cursor: pointer;
+  z-index: 1000;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.menu-fab-scroll:hover {
+  transform: scale(1.05);
+  background: #00e67a;
+}
+
+.menu-dashboard-hard .menu-fab-scroll {
+  background: var(--accent-orange);
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.menu-dashboard-hard .menu-fab-scroll:hover {
+  background: #e65c2e;
+}
+
 .start-btn-opts { font-size: 0.75rem; opacity: 0.8; margin-left: 0.3rem; }
 
 /* Quiz con 5 y 6 opciones */
@@ -2665,22 +2701,18 @@ body {
 }
 
 /* Indicador visual de swipe en móvil — ícono sutil en el centro */
-.swipe-box-mobile::after {
-  content: "👆 Desliza aquí para mover";
+.swipe-overlay::after {
+  content: "👆 Desliza para mover";
   position: absolute;
-  top: 50%;
+  bottom: 8px;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   font-size: 0.8rem;
   color: rgba(255,255,255,0.4);
   white-space: nowrap;
   pointer-events: none;
   font-family: var(--font-body);
   letter-spacing: 0.05em;
-}
-
-/* Ocultar el hint después de 3s con animación */
-.swipe-box-mobile::after {
   animation: swipeHintFade 4s ease-out 1s forwards;
 }
 
@@ -2688,18 +2720,6 @@ body {
   0%   { opacity: 1; }
   80%  { opacity: 1; }
   100% { opacity: 0; }
-}
-
-/* Contenedor de controles (por defecto fluye normal en desktop) */
-.game-controls-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.swipe-box-mobile {
-  display: none; /* Oculto en desktop */
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2715,6 +2735,7 @@ body {
 /* El grid del menú no debe tener min-height fijo en móvil */
 @media (max-width: 900px) {
   .menu-grid {
+    height: auto;
     min-height: auto !important;
     padding-bottom: 2rem;
   }
@@ -2722,6 +2743,21 @@ body {
   /* Permitir scroll en columnas del menú */
   .menu-col {
     overflow: visible;
+  }
+
+  /* Ocultar botones no esenciales en navbar */
+  #game-rules-btn, #game-lb-btn {
+    display: none;
+  }
+
+  /* Dejar solo los corazones arriba, ocultar el valor numérico */
+  .topbar-score-val {
+    display: none;
+  }
+
+  /* Mostrar el botón flotante en móvil */
+  .menu-fab-scroll {
+    display: flex;
   }
 
   /* Game view en móvil: flex vertical, scroll natural del body */
@@ -2741,63 +2777,40 @@ body {
     padding: 0;
   }
 
-  /* Reordenar: 1º Full Stats (left), 2º Canvas (center), 3º Mini Stats (right) */
-  .game-col-left   { order: 1; padding: 0.5rem; }
-  .game-col-center { order: 2; padding: 0; }
-  .game-col-right  { order: 3; padding: 1rem 0.5rem; }
+  /* Reordenar para que las estadísticas (ambas columnas) queden DEBAJO del canvas */
+  .game-col-center { order: 1; padding: 0; min-height: 100vw; }
+  .game-col-left   { display: none; } /* Ocultar el panel de stats izquierdo completamente */
+  .game-col-right  { order: 2; padding: 1rem 0.5rem; }
 
   /* Ajustes del panel derecho en móvil (para que sea horizontal) */
   .game-col-right .right-panel {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
     align-items: center;
-    justify-content: space-around;
-    gap: 0.5rem;
+    justify-content: center;
   }
   .right-stat {
+    display: flex;
     flex-direction: column;
     gap: 0.1rem;
     font-size: 0.7rem;
     background: transparent;
     border: none;
     padding: 0;
+    text-align: center;
+  }
+  .mobile-vidas {
+    grid-column: 1 / -1;
   }
   .right-stat-icon { font-size: 1rem; }
   .right-stat-label { font-size: 0.55rem; }
   .right-stat-value { font-size: 0.8rem; }
-  .right-divider, .right-next, .right-controls { display: none; } /* Ocultamos lo innecesario arriba */
+  .right-divider, .right-next, .right-controls, .swipe-box-mobile { display: none; } /* Ocultamos lo innecesario arriba */
 
-  /* Controles flotantes en móvil en la esquina inferior derecha */
-  .game-controls-container {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 9999;
-    background: rgba(10, 15, 20, 0.8);
-    border-radius: 50%;
-    padding: 10px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
-    border: 1px solid rgba(0, 255, 136, 0.2);
-  }
-
-  .dpad-wrap {
-    margin: 0;
-  }
-
-  .swipe-box-mobile {
+  /* Mostrar la estadística extra que agregamos (Puntos) */
+  .mobile-only-stat {
     display: block;
-    position: absolute;
-    inset: -15px; /* Cubre el D-pad y un poco más para facilitar el swipe */
-    border-radius: 50%;
-    touch-action: none; /* Previene scroll DENTRO de esta caja para que se pueda hacer swipe */
-    z-index: 10;
-  }
-  
-  /* Quitar el texto del hint porque ya es evidente con el D-Pad */
-  .swipe-box-mobile::after {
-    display: none;
   }
 
   /* Columnas del juego stackeadas con scroll */

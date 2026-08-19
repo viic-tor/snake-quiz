@@ -32,10 +32,50 @@ export default function StartScreen({ onStart }) {
   const [showImporter,   setShowImporter]   = useState(false);
   const [customMeta,     setCustomMeta]     = useState(() => getCustomMeta());
   const [hasCustom,      setHasCustom]      = useState(() => hasCustomQuestions());
+  const [isAtBottom,     setIsAtBottom]     = useState(false);
   const [error,          setError]          = useState("");
   const [top3,           setTop3]           = useState([]);
   const [top3Loading,    setTop3Loading]    = useState(true);
   const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats());
+
+  // Detectar si estamos al final de la página para cambiar el ícono
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 250;
+      setIsAtBottom(scrolledToBottom);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleImported = (stats) => {
+    setCustomMeta(stats || getCustomMeta());
+    setHasCustom(hasCustomQuestions());
+    setShowImporter(false);
+  };
+
+  const handleScrollDown = () => {
+    // Orden lógico en móvil: Centro (Hero/Login), Izquierda (Config), Derecha (Stats/Leaderboard)
+    const sectionIds = ['section-center', 'section-left', 'section-right'];
+    const currentScroll = window.scrollY + 10; // Margen para evitar atascos en la misma sección
+
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el) {
+        const elTop = el.getBoundingClientRect().top + window.scrollY;
+        if (elTop > currentScroll) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+      }
+    }
+    
+    // Si estamos en la última (ninguna está más abajo), volvemos a la primera
+    const firstEl = document.getElementById(sectionIds[0]);
+    if (firstEl) {
+      firstEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const isHard = difficulty === "hard";
   const cfg    = DIFFICULTY_CONFIG[difficulty];
@@ -94,10 +134,7 @@ export default function StartScreen({ onStart }) {
     onStart(trimmed, difficulty, answerCount, snakeColor);
   };
 
-  const handleImported = () => {
-    setCustomMeta(getCustomMeta());
-    setHasCustom(hasCustomQuestions());
-  };
+
 
   const handleClearCustom = () => {
     clearCustomQuestions();
@@ -117,8 +154,8 @@ export default function StartScreen({ onStart }) {
       {/* ── Grid principal ─────────────────────────────────────────────── */}
       <div className="menu-grid">
 
-        {/* ══ COLUMNA IZQUIERDA — Configuración ══ */}
-        <aside className="menu-col menu-col-left">
+        {/* Columna izquierda: Configuración */}
+        <aside id="section-left" className="menu-col menu-col-left">
 
           {/* Título columna */}
           <p className="menu-col-title">⚙️ Configuración</p>
@@ -235,7 +272,7 @@ export default function StartScreen({ onStart }) {
         </aside>
 
         {/* ══ COLUMNA CENTRO — Hero ══ */}
-        <main className="menu-col menu-col-center">
+        <main id="section-center" className="menu-col menu-col-center">
 
           {/* Logo */}
           <div className="menu-logo">
@@ -318,8 +355,8 @@ export default function StartScreen({ onStart }) {
           </div>
         </main>
 
-        {/* ══ COLUMNA DERECHA — Stats + Top 3 ══ */}
-        <aside className="menu-col menu-col-right">
+        {/* ══ COLUMNA DERECHA — Stats & Leaderboard ══ */}
+        <aside id="section-right" className="menu-col menu-col-right">
 
           {/* Tus estadísticas personales */}
           <p className="menu-col-title">📈 Tus Estadísticas</p>
@@ -430,6 +467,11 @@ export default function StartScreen({ onStart }) {
       {showLb       && <Leaderboard     onClose={() => setShowLb(false)}       initialMode={difficulty} />}
       {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} />}
       {showImporter && <QuestionImporter onClose={() => setShowImporter(false)} onImported={handleImported} />}
+
+      {/* Botón flotante estilo WhatsApp para scroll */}
+      <button className="menu-fab-scroll" onClick={handleScrollDown} aria-label="Desplazarse hacia abajo">
+        {isAtBottom ? "⬆️" : "⬇️"}
+      </button>
     </div>
   );
 }

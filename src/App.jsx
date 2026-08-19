@@ -74,16 +74,6 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
           <span className="topbar-player">👤 {playerName}</span>
         </div>
 
-        {/* Score en topbar (visible en móvil donde el panel lateral no cabe) */}
-        <div className="topbar-score">
-          <span className="topbar-score-val">⭐ {state.score.toLocaleString()}</span>
-          <div className="topbar-lives">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <span key={i}>{i < state.lives ? "❤️" : "🖤"}</span>
-            ))}
-          </div>
-        </div>
-
         <div className="topbar-right">
           <button id="pause-btn" className="btn btn-sm btn-secondary"
             onClick={togglePause} disabled={state.showQuiz || state.gameOver}>
@@ -108,7 +98,11 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
           <div className="board-wrap">
             <GameBoard state={state} size={canvasSize} snakeColor={snakeColor} />
 
-
+            {/* Zona de swipe táctil — cubre el canvas en móvil para deslizar el tablero */}
+            <SwipeZone
+              onSwipe={setDirection}
+              className="swipe-overlay"
+            />
 
             {isPaused && (
               <div className="board-overlay">
@@ -131,30 +125,29 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
               </div>
             )}
           </div>
-
-          {/* Controles: Desktop inline, Mobile flotante */}
-          <div className="game-controls-container">
-            <div className="dpad-wrap" aria-label="Controles de dirección">
-              <div className="dpad">
-                <button id="dpad-up"    className="dpad-btn dpad-up"    onClick={() => setDirection({ x: 0, y: -1 })} aria-label="Arriba">▲</button>
-                <button id="dpad-left"  className="dpad-btn dpad-left"  onClick={() => setDirection({ x: -1, y: 0 })} aria-label="Izquierda">◄</button>
-                <div className="dpad-center" />
-                <button id="dpad-right" className="dpad-btn dpad-right" onClick={() => setDirection({ x: 1, y: 0 })} aria-label="Derecha">►</button>
-                <button id="dpad-down"  className="dpad-btn dpad-down"  onClick={() => setDirection({ x: 0, y: 1 })} aria-label="Abajo">▼</button>
-              </div>
-            </div>
-
-            {/* Zona de swipe táctil dedicada en móvil (superpuesta al D-Pad) */}
-            <SwipeZone
-              onSwipe={setDirection}
-              className="swipe-box-mobile"
-            />
-          </div>
         </div>
 
         {/* Columna derecha: Info / mini stats extra */}
         <aside className="game-col-right">
           <div className="right-panel">
+            {/* Puntos (solo móvil, en desktop están en la izq) */}
+            <div className="right-stat mobile-only-stat">
+              <span className="right-stat-icon">⭐</span>
+              <span className="right-stat-label">Puntos</span>
+              <span className="right-stat-value">{state.score.toLocaleString()}</span>
+            </div>
+
+            {/* Vidas (solo móvil, en desktop están en la izq) */}
+            <div className="right-stat mobile-only-stat mobile-vidas">
+              <span className="right-stat-icon">❤️</span>
+              <span className="right-stat-label">Vidas</span>
+              <span className="right-stat-value">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <span key={i} style={{fontSize: '0.6rem'}}>{i < state.lives ? "❤️" : "🖤"}</span>
+                ))}
+              </span>
+            </div>
+
             {/* Nivel y comidas */}
             <div className="right-stat">
               <span className="right-stat-icon">🏅</span>
