@@ -15,6 +15,7 @@ import Leaderboard from "./components/Leaderboard";
 import RulesModal from "./components/RulesModal";
 import useSnakeGame, { DIFFICULTY_CONFIG } from "./hooks/useSnakeGame";
 import SwipeZone from "./components/SwipeZone";
+import { Skull, Heart, Star, Medal, Apple, CheckCircle, XCircle, Flame, Worm, User, Play, Pause, BookOpen, Crown, Home } from "lucide-react";
 
 const VIEWS = { START: "start", GAME: "game", GAMEOVER: "gameover" };
 
@@ -67,21 +68,25 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
       {/* ── TOPBAR ─────────────────────────────────────────────────────────── */}
       <header className={`game-topbar ${isHard ? "game-topbar-hard" : ""}`}>
         <div className="topbar-left">
-          <span className="topbar-logo">{isHard ? "🔥" : "🐍"} SnakeQuiz</span>
+          <span className="topbar-logo" style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+            <span className="icon-wrap">{isHard ? <Flame size={16} className="icon-flicker" /> : <Worm size={16} className="icon-float" />}</span> SnakeQuiz
+          </span>
           <span className={`topbar-mode ${isHard ? "topbar-mode-hard" : "topbar-mode-easy"}`}>
             {isHard ? "DIFÍCIL" : "FÁCIL"}
           </span>
-          <span className="topbar-player">👤 {playerName}</span>
+          <span className="topbar-player" style={{display: 'flex', alignItems: 'center', gap: '4px'}}>
+            <span className="icon-wrap"><User size={14} /></span> {playerName}
+          </span>
         </div>
 
         <div className="topbar-right">
           <button id="pause-btn" className="btn btn-sm btn-secondary"
-            onClick={togglePause} disabled={state.showQuiz || state.gameOver}>
-            {isPaused ? "▶" : "⏸"}
+            onClick={togglePause} disabled={state.showQuiz || state.gameOver} aria-label="Pausa">
+            <span className="icon-wrap">{isPaused ? <Play size={16} /> : <Pause size={16} />}</span>
           </button>
-          <button id="game-rules-btn" className="btn btn-sm btn-ghost" onClick={() => setShowRules(true)}>📋</button>
-          <button id="game-lb-btn" className="btn btn-sm btn-ghost" onClick={() => setShowLb(true)}>🏆</button>
-          <button id="game-menu-btn" className="btn btn-sm btn-ghost" onClick={onMenu}>🏠</button>
+          <button id="game-rules-btn" className="btn btn-sm btn-ghost" onClick={() => setShowRules(true)} aria-label="Reglas"><span className="icon-wrap"><BookOpen size={16} /></span></button>
+          <button id="game-lb-btn" className="btn btn-sm btn-ghost" onClick={() => setShowLb(true)} aria-label="Leaderboard"><span className="icon-wrap"><Crown size={16} /></span></button>
+          <button id="game-menu-btn" className="btn btn-sm btn-ghost" onClick={onMenu} aria-label="Menú"><span className="icon-wrap"><Home size={16} /></span></button>
         </div>
       </header>
 
@@ -118,7 +123,7 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
             {state.gameOver && (
               <div className="board-overlay">
                 <div className="overlay-content">
-                  <span className="overlay-icon">💀</span>
+                  <span className="overlay-icon icon-wrap icon-flicker"><Skull /></span>
                   <h2>Game Over</h2>
                   <p>Guardando puntuación...</p>
                 </div>
@@ -132,42 +137,44 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
           <div className="right-panel">
             {/* Vidas (solo móvil, en desktop están en la izq) */}
             <div className="right-stat mobile-only-stat mobile-vidas">
-              <span className="right-stat-icon">❤️</span>
+              <span className="right-stat-icon icon-wrap icon-pulse"><Heart /></span>
               <span className="right-stat-label">Vidas</span>
-              <span className="right-stat-value">
+              <span className="right-stat-value" style={{ display: 'flex', gap: '2px', justifyContent: 'center', marginTop: '2px' }}>
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <span key={i} style={{fontSize: '0.6rem'}}>{i < state.lives ? "❤️" : "🖤"}</span>
+                  <span key={i} className="icon-wrap" style={{ width: '12px', height: '12px' }}>
+                    {i < state.lives ? <Heart fill="#ff4757" color="#ff4757" /> : <Heart opacity={0.3} />}
+                  </span>
                 ))}
               </span>
             </div>
 
             {/* Puntos extra (solo móvil) */}
             <div className="right-stat mobile-only-stat mobile-puntos">
-              <span className="right-stat-icon">🌟</span>
+              <span className="right-stat-icon icon-wrap icon-spin-slow"><Star /></span>
               <span className="right-stat-label">Puntos</span>
               <span className="right-stat-value">{state.score.toLocaleString()}</span>
             </div>
 
             {/* Nivel y comidas */}
             <div className="right-stat">
-              <span className="right-stat-icon">🏅</span>
+              <span className="right-stat-icon icon-wrap icon-shine"><Medal /></span>
               <span className="right-stat-label">Nivel</span>
               <span className="right-stat-value">{state.level}</span>
             </div>
             <div className="right-stat">
-              <span className="right-stat-icon">🍎</span>
+              <span className="right-stat-icon icon-wrap"><Apple color="#ff4757" fill="#ff4757" /></span>
               <span className="right-stat-label">Comidas</span>
               <span className="right-stat-value">{state.foodEaten}</span>
             </div>
             <div className="right-stat">
-              <span className="right-stat-icon">✅</span>
+              <span className="right-stat-icon icon-wrap icon-bounce-in"><CheckCircle /></span>
               <span className="right-stat-label">Correctas</span>
               <span className="right-stat-value correct-count">{state.questionsCorrect}</span>
             </div>
             <div className="right-stat">
-              <span className="right-stat-icon">❌</span>
+              <span className="right-stat-icon icon-wrap icon-shake"><XCircle /></span>
               <span className="right-stat-label">Incorrectas</span>
-              <span className="right-stat-value">{state.questionsAnswered - state.questionsCorrect}</span>
+              <span className="right-stat-value incorrect-count">{state.questionsAnswered - state.questionsCorrect}</span>
             </div>
 
             <div className="right-divider" />

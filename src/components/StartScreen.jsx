@@ -19,6 +19,7 @@ import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../util
 import { getLeaderboardLocal, getLeaderboard } from "../utils/leaderboard";
 import { SUPABASE_ENABLED, loginPlayer, registerPlayer } from "../utils/supabase";
 import { getPlayerStats, getAccuracy } from "../utils/playerStats";
+import { Settings, Circle, AlertTriangle, BookOpen, Crown, Flame, Gamepad2, Brain, Heart, Zap, BarChart2, Skull, Sparkles, Loader2, Lightbulb, TrendingUp, Target, Medal, FolderOpen, RefreshCw, X, ArrowRight, CheckCircle, Worm } from "lucide-react";
 
 export default function StartScreen({ onStart }) {
   const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
@@ -32,70 +33,15 @@ export default function StartScreen({ onStart }) {
   const [showImporter,   setShowImporter]   = useState(false);
   const [customMeta,     setCustomMeta]     = useState(() => getCustomMeta());
   const [hasCustom,      setHasCustom]      = useState(() => hasCustomQuestions());
-  const [isAtBottom,     setIsAtBottom]     = useState(false);
   const [error,          setError]          = useState("");
   const [top3,           setTop3]           = useState([]);
   const [top3Loading,    setTop3Loading]    = useState(true);
   const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats());
 
-  // Detectar si estamos al final de la página para cambiar el ícono
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 250;
-      setIsAtBottom(scrolledToBottom);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   const handleImported = (stats) => {
     setCustomMeta(stats || getCustomMeta());
     setHasCustom(hasCustomQuestions());
     setShowImporter(false);
-  };
-
-  const ChevronDown = () => (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
-  );
-
-  const ChevronUp = () => (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="18 15 12 9 6 15"></polyline>
-    </svg>
-  );
-
-  const handleScrollDown = () => {
-    // Si la flecha apunta hacia arriba, forzamos la subida a la primera sección
-    if (isAtBottom) {
-      const firstEl = document.getElementById('section-center');
-      if (firstEl) {
-        firstEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-      return;
-    }
-
-    // Orden lógico en móvil: Centro (Hero/Login), Izquierda (Config), Derecha (Stats/Leaderboard)
-    const sectionIds = ['section-center', 'section-left', 'section-right'];
-    const currentScroll = window.scrollY + 10; // Margen para evitar atascos en la misma sección
-
-    for (const id of sectionIds) {
-      const el = document.getElementById(id);
-      if (el) {
-        const elTop = el.getBoundingClientRect().top + window.scrollY;
-        if (elTop > currentScroll) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return;
-        }
-      }
-    }
-    
-    // Si estamos en la última (ninguna está más abajo), volvemos a la primera
-    const firstEl = document.getElementById(sectionIds[0]);
-    if (firstEl) {
-      firstEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   const isHard = difficulty === "hard";
@@ -163,7 +109,12 @@ export default function StartScreen({ onStart }) {
     setHasCustom(false);
   };
 
-  const rankMedal = (i) => ["🥇", "🥈", "🥉"][i] ?? `#${i + 1}`;
+  const rankMedal = (i) => {
+    if (i === 0) return <Medal color="#ffd700" fill="#ffd700" className="icon-shine" />;
+    if (i === 1) return <Medal color="#c0c0c0" fill="#c0c0c0" />;
+    if (i === 2) return <Medal color="#cd7f32" fill="#cd7f32" />;
+    return `#${i + 1}`;
+  };
   const accuracy  = getAccuracy(playerStats);
 
   return (
@@ -179,7 +130,7 @@ export default function StartScreen({ onStart }) {
         <aside id="section-left" className="menu-col menu-col-left">
 
           {/* Título columna */}
-          <p className="menu-col-title">⚙️ Configuración</p>
+          <p className="menu-col-title"><span className="icon-wrap icon-rotate-hover"><Settings /></span> Configuración</p>
 
           {/* Modo de juego */}
           <div className="menu-section">
@@ -190,7 +141,7 @@ export default function StartScreen({ onStart }) {
                 className={`menu-diff-btn ${difficulty === "easy" ? "menu-diff-easy-active" : ""}`}
                 onClick={() => setDifficulty("easy")}
               >
-                <span className="menu-diff-icon">🟢</span>
+                <span className="menu-diff-icon icon-wrap"><Circle color="#00ff88" fill="#00ff88" /></span>
                 <div>
                   <span className="menu-diff-name">Fácil</span>
                   <span className="menu-diff-desc">Paredes traspasables · Quiz c/3</span>
@@ -201,7 +152,7 @@ export default function StartScreen({ onStart }) {
                 className={`menu-diff-btn ${difficulty === "hard" ? "menu-diff-hard-active" : ""}`}
                 onClick={() => setDifficulty("hard")}
               >
-                <span className="menu-diff-icon">🔴</span>
+                <span className="menu-diff-icon icon-wrap"><Circle color="#ff4757" fill="#ff4757" /></span>
                 <div>
                   <span className="menu-diff-name">Difícil</span>
                   <span className="menu-diff-desc">Paredes mortales · ×2 pts · 10s</span>
@@ -210,7 +161,7 @@ export default function StartScreen({ onStart }) {
             </div>
             {isHard && (
               <div className="menu-diff-warning">
-                ⚠️ Las paredes quitan vida · Quiz c/2 comidas · 10s por pregunta
+                <span className="icon-wrap icon-flicker"><AlertTriangle size={14} /></span> Las paredes quitan vida · Quiz c/2 comidas · 10s por pregunta
               </div>
             )}
           </div>
@@ -247,7 +198,7 @@ export default function StartScreen({ onStart }) {
                 onClick={() => setSnakeColor(null)}
                 title="Color automático del modo"
               >
-                <span>🐍</span>
+                <span className="icon-wrap"><Gamepad2 /></span>
                 <span className="menu-swatch-label">Auto</span>
               </button>
               {[
@@ -284,10 +235,10 @@ export default function StartScreen({ onStart }) {
           {/* Botones secundarios */}
           <div className="menu-secondary section-botones-secundarios">
             <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
-              📋 Reglas
+              <span className="icon-wrap icon-rotate-hover" style={{marginRight: 4}}><BookOpen size={16}/></span> Reglas
             </button>
             <button id="show-lb-full-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
-              🏆 Ranking completo
+              <span className="icon-wrap icon-shine" style={{marginRight: 4}}><Crown size={16}/></span> Ranking completo
             </button>
           </div>
         </aside>
@@ -298,7 +249,7 @@ export default function StartScreen({ onStart }) {
           {/* Logo */}
           <div className="menu-logo">
             <div className={`menu-logo-icon ${isHard ? "menu-logo-hard" : ""}`}>
-              {isHard ? "🔥" : "🐍"}
+              {isHard ? <span className="icon-wrap icon-flicker"><Flame /></span> : <span className="icon-wrap icon-float"><Worm /></span>}
             </div>
             <h1 className="menu-title">
               Snake<span className={`menu-title-accent ${isHard ? "menu-title-hard" : ""}`}>Quiz</span>
@@ -309,13 +260,13 @@ export default function StartScreen({ onStart }) {
           {/* Mini feature pills */}
           <div className="menu-pills">
             {[
-              { icon: "🧠", text: `Quiz c/${cfg.quizEvery}` },
-              { icon: "❤️", text: "3 vidas" },
-              { icon: "⚡", text: "Velocidad creciente" },
-              { icon: "📊", text: `${answerCount} respuestas` },
-              { icon: isHard ? "💀" : "✨", text: isHard ? "×2 puntos" : "Paredes seguras" },
+              { icon: <Brain className="icon-float" size={14} />, text: `Quiz c/${cfg.quizEvery}` },
+              { icon: <Heart className="icon-pulse" fill="currentColor" size={14} />, text: "3 vidas" },
+              { icon: <Zap className="icon-flicker" size={14} />, text: "Velocidad creciente" },
+              { icon: <BarChart2 size={14} />, text: `${answerCount} respuestas` },
+              { icon: isHard ? <Skull className="icon-flicker" size={14} /> : <Sparkles className="icon-shine" size={14} />, text: isHard ? "×2 puntos" : "Paredes seguras" },
             ].map(({ icon, text }) => (
-              <span key={text} className="menu-pill">{icon} {text}</span>
+              <span key={text} className="menu-pill"><span className="icon-wrap">{icon}</span> {text}</span>
             ))}
           </div>
 
@@ -361,7 +312,7 @@ export default function StartScreen({ onStart }) {
               disabled={authLoading}
               className={`btn menu-start-btn ${isHard ? "btn-danger" : "btn-primary"}`}
             >
-              <span>{authLoading ? "⏳ Validando..." : (isHard ? (answerCount === 4 ? "🔴 Jugar en Difícil" : answerCount === 5 ? "🔥 Jugar en Difícil Pro" : "💀 Jugar en Difícil Pro Max") : "🎮 Jugar en Fácil")}</span>
+              <span>{authLoading ? <><span className="icon-wrap icon-spin-slow"><Loader2 size={16}/></span> Validando...</> : (isHard ? (answerCount === 4 ? <><span className="icon-wrap"><Circle fill="currentColor" size={16}/></span> Jugar en Difícil</> : answerCount === 5 ? <><span className="icon-wrap"><Flame size={16}/></span> Jugar en Difícil Pro</> : <><span className="icon-wrap"><Skull size={16}/></span> Jugar en Difícil Pro Max</>) : <><span className="icon-wrap"><Gamepad2 size={16}/></span> Jugar en Fácil</>)}</span>
               <span className="menu-start-opts">· {answerCount} opciones</span>
             </button>
           </form>
@@ -369,9 +320,9 @@ export default function StartScreen({ onStart }) {
           {/* Tip del modo — debajo del botón de inicio */}
           <div className={`menu-tip menu-tip-center ${isHard ? "menu-tip-hard" : "menu-tip-easy"}`}>
             {isHard ? (
-              <><span>💡</span><p>En modo difícil cada respuesta correcta vale el doble. ¡Pero cuidado con las paredes!</p></>
+              <><span className="icon-wrap icon-shine"><Lightbulb size={16} /></span><p>En modo difícil cada respuesta correcta vale el doble. ¡Pero cuidado con las paredes!</p></>
             ) : (
-              <><span>💡</span><p>Cada 10 preguntas correctas sin perder vidas ganas una vida extra.</p></>
+              <><span className="icon-wrap icon-shine"><Lightbulb size={16} /></span><p>Cada 10 preguntas correctas sin perder vidas ganas una vida extra.</p></>
             )}
           </div>
         </main>
@@ -380,25 +331,25 @@ export default function StartScreen({ onStart }) {
         <aside id="section-right" className="menu-col menu-col-right">
 
           {/* Tus estadísticas personales */}
-          <p className="menu-col-title">📈 Tus Estadísticas</p>
+          <p className="menu-col-title"><span className="icon-wrap"><TrendingUp /></span> Tus Estadísticas</p>
           <div className="menu-stats-grid">
             <div className="menu-stat-card">
-              <span className="menu-stat-icon">🏆</span>
+              <span className="menu-stat-icon icon-wrap icon-shine"><Crown /></span>
               <span className="menu-stat-value">{playerStats.bestScore.toLocaleString()}</span>
               <span className="menu-stat-label">Mejor Score</span>
             </div>
             <div className="menu-stat-card">
-              <span className="menu-stat-icon">🎮</span>
+              <span className="menu-stat-icon icon-wrap"><Gamepad2 /></span>
               <span className="menu-stat-value">{playerStats.gamesPlayed}</span>
               <span className="menu-stat-label">Partidas</span>
             </div>
             <div className="menu-stat-card">
-              <span className="menu-stat-icon">🎯</span>
+              <span className="menu-stat-icon icon-wrap"><Target /></span>
               <span className="menu-stat-value">{accuracy}%</span>
               <span className="menu-stat-label">Precisión</span>
             </div>
             <div className="menu-stat-card">
-              <span className="menu-stat-icon">🏅</span>
+              <span className="menu-stat-icon icon-wrap icon-shine"><Medal /></span>
               <span className="menu-stat-value">{playerStats.bestLevel}</span>
               <span className="menu-stat-label">Mejor Nivel</span>
             </div>
@@ -418,17 +369,17 @@ export default function StartScreen({ onStart }) {
           {/* Top 3 Leaderboard */}
           <div className="menu-top3">
             <p className="menu-col-title">
-              🏆 Top 3 — {isHard ? "Difícil" : "Fácil"}
+              <span className="icon-wrap icon-shine"><Crown /></span> Top 3 — {isHard ? "Difícil" : "Fácil"}
               {SUPABASE_ENABLED && <span className="menu-global-badge">🌐 Global</span>}
             </p>
             {top3Loading ? (
               <div className="menu-top3-empty">
-                <span style={{fontSize:"1.2rem"}}>⏳</span>
+                <span className="icon-wrap icon-spin-slow" style={{fontSize:"1.2rem"}}><Loader2 /></span>
                 <p>Cargando ranking…</p>
               </div>
             ) : top3.length === 0 ? (
               <div className="menu-top3-empty">
-                <span>🎯</span>
+                <span className="icon-wrap"><Target /></span>
                 <p>¡Sé el primero en el ranking!</p>
               </div>
             ) : (
@@ -452,32 +403,32 @@ export default function StartScreen({ onStart }) {
 
           {/* Banco de preguntas / Excel — debajo del Top 3 */}
           <div className="menu-section">
-            <p className="menu-section-label">📊 Banco de preguntas</p>
+            <p className="menu-section-label"><span className="icon-wrap"><BarChart2 size={14}/></span> Banco de preguntas</p>
             {hasCustom && customMeta ? (
               <div className="menu-bank-active">
-                <span>📂</span>
+                <span className="icon-wrap"><FolderOpen size={20} /></span>
                 <div className="menu-bank-info">
                   <span className="menu-bank-name">{customMeta.name}</span>
                   <span className="menu-bank-count">{customMeta.count} preguntas · <span className="menu-no-lb">no cuenta para ranking</span></span>
                 </div>
                 <div className="menu-bank-actions">
-                  <button id="import-change-btn-r" className="btn btn-sm btn-ghost" title="Cambiar archivo" onClick={() => setShowImporter(true)}>🔄</button>
-                  <button id="import-clear-btn-r"  className="btn btn-sm btn-ghost" title="Usar banco base"  onClick={handleClearCustom}>✕</button>
+                  <button id="import-change-btn-r" className="btn btn-sm btn-ghost" title="Cambiar archivo" onClick={() => setShowImporter(true)}><RefreshCw size={16}/></button>
+                  <button id="import-clear-btn-r"  className="btn btn-sm btn-ghost" title="Usar banco base"  onClick={handleClearCustom}><X size={16}/></button>
                 </div>
               </div>
             ) : (
               <button id="open-importer-btn-r" className="menu-bank-upload" onClick={() => setShowImporter(true)}>
-                <span>📊</span>
+                <span className="icon-wrap"><BarChart2 size={24} /></span>
                 <div>
                   <span className="menu-bank-upload-title">Importar desde Excel</span>
                   <span className="menu-bank-upload-sub">Carga tu propio banco de preguntas</span>
                 </div>
-                <span className="menu-bank-upload-arrow">→</span>
+                <span className="menu-bank-upload-arrow"><ArrowRight size={18} /></span>
               </button>
             )}
             {!hasCustom && (
               <div className="menu-bank-base">
-                ✅ Banco oficial · <strong>200 preguntas</strong>
+                <span className="icon-wrap icon-bounce-in"><CheckCircle size={12} /></span> Banco oficial · <strong>200 preguntas</strong>
               </div>
             )}
           </div>
@@ -488,11 +439,6 @@ export default function StartScreen({ onStart }) {
       {showLb       && <Leaderboard     onClose={() => setShowLb(false)}       initialMode={difficulty} />}
       {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} />}
       {showImporter && <QuestionImporter onClose={() => setShowImporter(false)} onImported={handleImported} />}
-
-      {/* Botón flotante estilo WhatsApp para scroll */}
-      <button className="menu-fab-scroll" onClick={handleScrollDown} aria-label="Desplazarse hacia abajo">
-        {isAtBottom ? <ChevronUp /> : <ChevronDown />}
-      </button>
     </div>
   );
 }

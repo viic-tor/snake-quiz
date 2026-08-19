@@ -7,6 +7,7 @@
 import { useState, useRef } from "react";
 import { parseQuestionFile, downloadTemplate } from "../utils/questionParser";
 import { saveCustomQuestions, clearCustomQuestions, getCustomMeta, hasCustomQuestions } from "../utils/questionStore";
+import { FolderOpen, X, CheckCircle, Trash2, BarChart2, AlertTriangle, Download, ClipboardList, Square, XCircle, ArrowLeft, PartyPopper, Gamepad2 } from "lucide-react";
 
 const CATEGORY_COLORS = {
   sistemas: "#4facfe",
@@ -72,21 +73,21 @@ export default function QuestionImporter({ onClose, onImported }) {
 
         {/* Header */}
         <div className="importer-header">
-          <h2 className="importer-title">📂 Importar Preguntas</h2>
-          <button id="importer-close" className="lb-close-btn" onClick={onClose} aria-label="Cerrar">✕</button>
+          <h2 className="importer-title"><span className="icon-wrap" style={{marginRight: 4}}><FolderOpen /></span> Importar Preguntas</h2>
+          <button id="importer-close" className="lb-close-btn" onClick={onClose} aria-label="Cerrar"><X size={20} /></button>
         </div>
 
         {/* Banco actual */}
         {hasCustom && meta && step === "upload" && (
           <div className="importer-current">
-            <span className="importer-current-icon">✅</span>
+            <span className="importer-current-icon icon-wrap icon-pulse"><CheckCircle /></span>
             <div>
               <span className="importer-current-label">Banco activo:</span>
               <span className="importer-current-name">{meta.name}</span>
               <span className="importer-current-count">{meta.count} preguntas</span>
             </div>
             <button id="importer-clear-btn" className="btn btn-sm btn-ghost danger-btn" onClick={handleClear}>
-              🗑️ Restaurar por defecto
+              <span className="icon-wrap" style={{marginRight: 4}}><Trash2 size={16} /></span> Restaurar por defecto
             </button>
           </div>
         )}
@@ -112,7 +113,7 @@ export default function QuestionImporter({ onClose, onImported }) {
                 </div>
               ) : (
                 <>
-                  <span className="drop-icon">📊</span>
+                  <span className="drop-icon icon-wrap"><BarChart2 size={48} /></span>
                   <p className="drop-title">Arrastra tu archivo aquí</p>
                   <p className="drop-subtitle">o haz clic para seleccionar</p>
                   <span className="drop-formats">.xlsx · .xls · .csv</span>
@@ -131,7 +132,7 @@ export default function QuestionImporter({ onClose, onImported }) {
             {/* Error */}
             {result?.error && (
               <div className="importer-error" role="alert">
-                ⚠️ {result.error}
+                <span className="icon-wrap icon-flicker" style={{marginRight: 4}}><AlertTriangle size={18} /></span> {result.error}
               </div>
             )}
 
@@ -139,13 +140,13 @@ export default function QuestionImporter({ onClose, onImported }) {
             <div className="importer-template-section">
               <p className="importer-template-label">¿No tienes el archivo? Descarga la plantilla:</p>
               <button id="download-template-btn" className="btn btn-secondary btn-sm" onClick={downloadTemplate}>
-                ⬇️ Descargar plantilla Excel
+                <span className="icon-wrap icon-bounce-in" style={{marginRight: 4}}><Download size={16}/></span> Descargar plantilla Excel
               </button>
             </div>
 
             {/* Formato */}
             <div className="importer-format">
-              <p className="format-title">📋 Formato esperado del Excel:</p>
+              <p className="format-title"><span className="icon-wrap" style={{marginRight: 4}}><ClipboardList size={18} /></span> Formato esperado del Excel:</p>
               <div className="format-table-wrap">
                 <table className="format-table">
                   <thead>
@@ -155,21 +156,24 @@ export default function QuestionImporter({ onClose, onImported }) {
                   </thead>
                   <tbody>
                     {[
-                      ["Pregunta", "¿Qué es un sistema?", "✅ Sí"],
-                      ["Opcion_A", "Conjunto de elementos", "✅ Sí"],
-                      ["Opcion_B", "Un programa", "✅ Sí"],
-                      ["Opcion_C", "Un proceso", "✅ Sí"],
-                      ["Opcion_D", "Un algoritmo", "✅ Sí"],
-                      ["Opcion_E", "Una red", "⬜ Opcional (5a)"],
-                      ["Opcion_F", "Un modelo", "⬜ Opcional (6a)"],
-                      ["Correcta", "A", "✅ Sí (A–F)"],
-                      ["Explicacion", "Porque...", "⬜ Opcional"],
-                      ["Categoria", "sistemas", "⬜ Opcional"],
-                    ].map(([col, ex, req]) => (
+                      ["Pregunta", "¿Qué es un sistema?", true],
+                      ["Opcion_A", "Conjunto de elementos", true],
+                      ["Opcion_B", "Un programa", true],
+                      ["Opcion_C", "Un proceso", true],
+                      ["Opcion_D", "Un algoritmo", true],
+                      ["Opcion_E", "Una red", false, "(5a)"],
+                      ["Opcion_F", "Un modelo", false, "(6a)"],
+                      ["Correcta", "A", true, "(A–F)"],
+                      ["Explicacion", "Porque...", false],
+                      ["Categoria", "sistemas", false],
+                    ].map(([col, ex, req, extra]) => (
                       <tr key={col}>
                         <td><code>{col}</code></td>
                         <td className="format-ex">{ex}</td>
-                        <td className={req.startsWith("✅") ? "format-req" : "format-opt"}>{req}</td>
+                        <td className={req ? "format-req" : "format-opt"}>
+                          {req ? <><span className="icon-wrap"><CheckCircle size={14}/></span> Sí</> : <><span className="icon-wrap"><Square size={14}/></span> Opcional</>}
+                          {extra && ` ${extra}`}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -201,7 +205,7 @@ export default function QuestionImporter({ onClose, onImported }) {
             {/* Errores de parseo */}
             {result.errors.length > 0 && (
               <div className="preview-errors">
-                <p className="preview-errors-title">⚠️ Filas con problemas (se omiten):</p>
+                <p className="preview-errors-title"><span className="icon-wrap icon-flicker" style={{marginRight: 4}}><AlertTriangle size={16}/></span> Filas con problemas (se omiten):</p>
                 <ul className="preview-errors-list">
                   {result.errors.slice(0, 5).map((e, i) => <li key={i}>{e}</li>)}
                   {result.errors.length > 5 && <li>...y {result.errors.length - 5} más</li>}
@@ -241,18 +245,18 @@ export default function QuestionImporter({ onClose, onImported }) {
               </div>
             ) : (
               <div className="importer-error">
-                ❌ No se encontraron preguntas válidas. Revisa el formato del archivo.
+                <span className="icon-wrap icon-shake" style={{marginRight: 4}}><XCircle size={18} /></span> No se encontraron preguntas válidas. Revisa el formato del archivo.
               </div>
             )}
 
             {/* Acciones */}
             <div className="preview-actions">
               <button id="preview-back-btn" className="btn btn-ghost" onClick={() => { setStep("upload"); setResult(null); }}>
-                ← Volver
+                <span className="icon-wrap" style={{marginRight: 4}}><ArrowLeft size={16}/></span> Volver
               </button>
               {result.questions.length > 0 && (
                 <button id="preview-confirm-btn" className="btn btn-primary" onClick={handleConfirm}>
-                  ✅ Usar estas {result.questions.length} preguntas
+                  <span className="icon-wrap" style={{marginRight: 4}}><CheckCircle size={16}/></span> Usar estas {result.questions.length} preguntas
                 </button>
               )}
             </div>
@@ -262,12 +266,12 @@ export default function QuestionImporter({ onClose, onImported }) {
         {/* ── Paso 3: Éxito ── */}
         {step === "success" && (
           <div className="importer-success">
-            <span className="success-icon">🎉</span>
+            <span className="success-icon icon-wrap icon-bounce-in"><PartyPopper size={48} /></span>
             <h3>¡Banco importado!</h3>
             <p>{result.questions.length} preguntas cargadas desde <b>{result.fileName}</b></p>
             <p className="success-note">El juego usará estas preguntas mientras no importes otras.</p>
             <button id="importer-done-btn" className="btn btn-primary" onClick={onClose}>
-              ✅ ¡A jugar!
+              <span className="icon-wrap" style={{marginRight: 4}}><Gamepad2 size={16} /></span> ¡A jugar!
             </button>
           </div>
         )}

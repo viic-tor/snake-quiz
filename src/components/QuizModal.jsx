@@ -4,11 +4,12 @@
  */
 
 import { useState, useEffect } from "react";
+import { Monitor, Terminal, FolderOpen, Circle, CheckCircle, XCircle } from "lucide-react";
 
 const CATEGORY_LABELS = {
-  sistemas: "🖥️ Teoría de Sistemas",
-  prog: "💻 Programación",
-  custom: "📂 Banco Personalizado",
+  sistemas: <><span className="icon-wrap"><Monitor size={14} /></span> Teoría de Sistemas</>,
+  prog: <><span className="icon-wrap"><Terminal size={14} /></span> Programación</>,
+  custom: <><span className="icon-wrap"><FolderOpen size={14} /></span> Banco Personalizado</>,
 };
 
 const CATEGORY_COLORS = {
@@ -64,12 +65,12 @@ export default function QuizModal({
       <div className={`quiz-modal quiz-modal-${options.length}opts`} role="dialog" aria-modal="true">
 
         {/* Badge difícil */}
-        {isHard && <div className="quiz-diff-badge">🔴 MODO DIFÍCIL — Puntos ×2</div>}
+        {isHard && <div className="quiz-diff-badge"><span className="icon-wrap"><Circle fill="currentColor" size={12} /></span> MODO DIFÍCIL — Puntos ×2</div>}
 
         {/* Header */}
         <div className="quiz-header">
           <div className="quiz-badge" style={{ borderColor: catColor, color: catColor }}>
-            {CATEGORY_LABELS[question.category] || `📂 ${question.category}`}
+            {CATEGORY_LABELS[question.category] || <><span className="icon-wrap"><FolderOpen size={14} /></span> {question.category}</>}
           </div>
           <div className="quiz-timer-wrap">
             <span className="quiz-timer-num" style={{ color: timerColor }}>{timeLeft}s</span>
@@ -123,7 +124,7 @@ export default function QuizModal({
         {/* Explicación */}
         {revealed && question.explanation && (
           <div className={`quiz-explanation ${selected === question.answer ? "correct-exp" : "wrong-exp"}`}>
-            <span className="quiz-exp-icon">{selected === question.answer ? "✅" : "❌"}</span>
+            <span className="quiz-exp-icon icon-wrap">{selected === question.answer ? <CheckCircle className="icon-bounce-in" /> : <XCircle className="icon-shake" />}</span>
             <span>{question.explanation}</span>
           </div>
         )}
