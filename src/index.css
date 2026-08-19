@@ -68,9 +68,8 @@
 }
 
 html, body, #root {
-  height: 100%;
+  min-height: 100dvh;
   width: 100%;
-  /* overflow: hidden quitado — bloqueaba scroll en móvil */
 }
 
 body {
@@ -82,13 +81,12 @@ body {
 
 /* ── App Root ──────────────────────────────────────────────────────────────── */
 .app-root {
-  width: 100dvw;
+  width: 100%;
   min-height: 100dvh;
-  display: block;
+  display: flex;
+  flex-direction: column;
   background: var(--bg-deep);
-  /* overflow-x hidden sólo, scroll vertical libre en móvil */
   overflow-x: hidden;
-  overflow-y: auto;
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
@@ -2699,8 +2697,7 @@ body {
 /* Menu dashboard: scrolleable verticalmente en móvil */
 .menu-dashboard {
   min-height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 /* El grid del menú no debe tener min-height fijo en móvil */
@@ -2715,13 +2712,19 @@ body {
     overflow: visible;
   }
 
-  /* Game view en móvil: columnas en stack vertical con scroll */
+  /* Game view en móvil: flex vertical, scroll natural del body */
+  .game-view {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    height: auto !important;
+  }
+
   .game-main {
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
+    flex: 1;
     padding: 0;
   }
 
@@ -2752,10 +2755,10 @@ body {
   .right-stat-value { font-size: 0.8rem; }
   .right-divider, .right-next, .right-controls { display: none; } /* Ocultamos lo innecesario arriba */
 
-  /* El game-view no debe fijar height en móvil */
-  .game-view {
-    min-height: 100dvh;
-    height: auto !important;
+  /* Añadir margen al D-Pad para que no se pegue al tablero */
+  .dpad-wrap {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   /* Columnas del juego stackeadas con scroll */
