@@ -54,7 +54,28 @@ export default function StartScreen({ onStart }) {
     setShowImporter(false);
   };
 
+  const ChevronDown = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  );
+
+  const ChevronUp = () => (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="18 15 12 9 6 15"></polyline>
+    </svg>
+  );
+
   const handleScrollDown = () => {
+    // Si la flecha apunta hacia arriba, forzamos la subida a la primera sección
+    if (isAtBottom) {
+      const firstEl = document.getElementById('section-center');
+      if (firstEl) {
+        firstEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      return;
+    }
+
     // Orden lógico en móvil: Centro (Hero/Login), Izquierda (Config), Derecha (Stats/Leaderboard)
     const sectionIds = ['section-center', 'section-left', 'section-right'];
     const currentScroll = window.scrollY + 10; // Margen para evitar atascos en la misma sección
@@ -470,7 +491,7 @@ export default function StartScreen({ onStart }) {
 
       {/* Botón flotante estilo WhatsApp para scroll */}
       <button className="menu-fab-scroll" onClick={handleScrollDown} aria-label="Desplazarse hacia abajo">
-        {isAtBottom ? "⬆️" : "⬇️"}
+        {isAtBottom ? <ChevronUp /> : <ChevronDown />}
       </button>
     </div>
   );

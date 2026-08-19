@@ -86,7 +86,7 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg-deep);
-  overflow-x: hidden;
+  overflow-x: clip; /* clip en lugar de hidden para no romper scroll en iOS */
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
@@ -1946,7 +1946,6 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--bg-primary);
-  overflow: hidden;
 }
 
 .menu-dashboard-hard {
