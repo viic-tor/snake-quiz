@@ -68,20 +68,104 @@ export async function saveScoreRemote(entry) {
   lastSavedSignature = signature;
   lastSavedTime = now;
 
-  const { error } = await supabase.from("leaderboard").insert([
-    {
-      name:               entry.name,
-      score:              entry.score,
-      level:              entry.level ?? 1,
-      questions_correct:  entry.questionsCorrect ?? 0,
-      food_eaten:         entry.foodEaten ?? 0,
-      mode:               entry.mode ?? "easy",
-    },
-  ]);
+  // Buscar si ya existe un score para este jugador en este modo
+  const { data: existing, error: fetchErr } = await supabase
+    .from("leaderboard")
+    .select("id, score")
+    .eq("name", entry.name)
+    .eq("mode", entry.mode ?? "easy")
+    .single();
+
+  if (fetchErr && fetchErr.code !== 'PGRST116') { // PGRST116 = no rows found
+    lastSavedSignature = "";
+    throw fetchErr;
+  }
+
+  if (existing) {
+    // Si ya existe, solo actualizar si el puntaje nuevo es mayor
+    if (entry.score > existing.score) {
+      const { error: updateErr } = await supabase
+        .from("leaderboard")
+        .update({
+          score:              entry.score,
+          level:              entry.level ?? 1,
+          questions_correct:  entry.questionsCorrect ?? 0,
+          food_eaten:         entry.foodEaten ?? 0,
+          date:               new Date().toISOString() // Actualiza la fecha
+        })
+        .eq("id", existing.id);
+
+      if (updateErr) {
+        lastSavedSignature = "";
+        throw updateErr;
+      }
+    }
+  } else {
+    // Si no existe, insertar nuevo registro
+    const { error: insertErr } = await supabase.from("leaderboard").insert([
+      {
+        name:               entry.name,
+        score:              entry.score,
+        level:              entry.level ?? 1,
+        questions_correct:  entry.questionsCorrect ?? 0,
+        food_eaten:         entry.foodEaten ?? 0,
+        mode:               entry.mode ?? "easy",
+      },
+    ]);
+
+    if (insertErr) {
+      lastSavedSignature = "";
+      throw insertErr;
+    }
+  }
+}
+
+/**
+ * Registra un nuevo perfil de jugador.
+ * @param {string} username
+ * @param {string} password
+ */
+export async function registerPlayer(username, password) {
+  if (!supabase) throw new Error("Supabase no inicializado");
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .insert([{ username, password }])
+    .select();
 
   if (error) {
-    // Si la base de datos falla, liberamos el candado para permitir un reintento
-    lastSavedSignature = "";
+    if (error.code === '23505') { // unique violation
+      throw new Error("El nombre de usuario ya está registrado.");
+    }
     throw error;
   }
+  return data[0];
+}
+
+/**
+ * Valida las credenciales de un jugador.
+ * @param {string} username
+ * @param {string} password
+ */
+export async function loginPlayer(username, password) {
+  if (!supabase) throw new Error("Supabase no inicializado");
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("username", username)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') { // No rows found
+      throw new Error("Usuario no encontrado.");
+    }
+    throw error;
+  }
+
+  if (data.password !== password) {
+    throw new Error("Contraseña incorrecta.");
+  }
+
+  return data;
 }

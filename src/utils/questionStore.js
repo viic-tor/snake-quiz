@@ -92,35 +92,43 @@ export function hasCustomQuestions() {
 export function getNextQuestion(usedIds = [], answerCount = 4) {
   const bank = getActiveQuestions();
 
-  // Filtrar: solo preguntas con suficientes opciones
-  const eligible = bank.filter(
-    (q) => q.options.length >= answerCount && !usedIds.includes(q.id)
-  );
-
-  // Si ya se usaron todas, reiniciar
-  const pool = eligible.length > 0
-    ? eligible
-    : bank.filter((q) => q.options.length >= answerCount);
-
-  // Fallback: si ninguna tiene suficientes opciones, usar las que haya
-  const finalPool = pool.length > 0 ? pool : bank.filter((q) => !usedIds.includes(q.id));
-  const lastResort = finalPool.length > 0 ? finalPool : bank;
-
-  const q = lastResort[Math.floor(Math.random() * lastResort.length)];
-
-  // Recortar opciones al número solicitado si tiene más
-  if (q.options.length > answerCount) {
-    const correctOption = q.options[q.answer];
-    // Mantener la correcta + opciones aleatorias hasta answerCount
-    const others = q.options.filter((_, i) => i !== q.answer);
-    const shuffled = others.sort(() => Math.random() - 0.5).slice(0, answerCount - 1);
-    const newOptions = [...shuffled, correctOption].sort(() => Math.random() - 0.5);
-    return {
-      ...q,
-      options: newOptions,
-      answer: newOptions.indexOf(correctOption),
-    };
+  // Buscar preguntas no usadas
+  let pool = bank.filter((q) => !usedIds.includes(q.id));
+  
+  if (pool.length === 0) {
+    // Si se usaron todas, reiniciar
+    pool = bank;
   }
 
-  return { ...q };
+  const q = pool[Math.floor(Math.random() * pool.length)];
+
+  const correctOption = q.options[q.answer];
+  let incorrectOptions = q.options.filter((_, i) => i !== q.answer);
+
+  // Si faltan opciones para llegar a answerCount, robar de otras preguntas
+  if (incorrectOptions.length < answerCount - 1) {
+    const allOtherIncorrect = bank
+      .filter(otherQ => otherQ.id !== q.id)
+      .flatMap(otherQ => otherQ.options.filter((_, i) => i !== otherQ.answer));
+    
+    const shuffledOthers = allOtherIncorrect.sort(() => Math.random() - 0.5);
+    for (let option of shuffledOthers) {
+      if (incorrectOptions.length >= answerCount - 1) break;
+      if (!incorrectOptions.includes(option) && option !== correctOption) {
+        incorrectOptions.push(option);
+      }
+    }
+  }
+
+  // Recortar incorrectas por si había más de la cuenta y barajar
+  incorrectOptions = incorrectOptions.sort(() => Math.random() - 0.5).slice(0, answerCount - 1);
+
+  // Unir con la correcta y barajar posición final
+  const finalOptions = [...incorrectOptions, correctOption].sort(() => Math.random() - 0.5);
+
+  return {
+    ...q,
+    options: finalOptions,
+    answer: finalOptions.indexOf(correctOption),
+  };
 }

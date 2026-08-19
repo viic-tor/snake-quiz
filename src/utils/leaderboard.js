@@ -14,10 +14,7 @@
 
 import { saveScoreRemote, getLeaderboardRemote, SUPABASE_ENABLED } from "./supabase.js";
 
-const STORAGE_KEYS = {
-  easy: "snake-quiz-lb-easy",
-  hard: "snake-quiz-lb-hard",
-};
+const getStorageKey = (mode) => `snake-quiz-lb-${mode}`;
 const MAX_ENTRIES = 10;
 
 /**
@@ -27,7 +24,7 @@ const MAX_ENTRIES = 10;
  */
 export function getLeaderboardLocal(mode = "easy") {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS[mode] ?? STORAGE_KEYS.easy);
+    const raw = localStorage.getItem(getStorageKey(mode));
     if (!raw) return [];
     return JSON.parse(raw);
   } catch {
@@ -56,7 +53,7 @@ export function saveScoreLocal(entry, mode = "easy") {
   const position = trimmed.findIndex((e) => e.id === newEntry.id) + 1;
 
   try {
-    const key = STORAGE_KEYS[mode] ?? STORAGE_KEYS.easy;
+    const key = getStorageKey(mode);
     localStorage.setItem(key, JSON.stringify(trimmed));
   } catch { /* localStorage lleno */ }
 

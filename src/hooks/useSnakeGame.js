@@ -43,16 +43,22 @@ export const DIFFICULTY_CONFIG = {
   },
   hard: {
     label: "Difícil",
-    initialSpeed: 110,
+    initialSpeed: 110, // Base
     minSpeed: 45,
     speedStep: 12,
     quizEvery: 2,
     quizTimeLimit: 10,
-    scoreMultiplier: 2,
+    scoreMultiplier: 2, // Base
     bonusLifeAt: 15,
     wallsKill: true,     // paredes quitan 1 vida
-    pointsPerFood: (level) => (10 + level * 5) * 2,
-    pointsPerQuiz: (level) => (150 + level * 25) * 2,
+    pointsPerFood: (level, count = 4) => {
+      const mult = count === 6 ? 3 : count === 5 ? 2.5 : 2;
+      return Math.floor((10 + level * 5) * mult);
+    },
+    pointsPerQuiz: (level, count = 4) => {
+      const mult = count === 6 ? 3 : count === 5 ? 2.5 : 2;
+      return Math.floor((150 + level * 25) * mult);
+    },
     color: { snake: "#ff6b35", snakeDim: "#cc4a1a", food: "#ff004d", boardBg: "#1a0a0a", accent: "#ff6b35" },
   },
 };
@@ -78,6 +84,11 @@ const randomCell = (snake = []) => {
 
 const buildInitialState = (difficulty = "easy", answerCount = 4) => {
   const cfg = DIFFICULTY_CONFIG[difficulty];
+  let speed = cfg.initialSpeed;
+  if (difficulty === "hard") {
+    if (answerCount === 5) speed = 90;
+    if (answerCount === 6) speed = 70;
+  }
   return {
     snake: INITIAL_SNAKE,
     dir: INITIAL_DIR,
@@ -91,7 +102,8 @@ const buildInitialState = (difficulty = "easy", answerCount = 4) => {
     questionsCorrect: 0,
     consecutiveCorrect: 0,
     livesLostSinceLastBonus: 0,
-    speed: cfg.initialSpeed,
+    speed: speed,
+    answerCount: answerCount,
     running: false,
     gameOver: false,
     showQuiz: false,
@@ -194,7 +206,8 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
         newSpeed = Math.max(localCfg.minSpeed, prev.speed - localCfg.speedStep);
       }
 
-      const bonusPoints = isCorrect ? localCfg.pointsPerQuiz(prev.level) : 0;
+      const pts = localCfg.pointsPerQuiz(prev.level, prev.answerCount);
+      const bonusPoints = isCorrect ? pts : 0;
       const newScore = prev.score + bonusPoints;
       const newLevel = Math.floor(prev.foodEaten / 10) + 1;
       const gameOver = finalLives <= 0;
@@ -308,7 +321,8 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
 
       // ── Comió ──────────────────────────────────────────────────────
       const newFoodEaten = prev.foodEaten + 1;
-      const newScore = prev.score + localCfg.pointsPerFood(prev.level);
+      const pts = localCfg.pointsPerFood(prev.level, prev.answerCount);
+      const newScore = prev.score + pts;
       const newLevel = Math.floor(newFoodEaten / 10) + 1;
       const newFood = randomCell(newSnake);
 

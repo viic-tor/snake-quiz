@@ -17,11 +17,13 @@ import MenuSnakeCanvas from "./MenuSnakeCanvas";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../utils/questionStore";
 import { getLeaderboardLocal, getLeaderboard } from "../utils/leaderboard";
-import { SUPABASE_ENABLED } from "../utils/supabase";
+import { SUPABASE_ENABLED, loginPlayer, registerPlayer } from "../utils/supabase";
 import { getPlayerStats, getAccuracy } from "../utils/playerStats";
 
 export default function StartScreen({ onStart }) {
   const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
+  const [password,       setPassword]       = useState("");
+  const [authLoading,    setAuthLoading]    = useState(false);
   const [difficulty,     setDifficulty]     = useState("easy");
   const [answerCount,    setAnswerCount]    = useState(4);
   const [snakeColor,     setSnakeColor]     = useState(null); // null = color del modo
@@ -56,11 +58,38 @@ export default function StartScreen({ onStart }) {
     setPlayerStats(getPlayerStats());
   }, []);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { setError("Por favor ingresa tu nombre."); return; }
     if (trimmed.length > 20) { setError("Máximo 20 caracteres."); return; }
+
+    if (SUPABASE_ENABLED) {
+      if (!password) { setError("Debes ingresar una contraseña (PIN)."); return; }
+      setAuthLoading(true);
+      setError("");
+      try {
+        // Intenta hacer login primero
+        await loginPlayer(trimmed, password);
+      } catch (err) {
+        if (err.message === "Usuario no encontrado.") {
+          // Si no existe, lo registra automáticamente
+          try {
+            await registerPlayer(trimmed, password);
+          } catch (regErr) {
+            setAuthLoading(false);
+            setError(regErr.message || "Error al crear perfil.");
+            return;
+          }
+        } else {
+          setAuthLoading(false);
+          setError(err.message || "Error de autenticación.");
+          return;
+        }
+      }
+      setAuthLoading(false);
+    }
+
     localStorage.setItem("snake-quiz-last-name", trimmed);
     onStart(trimmed, difficulty, answerCount, snakeColor);
   };
@@ -239,20 +268,42 @@ export default function StartScreen({ onStart }) {
               id="player-name"
               type="text"
               className={`menu-input ${isHard ? "menu-input-hard" : ""}`}
-              placeholder="Ingresa tu nombre…"
+              placeholder="Ej: Jugador1"
               value={name}
               maxLength={20}
               onChange={(e) => { setName(e.target.value); setError(""); }}
               autoComplete="off"
               autoFocus
             />
+
+            {SUPABASE_ENABLED && (
+              <>
+                <label htmlFor="player-password" className="menu-form-label" style={{ marginTop: '0.5rem' }}>
+                  Contraseña (PIN)
+                </label>
+                <input
+                  id="player-password"
+                  type="password"
+                  className={`menu-input ${isHard ? "menu-input-hard" : ""}`}
+                  placeholder="Tu PIN secreto..."
+                  value={password}
+                  maxLength={20}
+                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                />
+                <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                  Si el nombre no existe, se creará el perfil automáticamente.
+                </p>
+              </>
+            )}
+
             {error && <p className="menu-error" role="alert">{error}</p>}
             <button
               id="start-btn"
               type="submit"
+              disabled={authLoading}
               className={`btn menu-start-btn ${isHard ? "btn-danger" : "btn-primary"}`}
             >
-              <span>{isHard ? "🔥 Jugar en Difícil" : "🎮 Jugar en Fácil"}</span>
+              <span>{authLoading ? "⏳ Validando..." : (isHard ? (answerCount === 4 ? "🔴 Jugar en Difícil" : answerCount === 5 ? "🔥 Jugar en Difícil Pro" : "💀 Jugar en Difícil Pro Max") : "🎮 Jugar en Fácil")}</span>
               <span className="menu-start-opts">· {answerCount} opciones</span>
             </button>
           </form>

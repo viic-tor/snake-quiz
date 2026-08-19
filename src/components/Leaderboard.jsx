@@ -9,6 +9,13 @@ import { getLeaderboard, clearLeaderboard, formatDate } from "../utils/leaderboa
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
+const MODES = [
+  { id: "easy", label: "🟢 Fácil", name: "Fácil" },
+  { id: "hard_4", label: "🔴 Difícil", name: "Difícil" },
+  { id: "hard_5", label: "🔥 Pro", name: "Difícil Pro" },
+  { id: "hard_6", label: "💀 Pro Max", name: "Difícil Pro Max" },
+];
+
 export default function Leaderboard({ onClose, highlightId, initialMode = "easy" }) {
   const [activeMode, setActiveMode] = useState(initialMode);
   const [board, setBoard] = useState([]);
@@ -35,7 +42,8 @@ export default function Leaderboard({ onClose, highlightId, initialMode = "easy"
   }, [activeMode]);
 
   const handleClear = () => {
-    if (!window.confirm(`¿Borrar el ranking de modo ${activeMode === "easy" ? "Fácil" : "Difícil"}?`)) return;
+    const modeObj = MODES.find(m => m.id === activeMode) || MODES[0];
+    if (!window.confirm(`¿Borrar el ranking de modo ${modeObj.name}?`)) return;
     clearLeaderboard(activeMode);
     setBoard([]);
   };
@@ -59,24 +67,17 @@ export default function Leaderboard({ onClose, highlightId, initialMode = "easy"
 
         {/* Tabs de modo */}
         <div className="lb-tabs" role="tablist" aria-label="Modo de juego">
-          <button
-            id="lb-tab-easy"
-            role="tab"
-            aria-selected={activeMode === "easy"}
-            className={`lb-tab ${activeMode === "easy" ? "lb-tab-active lb-tab-easy" : ""}`}
-            onClick={() => setActiveMode("easy")}
-          >
-            🟢 Fácil
-          </button>
-          <button
-            id="lb-tab-hard"
-            role="tab"
-            aria-selected={activeMode === "hard"}
-            className={`lb-tab ${activeMode === "hard" ? "lb-tab-active lb-tab-hard" : ""}`}
-            onClick={() => setActiveMode("hard")}
-          >
-            🔴 Difícil
-          </button>
+          {MODES.map((mode) => (
+            <button
+              key={mode.id}
+              role="tab"
+              aria-selected={activeMode === mode.id}
+              className={`lb-tab ${activeMode === mode.id ? (mode.id.startsWith("hard") ? "lb-tab-active lb-tab-hard" : "lb-tab-active lb-tab-easy") : ""}`}
+              onClick={() => setActiveMode(mode.id)}
+            >
+              {mode.label}
+            </button>
+          ))}
         </div>
 
         {/* Contenido */}
@@ -87,8 +88,8 @@ export default function Leaderboard({ onClose, highlightId, initialMode = "easy"
           </div>
         ) : board.length === 0 ? (
           <div className="lb-empty">
-            <span>{activeMode === "hard" ? "💀" : "🎮"}</span>
-            <p>No hay puntuaciones en modo {activeMode === "easy" ? "Fácil" : "Difícil"}.</p>
+            <span>{activeMode.startsWith("hard") ? "💀" : "🎮"}</span>
+            <p>No hay puntuaciones en modo {MODES.find(m => m.id === activeMode)?.name}.</p>
             <p>¡Juega y sé el primero en el ranking!</p>
           </div>
         ) : (

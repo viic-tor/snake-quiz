@@ -20,8 +20,9 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
   const [savedEntryId, setSavedEntryId] = useState(null);
   const [showLb, setShowLb]           = useState(false);
 
-  const difficulty = state.difficulty || "easy";
-  const isHard     = difficulty === "hard";
+  const baseDifficulty = state.difficulty || "easy";
+  const isHard         = baseDifficulty === "hard";
+  const difficulty     = isHard ? `hard_${state.answerCount}` : "easy";
 
   // ── ¿Partida con banco personalizado? ────────────────────────────────────
   const usingCustom = hasCustomQuestions();

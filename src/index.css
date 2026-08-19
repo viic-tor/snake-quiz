@@ -2717,10 +2717,40 @@ body {
 
   /* Game view en móvil: columnas en stack vertical con scroll */
   .game-main {
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
+    padding: 0;
   }
+
+  /* Reordenar: 1º Mini Stats (right), 2º Canvas (center), 3º Full Stats (left) */
+  .game-col-right  { order: 1; padding: 0.5rem; }
+  .game-col-center { order: 2; padding: 0; }
+  .game-col-left   { order: 3; padding: 1rem 0.5rem; }
+
+  /* Ajustes del panel derecho en móvil (para que sea horizontal) */
+  .game-col-right .right-panel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-around;
+    gap: 0.5rem;
+  }
+  .right-stat {
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.7rem;
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+  .right-stat-icon { font-size: 1rem; }
+  .right-stat-label { font-size: 0.55rem; }
+  .right-stat-value { font-size: 0.8rem; }
+  .right-divider, .right-next, .right-controls { display: none; } /* Ocultamos lo innecesario arriba */
 
   /* El game-view no debe fijar height en móvil */
   .game-view {
@@ -2733,6 +2763,7 @@ body {
   .game-col-right {
     overflow: visible;
     max-height: none;
+    border-right: none;
   }
 }
 
