@@ -70,7 +70,7 @@
 html, body, #root {
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  /* overflow: hidden quitado — bloqueaba scroll en móvil */
 }
 
 body {
@@ -83,10 +83,12 @@ body {
 /* ── App Root ──────────────────────────────────────────────────────────────── */
 .app-root {
   width: 100dvw;
-  height: 100dvh;
+  min-height: 100dvh;
   display: block;
   background: var(--bg-deep);
-  overflow: hidden;
+  /* overflow-x hidden sólo, scroll vertical libre en móvil */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */
@@ -342,10 +344,11 @@ body {
 
 .game-view {
   width: 100dvw;
-  height: 100dvh;
+  min-height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;  /* scroll vertical en móvil */
   background:
     radial-gradient(ellipse at 20% 50%, #0a1628 0%, transparent 55%),
     radial-gradient(ellipse at 80% 20%, #0d0d20 0%, transparent 55%),
@@ -2639,4 +2642,113 @@ body {
   width: 100%;
   max-width: 340px;
   margin-top: 0.1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SWIPE ZONE — Control táctil de la serpiente
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* La zona cubre el canvas exactamente */
+.swipe-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;               /* encima del canvas, debajo de overlays de pausa */
+  touch-action: none;       /* evita scroll nativo dentro de la zona */
+  cursor: default;
+  /* Invisible pero activa */
+  background: transparent;
+}
+
+/* En desktop el swipe overlay no interfiere con el mouse */
+@media (hover: hover) and (pointer: fine) {
+  .swipe-overlay {
+    pointer-events: none;   /* desactivado en mouse, solo activo en touch */
+  }
+}
+
+/* Indicador visual de swipe en móvil — ícono sutil en el centro */
+.swipe-overlay::after {
+  content: "👆 Desliza para mover";
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.2);
+  white-space: nowrap;
+  pointer-events: none;
+  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+}
+
+/* Ocultar el hint después de 3s con animación */
+.swipe-overlay::after {
+  animation: swipeHintFade 4s ease-out 1s forwards;
+}
+
+@keyframes swipeHintFade {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIXES DE SCROLL — Menú y juego en móvil
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Menu dashboard: scrolleable verticalmente en móvil */
+.menu-dashboard {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* El grid del menú no debe tener min-height fijo en móvil */
+@media (max-width: 900px) {
+  .menu-grid {
+    min-height: auto !important;
+    padding-bottom: 2rem;
+  }
+
+  /* Permitir scroll en columnas del menú */
+  .menu-col {
+    overflow: visible;
+  }
+
+  /* Game view en móvil: columnas en stack vertical con scroll */
+  .game-main {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* El game-view no debe fijar height en móvil */
+  .game-view {
+    min-height: 100dvh;
+    height: auto !important;
+  }
+
+  /* Columnas del juego stackeadas con scroll */
+  .game-col-left,
+  .game-col-right {
+    overflow: visible;
+    max-height: none;
+  }
+}
+
+/* Smooth scroll en toda la app en móvil */
+@media (max-width: 900px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Asegurar que el board-wrap sea relativo para el swipe overlay */
+.board-wrap {
+  position: relative;
 }

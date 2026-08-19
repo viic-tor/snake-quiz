@@ -14,6 +14,7 @@ import GameOver from "./components/GameOver";
 import Leaderboard from "./components/Leaderboard";
 import RulesModal from "./components/RulesModal";
 import useSnakeGame, { DIFFICULTY_CONFIG } from "./hooks/useSnakeGame";
+import SwipeZone from "./components/SwipeZone";
 
 const VIEWS = { START: "start", GAME: "game", GAMEOVER: "gameover" };
 
@@ -106,6 +107,12 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
         <div className="game-col-center" ref={boardContainerRef}>
           <div className="board-wrap">
             <GameBoard state={state} size={canvasSize} snakeColor={snakeColor} />
+
+            {/* Zona de swipe táctil — cubre el canvas en móvil */}
+            <SwipeZone
+              onSwipe={setDirection}
+              className="swipe-overlay"
+            />
 
             {isPaused && (
               <div className="board-overlay">
