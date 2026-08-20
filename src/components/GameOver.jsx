@@ -12,7 +12,7 @@
 import { useEffect, useState } from "react";
 import { saveScore, getLeaderboard } from "../utils/leaderboard";
 import { hasCustomQuestions, getCustomMeta } from "../utils/questionStore";
-import { updatePlayerStats } from "../utils/playerStats";
+import { updatePlayerStatsAsync } from "../utils/playerStats";
 import Leaderboard from "./Leaderboard";
 import { Medal, Skull, Flame, Circle, FolderOpen, Star, Apple, Brain, CheckCircle, Target, RefreshCw, Crown, Home } from "lucide-react";
 
@@ -38,14 +38,18 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
       level:            state.level,
       questionsCorrect: state.questionsCorrect,
       foodEaten:        state.foodEaten,
+      maxStreak:        state.maxStreak,
     };
 
-    // Actualizar estadísticas personales del jugador
-    updatePlayerStats({
+    // Actualizar estadísticas personales del jugador (ahora se guarda en la nube asíncronamente)
+    updatePlayerStatsAsync({
+      playerName:        playerName,
+      mode:              difficulty,
       score:             state.score,
       questionsCorrect:  state.questionsCorrect,
       questionsAnswered: state.questionsAnswered,
       level:             state.level,
+      maxStreak:         state.maxStreak,
     });
 
     saveScore(entry, difficulty).then((pos) => {

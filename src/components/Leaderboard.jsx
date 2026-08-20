@@ -107,6 +107,7 @@ export default function Leaderboard({ onClose, highlightId, initialMode = "easy"
                   <th>Puntos</th>
                   <th>Nivel</th>
                   <th><span className="icon-wrap"><CheckCircle size={14} /></span></th>
+                  <th><span className="icon-wrap"><Flame size={14} color="#ff6b35" /></span></th>
                   <th><span className="icon-wrap"><Apple size={14} /></span></th>
                   <th>Fecha</th>
                 </tr>
@@ -128,6 +129,7 @@ export default function Leaderboard({ onClose, highlightId, initialMode = "easy"
                     </td>
                     <td className="lb-level">{entry.level}</td>
                     <td className="lb-correct">{entry.questionsCorrect ?? "—"}</td>
+                    <td className="lb-streak">{entry.maxStreak ?? "—"}</td>
                     <td className="lb-food">{entry.foodEaten ?? "—"}</td>
                     <td className="lb-date">{formatDate(entry.date)}</td>
                   </tr>

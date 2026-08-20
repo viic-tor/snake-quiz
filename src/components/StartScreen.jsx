@@ -18,8 +18,8 @@ import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../utils/questionStore";
 import { getLeaderboardLocal, getLeaderboard } from "../utils/leaderboard";
 import { SUPABASE_ENABLED, loginPlayer, registerPlayer } from "../utils/supabase";
-import { getPlayerStats, getAccuracy } from "../utils/playerStats";
-import { Settings, Circle, AlertTriangle, BookOpen, Crown, Flame, Gamepad2, Brain, Heart, Zap, BarChart2, Skull, Sparkles, Loader2, Lightbulb, TrendingUp, Target, Medal, FolderOpen, RefreshCw, X, ArrowRight, CheckCircle, Worm } from "lucide-react";
+import { getPlayerStats, syncAllPlayerStats, getAccuracy } from "../utils/playerStats";
+import { Settings, Circle, AlertTriangle, BookOpen, Crown, Flame, Gamepad2, Brain, Heart, Zap, BarChart2, Skull, Sparkles, Loader2, Lightbulb, TrendingUp, Target, Medal, FolderOpen, RefreshCw, X, ArrowRight, CheckCircle, Worm, Cloud } from "lucide-react";
 
 export default function StartScreen({ onStart }) {
   const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
@@ -36,7 +36,9 @@ export default function StartScreen({ onStart }) {
   const [error,          setError]          = useState("");
   const [top3,           setTop3]           = useState([]);
   const [top3Loading,    setTop3Loading]    = useState(true);
-  const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats());
+  const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats(localStorage.getItem("snake-quiz-last-name") || "", "easy"));
+  const [statsLoading,   setStatsLoading]   = useState(false);
+  const [profileLoadedMsg, setProfileLoadedMsg] = useState("");
 
   const handleImported = (stats) => {
     setCustomMeta(stats || getCustomMeta());
@@ -45,25 +47,67 @@ export default function StartScreen({ onStart }) {
   };
 
   const isHard = difficulty === "hard";
+  const fullDifficulty = isHard ? `hard_${answerCount}` : "easy";
   const cfg    = DIFFICULTY_CONFIG[difficulty];
 
   // Cargar top 3 usando Supabase si está activo, si no localStorage
   useEffect(() => {
     setTop3Loading(true);
-    getLeaderboard(difficulty)
+    getLeaderboard(fullDifficulty)
       .then((board) => {
         setTop3(board.slice(0, 3));
       })
       .catch(() => {
-        setTop3(getLeaderboardLocal(difficulty).slice(0, 3));
+        setTop3(getLeaderboardLocal(fullDifficulty).slice(0, 3));
       })
       .finally(() => setTop3Loading(false));
-  }, [difficulty]);
+  }, [fullDifficulty]);
 
-  // Refrescar stats personales al montar
+  // Cargar estadísticas locales al cambiar nombre o modo
   useEffect(() => {
-    setPlayerStats(getPlayerStats());
-  }, []);
+    const trimmed = name.trim();
+    setPlayerStats(getPlayerStats(trimmed, fullDifficulty));
+  }, [name, fullDifficulty]);
+
+  const handleLoadProfile = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setError("Por favor ingresa tu nombre.");
+      return;
+    }
+    
+    if (SUPABASE_ENABLED) {
+      if (!password) { 
+        setError("Debes ingresar una contraseña (PIN) para cargar."); 
+        return; 
+      }
+      
+      setStatsLoading(true);
+      setProfileLoadedMsg("");
+      setError("");
+      
+      try {
+        await loginPlayer(trimmed, password);
+      } catch (err) {
+        setStatsLoading(false);
+        setError(err.message === "Usuario no encontrado." ? "El perfil no existe." : "Contraseña incorrecta.");
+        return;
+      }
+      
+      const hasData = await syncAllPlayerStats(trimmed);
+      
+      // Refrescar las estadísticas locales para la vista actual
+      setPlayerStats(getPlayerStats(trimmed, fullDifficulty));
+      setStatsLoading(false);
+      
+      if (hasData) {
+        setProfileLoadedMsg("¡Perfil cargado!");
+      } else {
+        setError("Aún no tienes estadísticas guardadas. ¡Juega una partida!");
+      }
+      setTimeout(() => setProfileLoadedMsg(""), 4000);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -210,6 +254,9 @@ export default function StartScreen({ onStart }) {
                 { color: "#ff2d78", label: "Rosa",    title: "Rosa neón" },
                 { color: "#ffffff", label: "Blanco",  title: "Blanco" },
                 { color: "#ff4444", label: "Rojo",    title: "Rojo" },
+                { color: "#ffff00", label: "Amari.",  title: "Amarillo" },
+                { color: "#3b82f6", label: "Azul",    title: "Azul" },
+                { color: "#10b981", label: "Esmer.",  title: "Esmeralda" },
               ].map(({ color, label, title }) => (
                 <button
                   key={color}
@@ -249,7 +296,7 @@ export default function StartScreen({ onStart }) {
           {/* Logo */}
           <div className="menu-logo">
             <div className={`menu-logo-icon ${isHard ? "menu-logo-hard" : ""}`}>
-              {isHard ? <span className="icon-wrap icon-flicker"><Flame /></span> : <span className="icon-wrap icon-float"><Worm /></span>}
+              {isHard ? <span className="icon-wrap icon-flicker"><Flame /></span> : <span className="icon-wrap icon-float">🐍</span>}
             </div>
             <h1 className="menu-title">
               Snake<span className={`menu-title-accent ${isHard ? "menu-title-hard" : ""}`}>Quiz</span>
@@ -302,6 +349,20 @@ export default function StartScreen({ onStart }) {
                 <p style={{ fontSize: '0.6rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                   Si el nombre no existe, se creará el perfil automáticamente.
                 </p>
+                <div style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    onClick={handleLoadProfile}
+                    disabled={statsLoading || !name.trim()}
+                    className="btn btn-secondary"
+                    style={{ flex: 1, padding: '0.5rem', fontSize: '0.8rem' }}
+                  >
+                    {statsLoading ? <><span className="icon-wrap icon-spin-slow" style={{marginRight: 4}}><Loader2 size={14}/></span> Cargando...</> : <><span className="icon-wrap" style={{marginRight: 4}}><Cloud size={14}/></span> Cargar Perfil</>}
+                  </button>
+                  {profileLoadedMsg && (
+                    <span style={{ fontSize: '0.75rem', color: '#00ff88' }}>{profileLoadedMsg}</span>
+                  )}
+                </div>
               </>
             )}
 

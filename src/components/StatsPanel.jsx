@@ -4,6 +4,7 @@
  * Adapta colores y textos según la dificultad.
  */
 
+import { Star, Heart, Medal, Apple, Brain, Zap, Gem, CheckCircle, XCircle, BarChart2 } from "lucide-react";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 
 function ProgressBar({ value, max, color = "#00ff88" }) {
@@ -40,29 +41,28 @@ export default function StatsPanel({ state }) {
         {isHard ? "🔴 DIFÍCIL — ×2 pts" : "🟢 FÁCIL"}
       </div>
 
-      <h3 className="stats-title">📊 Stats</h3>
+      <h3 className="stats-title"><span className="icon-wrap" style={{marginRight: 4}}><BarChart2 size={18} /></span> Stats</h3>
 
       {/* Score */}
       <div className="stat-item">
-        <span className="stat-icon">⭐</span>
+        <span className="stat-icon"><Star size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Puntuación</span>
           <span className="stat-value" style={{ color: isHard ? "#ff6b35" : "#ffd700" }}>
             {score.toLocaleString()}
           </span>
-          {isHard && <span className="stat-hint">×2 multiplicador activo</span>}
         </div>
       </div>
 
       {/* Vidas */}
       <div className="stat-item">
-        <span className="stat-icon">❤️</span>
+        <span className="stat-icon"><Heart size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Vidas</span>
           <div className="lives-hearts">
             {Array.from({ length: 5 }).map((_, i) => (
               <span key={i} className={`heart ${i < lives ? "heart-active" : "heart-empty"}`}>
-                {i < lives ? "❤️" : "🖤"}
+                <Heart size={14} fill={i < lives ? "currentColor" : "none"} />
               </span>
             ))}
           </div>
@@ -72,7 +72,7 @@ export default function StatsPanel({ state }) {
 
       {/* Nivel */}
       <div className="stat-item">
-        <span className="stat-icon">🏅</span>
+        <span className="stat-icon"><Medal size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Nivel</span>
           <span className="stat-value">{level}</span>
@@ -81,7 +81,7 @@ export default function StatsPanel({ state }) {
 
       {/* Comidas */}
       <div className="stat-item">
-        <span className="stat-icon">🍎</span>
+        <span className="stat-icon"><Apple size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Comidas — {foodEaten}</span>
           <span className="stat-hint">Quiz en {nextQuizIn} comida{nextQuizIn !== 1 ? "s" : ""}</span>
@@ -97,12 +97,17 @@ export default function StatsPanel({ state }) {
 
       {/* Preguntas */}
       <div className="stat-item">
-        <span className="stat-icon">🧠</span>
+        <span className="stat-icon"><Brain size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Preguntas</span>
-          <div className="quiz-stat-row">
-            <span className="correct-count">✅ {questionsCorrect}</span>
-            <span className="wrong-count">❌ {wrongAnswers}</span>
+          <div className="quiz-stat-row" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '4px', fontWeight: 'bold' }}>
+            <span className="correct-count" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#00ff88' }}>
+              <CheckCircle size={14} /> Bien {questionsCorrect}
+            </span>
+            <span style={{ opacity: 0.4, color: 'white', fontWeight: 'normal' }}>/</span>
+            <span className="wrong-count" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ff4757' }}>
+              <XCircle size={14} /> Mal {wrongAnswers}
+            </span>
           </div>
         </div>
       </div>
@@ -120,7 +125,7 @@ export default function StatsPanel({ state }) {
 
       {/* Velocidad */}
       <div className="stat-item">
-        <span className="stat-icon">⚡</span>
+        <span className="stat-icon"><Zap size={16} /></span>
         <div className="stat-content">
           <span className="stat-label">Velocidad</span>
           <ProgressBar value={speedLevel} max={100} color="#ffd700" />
@@ -130,15 +135,15 @@ export default function StatsPanel({ state }) {
 
       {/* Bonus vida */}
       <div className="stat-item bonus-item">
-        <span className="stat-icon">💎</span>
+        <span className="stat-icon"><Gem size={16} /></span>
         <div className="stat-content">
-          <span className="stat-label">Bonus ❤️ (cada {cfg.bonusLifeAt} ✅)</span>
+          <span className="stat-label">Bonus ❤️ (cada {cfg.bonusLifeAt} aciertos)</span>
           <ProgressBar
             value={consecutiveCorrect % cfg.bonusLifeAt}
             max={cfg.bonusLifeAt}
             color="#a855f7"
           />
-          <span className="stat-hint">{toNextBonus} correctas seguidas</span>
+          <span className="stat-hint">{toNextBonus} correctas seguidas para +1 Vida</span>
         </div>
       </div>
 

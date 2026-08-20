@@ -50,6 +50,7 @@ export async function getLeaderboardRemote(mode = "easy") {
     score: row.score,
     level: row.level,
     questionsCorrect: row.questions_correct,
+    maxStreak: row.max_streak,
     foodEaten: row.food_eaten,
     mode: row.mode,
     date: row.date,
@@ -103,6 +104,7 @@ export async function saveScoreRemote(entry) {
           score:              entry.score,
           level:              entry.level ?? 1,
           questions_correct:  entry.questionsCorrect ?? 0,
+          max_streak:         entry.maxStreak ?? 0,
           food_eaten:         entry.foodEaten ?? 0,
           date:               new Date().toISOString() // Actualiza la fecha
         })
@@ -122,6 +124,7 @@ export async function saveScoreRemote(entry) {
             score:             entry.score,
             level:             entry.level ?? 1,
             questions_correct: entry.questionsCorrect ?? 0,
+            max_streak:        entry.maxStreak ?? 0,
             food_eaten:        entry.foodEaten ?? 0,
             mode:              entry.mode ?? "easy",
             date:              new Date().toISOString()
@@ -137,6 +140,7 @@ export async function saveScoreRemote(entry) {
         score:              entry.score,
         level:              entry.level ?? 1,
         questions_correct:  entry.questionsCorrect ?? 0,
+        max_streak:         entry.maxStreak ?? 0,
         food_eaten:         entry.foodEaten ?? 0,
         mode:               entry.mode ?? "easy",
       },
@@ -197,4 +201,92 @@ export async function loginPlayer(username, password) {
   }
 
   return data;
+}
+
+/**
+ * Obtiene las estadísticas completas de un jugador desde la nube (player_stats).
+ * @param {string} playerName 
+ * @param {string} mode 
+ */
+export async function getPlayerStatsRemote(playerName, mode) {
+  if (!supabase) throw new Error("Supabase no inicializado");
+
+  const { data, error } = await supabase
+    .from("player_stats")
+    .select("*")
+    .eq("player_name", playerName)
+    .eq("mode", mode)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null; // No existe todavía
+    throw error;
+  }
+
+  return {
+    gamesPlayed: data.games_played,
+    bestScore: data.best_score,
+    lastScore: data.last_score,
+    totalCorrect: data.total_correct,
+    totalAnswered: data.total_answered,
+    bestLevel: data.best_level,
+    recentAccuracyHistory: data.recent_accuracy_history || [],
+    lastPlayedAt: data.last_played_at
+  };
+}
+
+/**
+ * Guarda o actualiza las estadísticas completas de un jugador en la nube.
+ * @param {string} playerName 
+ * @param {string} mode 
+ * @param {object} statsData - El objeto stats formateado
+ */
+export async function savePlayerStatsRemote(playerName, mode, statsData) {
+  if (!supabase) throw new Error("Supabase no inicializado");
+
+  const { error } = await supabase
+    .from("player_stats")
+    .upsert({
+      player_name: playerName,
+      mode: mode,
+      games_played: statsData.gamesPlayed,
+      best_score: statsData.bestScore,
+      last_score: statsData.lastScore,
+      total_correct: statsData.totalCorrect,
+      total_answered: statsData.totalAnswered,
+      best_level: statsData.bestLevel,
+      recent_accuracy_history: statsData.recentAccuracyHistory,
+      last_played_at: statsData.lastPlayedAt || new Date().toISOString()
+    }, {
+      onConflict: 'player_name, mode'
+    });
+
+  if (error) throw error;
+}
+
+/**
+ * Obtiene las estadísticas de todos los modos de un jugador de un solo golpe.
+ * @param {string} playerName 
+ */
+export async function getAllPlayerStatsRemote(playerName) {
+  if (!supabase) throw new Error("Supabase no inicializado");
+
+  const { data, error } = await supabase
+    .from("player_stats")
+    .select("*")
+    .eq("player_name", playerName);
+
+  if (error) throw error;
+  
+  return data.map(row => ({
+    mode: row.mode,
+    gamesPlayed: row.games_played,
+    bestScore: row.best_score,
+    lastScore: row.last_score,
+    totalCorrect: row.total_correct,
+    totalAnswered: row.total_answered,
+    bestLevel: row.best_level,
+    recentAccuracyHistory: row.recent_accuracy_history || [],
+    lastPlayedAt: row.last_played_at
+  }));
 }

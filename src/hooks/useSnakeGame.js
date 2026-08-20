@@ -37,8 +37,13 @@ export const DIFFICULTY_CONFIG = {
     scoreMultiplier: 1,
     bonusLifeAt: 10,     // correctas consecutivas para bonus vida
     wallsKill: false,    // paredes traspasables
-    pointsPerFood: (level) => 10 + level * 5,
-    pointsPerQuiz: (level) => 150 + level * 25,
+    streakMultiplier: (consecutive) => {
+      if (consecutive >= 6) return 2;
+      if (consecutive >= 3) return 1.5;
+      return 1;
+    },
+    pointsPerFood: (level) => 20 + level * 10,
+    pointsPerQuiz: (level) => 200 + level * 50,
     color: { snake: "#00ff88", snakeDim: "#00cc6a", food: "#ff4d6d", boardBg: "#0d0d1a", accent: "#00ff88" },
   },
   hard: {
@@ -51,14 +56,14 @@ export const DIFFICULTY_CONFIG = {
     scoreMultiplier: 2, // Base
     bonusLifeAt: 15,
     wallsKill: true,     // paredes quitan 1 vida
-    pointsPerFood: (level, count = 4) => {
-      const mult = count === 6 ? 3 : count === 5 ? 2.5 : 2;
-      return Math.floor((10 + level * 5) * mult);
+    streakMultiplier: (consecutive, count = 4) => {
+      if (consecutive < 3) return 1;
+      const baseM = count === 6 ? 4 : count === 5 ? 3 : 2;
+      if (consecutive >= 6) return baseM * 2;
+      return baseM;
     },
-    pointsPerQuiz: (level, count = 4) => {
-      const mult = count === 6 ? 3 : count === 5 ? 2.5 : 2;
-      return Math.floor((150 + level * 25) * mult);
-    },
+    pointsPerFood: (level) => Math.floor(10 + level * 5),
+    pointsPerQuiz: (level) => Math.floor(100 + level * 25),
     color: { snake: "#ff6b35", snakeDim: "#cc4a1a", food: "#ff004d", boardBg: "#1a0a0a", accent: "#ff6b35" },
   },
 };
@@ -101,6 +106,7 @@ const buildInitialState = (difficulty = "easy", answerCount = 4) => {
     questionsAnswered: 0,
     questionsCorrect: 0,
     consecutiveCorrect: 0,
+    maxStreak: 0,
     livesLostSinceLastBonus: 0,
     speed: speed,
     answerCount: answerCount,
@@ -183,7 +189,8 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
       const isCorrect = answerIndex === prev.currentQuestion.answer;
       const newQuestionsAnswered = prev.questionsAnswered + 1;
       const newQuestionsCorrect  = isCorrect ? prev.questionsCorrect + 1 : prev.questionsCorrect;
-      const newConsecutive = isCorrect ? prev.consecutiveCorrect + 1 : prev.consecutiveCorrect;
+      const newConsecutive = isCorrect ? prev.consecutiveCorrect + 1 : 0;
+      const newMaxStreak = Math.max(prev.maxStreak || 0, newConsecutive);
       const newLivesLost = isCorrect ? prev.livesLostSinceLastBonus : prev.livesLostSinceLastBonus + 1;
 
       // Bonus vida
@@ -207,7 +214,8 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
       }
 
       const pts = localCfg.pointsPerQuiz(prev.level, prev.answerCount);
-      const bonusPoints = isCorrect ? pts : 0;
+      const streakM = localCfg.streakMultiplier ? localCfg.streakMultiplier(newConsecutive, prev.answerCount) : 1;
+      const bonusPoints = isCorrect ? Math.floor(pts * streakM) : 0;
       const newScore = prev.score + bonusPoints;
       const newLevel = Math.floor(prev.foodEaten / 10) + 1;
       const gameOver = finalLives <= 0;
@@ -222,6 +230,7 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
         questionsAnswered: newQuestionsAnswered,
         questionsCorrect: newQuestionsCorrect,
         consecutiveCorrect: newConsecutive,
+        maxStreak: newMaxStreak,
         livesLostSinceLastBonus: bonusLife ? 0 : newLivesLost,
         speed: newSpeed,
         running: !gameOver,
@@ -322,7 +331,8 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
       // ── Comió ──────────────────────────────────────────────────────
       const newFoodEaten = prev.foodEaten + 1;
       const pts = localCfg.pointsPerFood(prev.level, prev.answerCount);
-      const newScore = prev.score + pts;
+      const streakM = localCfg.streakMultiplier ? localCfg.streakMultiplier(prev.consecutiveCorrect, prev.answerCount) : 1;
+      const newScore = prev.score + Math.floor(pts * streakM);
       const newLevel = Math.floor(newFoodEaten / 10) + 1;
       const newFood = randomCell(newSnake);
 
