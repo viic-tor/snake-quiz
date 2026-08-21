@@ -6,9 +6,16 @@
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 import { BookOpen, Circle, X, Target, Gamepad2, Move, Star, Apple, CheckCircle, XCircle, Heart, Skull, Gem, Brain, Monitor, Terminal, Zap, Medal, Crown, Flame } from "lucide-react";
 
-export default function RulesModal({ onClose, difficulty = "easy" }) {
+export default function RulesModal({ onClose, difficulty = "easy", answerCount = 4 }) {
   const cfg = DIFFICULTY_CONFIG[difficulty] || DIFFICULTY_CONFIG.easy;
   const isHard = difficulty === "hard";
+
+  const getThresholdText = () => {
+    if (!isHard) return "300 y 1200pts";
+    if (answerCount === 4) return "400 y 1500pts";
+    if (answerCount === 5) return "500 y 1800pts";
+    return "600 y 2200pts";
+  };
 
   return (
     <div className="rules-overlay" role="dialog" aria-modal="true" aria-label="Reglas del juego">
@@ -45,16 +52,25 @@ export default function RulesModal({ onClose, difficulty = "easy" }) {
             <ul className="rules-list">
               <li>
                 <span className="rule-tag food"><span className="icon-wrap"><Apple size={14} /></span> Comer</span>
-                <span><b>{isHard ? "20 + (Nivel × 10)" : "10 + (Nivel × 5)"}</b> puntos {isHard && <span className="diff-x2">×2</span>}</span>
+                <span><b>{isHard ? "10 + (Nivel × 5)" : "20 + (Nivel × 10)"}</b> puntos {isHard && <span className="diff-x2">×2</span>}</span>
               </li>
               <li>
                 <span className="rule-tag correct"><span className="icon-wrap"><CheckCircle size={14} /></span> Quiz correcto</span>
-                <span><b>{isHard ? "300 + (Nivel × 50)" : "150 + (Nivel × 25)"}</b> pts bonus {isHard && <span className="diff-x2">×2</span>}</span>
+                <span><b>{isHard ? "100 + (Nivel × 25)" : "200 + (Nivel × 50)"}</b> pts bonus {isHard && <span className="diff-x2">×2</span>}</span>
               </li>
               <li>
                 <span className="rule-tag wrong"><span className="icon-wrap"><XCircle size={14} /></span> Quiz incorrecto</span>
                 <span>Sin puntos + <b>−1 vida</b></span>
               </li>
+            </ul>
+          </section>
+
+          <section className="rules-section">
+            <h3><span className="icon-wrap icon-pulse" style={{marginRight: 4}}><Zap /></span> Modificadores</h3>
+            <ul className="rules-list">
+              <li>Acumula entre <b>{getThresholdText()}</b> para que aparezcan poderes en el tablero.</li>
+              <li>Tienen efectos temporales, pasivos, o instantáneos, dependiendo de su rareza.</li>
+              <li>¡Consulta el catálogo de <b>Modificadores</b> en el menú principal para conocerlos todos!</li>
             </ul>
           </section>
 

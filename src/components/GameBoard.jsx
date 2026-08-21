@@ -8,6 +8,7 @@
 
 import { useEffect, useRef } from "react";
 import { GRID_SIZE, DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
+import PowerupIcon from "./PowerupIcon";
 
 const LOGICAL = 400; // resolución interna fija (20 × 20px)
 const CELL    = LOGICAL / GRID_SIZE; // 20px
@@ -25,9 +26,16 @@ function draw(ctx, state, t, W, snakeColor) {
     C.snakeDim = snakeColor + "b3";
   }
 
+  const hasSlowmo = state.activePowerups?.some(p => p.id === "epic_slowmo");
+
   // ── Fondo ─────────────────────────────────────────────────────────────────
   ctx.fillStyle = C.boardBg;
   ctx.fillRect(0, 0, W, W);
+
+  if (hasSlowmo) {
+    ctx.fillStyle = "rgba(0, 200, 255, 0.08)";
+    ctx.fillRect(0, 0, W, W);
+  }
 
   // ── Flash de respuesta ────────────────────────────────────────────────────
   if (state.flashEffect) {
@@ -41,7 +49,9 @@ function draw(ctx, state, t, W, snakeColor) {
   }
 
   // ── Grid ──────────────────────────────────────────────────────────────────
-  ctx.strokeStyle = isHard ? "rgba(255,100,50,0.05)" : "rgba(255,255,255,0.03)";
+  ctx.strokeStyle = hasSlowmo 
+    ? "rgba(0,255,255,0.1)" 
+    : isHard ? "rgba(255,100,50,0.05)" : "rgba(255,255,255,0.03)";
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= GRID_SIZE; i++) {
     ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, W); ctx.stroke();
@@ -80,16 +90,42 @@ function draw(ctx, state, t, W, snakeColor) {
   ctx.fillStyle = "rgba(255,255,255,0.3)";
   ctx.beginPath(); ctx.arc(fx - foodR * 0.25, fy - foodR * 0.25, foodR * 0.3, 0, Math.PI * 2); ctx.fill();
 
+  // ── Powerup en tablero ────────────────────────────────────────────────────
+  if (state.boardPowerup) {
+    const p = state.boardPowerup;
+    const px = p.x * CELL + CELL / 2;
+    const py = p.y * CELL + CELL / 2;
+    const pPulse = 1 + 0.1 * Math.sin(t / 200);
+    const pR = (CELL / 2 - 2) * pPulse;
+
+    const pGrad = ctx.createRadialGradient(px, py, 0, px, py, pR * 2.5);
+    pGrad.addColorStop(0, p.color + "88");
+    pGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = pGrad;
+    ctx.beginPath(); ctx.arc(px, py, pR * 2.5, 0, Math.PI * 2); ctx.fill();
+
+    
+    ctx.strokeStyle = p.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const ratio = Math.max(0, p.remainingDespawn / p.despawn);
+    ctx.arc(px, py, pR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ratio);
+    ctx.stroke();
+  }
+
   // ── Serpiente ─────────────────────────────────────────────────────────────
   const len = state.snake.length;
   const eyeOff = Math.max(2, CELL * 0.3);
   const eyeR   = Math.max(1.2, CELL * 0.12);
 
+  const hasGhost = state.activePowerups?.some(p => p.id === "epic_ghost");
+
   state.snake.forEach((seg, i) => {
     const isHead = i === 0;
     const x = seg.x * CELL;
     const y = seg.y * CELL;
-    const alpha = isHead ? 1 : Math.max(0.35, 1 - (i / len) * 0.6);
+    let alpha = isHead ? 1 : Math.max(0.35, 1 - (i / len) * 0.6);
+    if (hasGhost) alpha = isHead ? 0.7 : 0.2;
     const r = isHead ? Math.max(4, CELL * 0.35) : Math.max(2, CELL * 0.2);
     const color = isHead ? C.snake : C.snakeDim;
 
@@ -124,6 +160,17 @@ function draw(ctx, state, t, W, snakeColor) {
 
     ctx.globalAlpha = 1;
   });
+
+  // ── Filtro de Congelado (Slowmo) ──────────────────────────────────────────
+  if (hasSlowmo) {
+    ctx.fillStyle = "rgba(0, 200, 255, 0.15)";
+    ctx.fillRect(0, 0, W, W);
+    
+    // Frost edges
+    ctx.strokeStyle = "rgba(0, 255, 255, 0.4)";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(4, 4, W - 8, W - 8);
+  }
 }
 
 export default function GameBoard({ state, size = 400, snakeColor = null }) {
@@ -149,13 +196,36 @@ export default function GameBoard({ state, size = 400, snakeColor = null }) {
     return () => cancelAnimationFrame(animIdRef.current);
   }, [snakeColor]);
 
+  const cellPx = size / GRID_SIZE;
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={size}
-      height={size}
-      className={`game-canvas ${isHard ? "game-canvas-hard" : "game-canvas-easy"}`}
-      aria-label="Tablero del juego Snake"
-    />
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <canvas
+        ref={canvasRef}
+        width={size}
+        height={size}
+        className={`game-canvas ${isHard ? "game-canvas-hard" : "game-canvas-easy"}`}
+        aria-label="Tablero del juego Snake"
+      />
+      {state.boardPowerup && (
+        <div style={{
+          position: 'absolute',
+          left: state.boardPowerup.x * cellPx,
+          top: state.boardPowerup.y * cellPx,
+          width: cellPx,
+          height: cellPx,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+        }}>
+          <PowerupIcon 
+            iconId={state.boardPowerup.iconId} 
+            size={cellPx * 0.7} 
+            color={state.boardPowerup.color} 
+          />
+        </div>
+      )}
+    </div>
   );
 }

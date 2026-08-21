@@ -16,7 +16,8 @@ import Leaderboard from "./components/Leaderboard";
 import RulesModal from "./components/RulesModal";
 import useSnakeGame, { DIFFICULTY_CONFIG } from "./hooks/useSnakeGame";
 import SwipeZone from "./components/SwipeZone";
-import { Skull, Heart, Star, Medal, Apple, Brain, Zap, CheckCircle, XCircle, Flame, Worm, User, Play, Pause, BookOpen, Crown, Home } from "lucide-react";
+import { soundEngine } from "./utils/SoundEngine";
+import { Skull, Heart, Star, Medal, Apple, Brain, Zap, CheckCircle, XCircle, Flame, Worm, User, Play, Pause, BookOpen, Crown, Home, Volume2, VolumeX } from "lucide-react";
 
 const VIEWS = { START: "start", GAME: "game", GAMEOVER: "gameover" };
 
@@ -51,8 +52,14 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
 
   const cfg = DIFFICULTY_CONFIG[difficulty];
   const isHard = difficulty === "hard";
+  const [isMuted, setIsMuted] = useState(soundEngine.isMuted);
 
-  useEffect(() => { startGame(); }, []);
+  useEffect(() => { 
+    startGame(); 
+    soundEngine.init();
+    soundEngine.startBGM();
+    return () => soundEngine.stopBGM();
+  }, []);
 
   useEffect(() => {
     if (state.gameOver) {
@@ -81,6 +88,9 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
         </div>
 
         <div className="topbar-right">
+          <button id="mute-btn" className="btn btn-sm btn-ghost" onClick={() => { setIsMuted(soundEngine.toggleMute()); }} aria-label="Mute">
+            <span className="icon-wrap">{isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}</span>
+          </button>
           <button id="pause-btn" className="btn btn-sm btn-secondary"
             onClick={togglePause} disabled={state.showQuiz || state.gameOver} aria-label="Pausa">
             <span className="icon-wrap">{isPaused ? <Play size={16} /> : <Pause size={16} />}</span>
@@ -132,6 +142,26 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
               </div>
             )}
           </div>
+
+          {/* Barra de modificadores activos (debajo del tablero) */}
+          <div className="active-powerups-bar">
+            {state.activePowerups.length === 0 && state.passivePowerups.length === 0 ? (
+              <span className="no-powerups-text">Sin modificadores activos</span>
+            ) : (
+              <>
+                {state.activePowerups.map(p => (
+                  <div key={`active-${p.id}`} className={`active-powerup-badge rarity-${p.rarity}`} title={p.name}>
+                    <span className="powerup-icon">{p.icon}</span>
+                  </div>
+                ))}
+                {state.passivePowerups.map(p => (
+                  <div key={`passive-${p.id}`} className={`active-powerup-badge rarity-${p.rarity}`} title={p.name}>
+                    <span className="powerup-icon">{p.icon}</span>
+                  </div>
+                ))}
+              </>
+            )}
+          </div>
         </div>
 
         {/* Columna derecha: Info / mini stats extra */}
@@ -150,9 +180,13 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
             <div className="stats-grid-mobile">
               {/* Racha */}
               <div className="right-stat">
-                <span className="right-stat-icon icon-wrap icon-flicker"><Flame color="#ff6b35" /></span>
-                <span className="right-stat-label">Racha</span>
-                <span className="right-stat-value">{state.consecutiveCorrect} 🔥</span>
+                <span className={`right-stat-icon icon-wrap ${state.consecutiveCorrect > 0 ? 'icon-flicker' : ''}`}>
+                  <Flame color={state.consecutiveCorrect > 0 ? "#ff6b35" : "#666"} />
+                </span>
+                <span className="right-stat-label" style={{ color: state.consecutiveCorrect > 0 ? 'inherit' : '#888' }}>Racha</span>
+                <span className="right-stat-value" style={{ color: state.consecutiveCorrect > 0 ? 'inherit' : '#888' }}>
+                  {state.consecutiveCorrect} {state.consecutiveCorrect > 0 ? '🔥' : '⚫'}
+                </span>
               </div>
               
               {/* Multiplicador */}
@@ -233,6 +267,26 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
 // ── App Root ──────────────────────────────────────────────────────────────────
 export default function App() {
   const [view, setView] = useState(VIEWS.START);
+
+  useEffect(() => {
+    const handleMouseOver = (e) => {
+      if (e.target.closest('button') || e.target.closest('.btn')) {
+        soundEngine.playHover();
+      }
+    };
+    const handleClick = (e) => {
+      soundEngine.init(); // Initialize audio context on first user interaction
+      if (e.target.closest('button') || e.target.closest('.btn')) {
+        soundEngine.playClick();
+      }
+    };
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('click', handleClick);
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('click', handleClick);
+    };
+  }, []);
 
   const isMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
 

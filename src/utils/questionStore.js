@@ -89,6 +89,15 @@ export function hasCustomQuestions() {
  * @param {number} answerCount - número de opciones requeridas (4, 5 o 6)
  * @returns {object}
  */
+function shuffleArray(array) {
+  const newArr = [...array];
+  for (let i = newArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+  }
+  return newArr;
+}
+
 export function getNextQuestion(usedIds = [], answerCount = 4) {
   const bank = getActiveQuestions();
 
@@ -109,22 +118,38 @@ export function getNextQuestion(usedIds = [], answerCount = 4) {
   if (incorrectOptions.length < answerCount - 1) {
     const allOtherIncorrect = bank
       .filter(otherQ => otherQ.id !== q.id)
-      .flatMap(otherQ => otherQ.options.filter((_, i) => i !== otherQ.answer));
+      .flatMap(otherQ => otherQ.options.filter((_, i) => i !== otherQ.answer))
+      // Filter out duplicates and the correct option itself
+      .filter((opt, index, self) => self.indexOf(opt) === index && opt !== correctOption);
     
-    const shuffledOthers = allOtherIncorrect.sort(() => Math.random() - 0.5);
+    const targetLen = correctOption.length;
+
+    // Group other incorrect by length difference
+    // We prefer options that have a length within +/- 20% or 15 chars
+    let similarLengthOptions = allOtherIncorrect.filter(opt => {
+      const diff = Math.abs(opt.length - targetLen);
+      return diff <= Math.max(15, targetLen * 0.3); // Within 30% or 15 chars
+    });
+
+    // If we don't have enough similar length options, just use all
+    if (similarLengthOptions.length < (answerCount - 1 - incorrectOptions.length)) {
+      similarLengthOptions = allOtherIncorrect;
+    }
+
+    const shuffledOthers = shuffleArray(similarLengthOptions);
     for (let option of shuffledOthers) {
       if (incorrectOptions.length >= answerCount - 1) break;
-      if (!incorrectOptions.includes(option) && option !== correctOption) {
+      if (!incorrectOptions.includes(option)) {
         incorrectOptions.push(option);
       }
     }
   }
 
   // Recortar incorrectas por si había más de la cuenta y barajar
-  incorrectOptions = incorrectOptions.sort(() => Math.random() - 0.5).slice(0, answerCount - 1);
+  incorrectOptions = shuffleArray(incorrectOptions).slice(0, answerCount - 1);
 
-  // Unir con la correcta y barajar posición final
-  const finalOptions = [...incorrectOptions, correctOption].sort(() => Math.random() - 0.5);
+  // Unir con la correcta y barajar posición final de forma uniforme con Fisher-Yates
+  const finalOptions = shuffleArray([...incorrectOptions, correctOption]);
 
   return {
     ...q,

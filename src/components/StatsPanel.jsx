@@ -6,6 +6,7 @@
 
 import { Star, Heart, Medal, Apple, Brain, Zap, Gem, CheckCircle, XCircle, BarChart2 } from "lucide-react";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
+import PowerupIcon from "./PowerupIcon";
 
 function ProgressBar({ value, max, color = "#00ff88" }) {
   const pct = Math.min(100, Math.round((value / Math.max(max, 1)) * 100));
@@ -144,6 +145,36 @@ export default function StatsPanel({ state }) {
             color="#a855f7"
           />
           <span className="stat-hint">{toNextBonus} correctas seguidas para +1 Vida</span>
+        </div>
+      </div>
+
+      <div className="stat-divider" />
+
+      {/* Power-ups */}
+      <div className="stat-item powerups-container">
+        <span className="stat-icon"><Zap size={16} /></span>
+        <div className="stat-content">
+          <span className="stat-label">Power-ups</span>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '6px' }}>
+            {state.passivePowerups?.map(p => (
+              <div key={p.id} style={{ border: `1px solid ${p.color}`, padding: '4px 8px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '4px', background: `${p.color}22` }}>
+                <PowerupIcon iconId={p.iconId} size={14} color={p.color} />
+                <span style={{ fontSize: '11px', color: p.color, fontWeight: 'bold' }}>{p.id === 'mythic_streak_saver' ? 'Escudo' : p.id === 'mythic_freeze' ? 'Congelar' : 'Rayos X'}</span>
+              </div>
+            ))}
+            {state.activePowerups?.map(p => (
+              <div key={p.id} style={{ border: `1px solid ${p.color}`, padding: '4px 8px', borderRadius: '6px', display: 'flex', flexDirection: 'column', gap: '2px', background: `${p.color}22`, position: 'relative', overflow: 'hidden' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', zIndex: 1, position: 'relative' }}>
+                   <PowerupIcon iconId={p.iconId} size={14} color={p.color} />
+                   <span style={{ fontSize: '11px', color: 'white', fontWeight: 'bold' }}>{Math.ceil(p.remainingDuration / 1000)}s</span>
+                </div>
+                <div style={{ position: 'absolute', bottom: 0, left: 0, height: '3px', background: p.color, width: `${(p.remainingDuration / p.duration) * 100}%` }} />
+              </div>
+            ))}
+            {(!state.passivePowerups?.length && !state.activePowerups?.length) && (
+              <span className="stat-hint" style={{ opacity: 0.5 }}>Ningún poder activo</span>
+            )}
+          </div>
         </div>
       </div>
 

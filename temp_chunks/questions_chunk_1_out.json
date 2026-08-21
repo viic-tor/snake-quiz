@@ -1,0 +1,752 @@
+[
+  {
+    "id": 51,
+    "category": "sistemas",
+    "question": "¿Cuál es la función principal de la retroalimentación negativa en un sistema?",
+    "options": [
+      "Amplificar las señales de error",
+      "Eliminar el sistema cuando falla",
+      "Reducir la diferencia entre el estado actual y el objetivo",
+      "Aumentar la entropía del sistema",
+      "Aislar completamente al sistema de su entorno",
+      "Incrementar la variabilidad estructural"
+    ],
+    "answer": 2,
+    "explanation": "La retroalimentación negativa corrige desviaciones, estabilizando el sistema hacia su objetivo."
+  },
+  {
+    "id": 52,
+    "category": "sistemas",
+    "question": "¿Qué principio establece que un sistema regulador debe tener al menos tanta variedad como el sistema que controla?",
+    "options": [
+      "Principio de Pareto",
+      "Ley de la variedad requerida de Ashby",
+      "Teorema de Shannon",
+      "Principio de incertidumbre",
+      "Ley de los rendimientos decrecientes",
+      "Principio de complejidad organizada"
+    ],
+    "answer": 1,
+    "explanation": "La Ley de Ashby (variedad requerida) indica que el controlador debe igualar la complejidad del sistema controlado."
+  },
+  {
+    "id": 53,
+    "category": "sistemas",
+    "question": "En la TGS, ¿qué son los 'subsistemas'?",
+    "options": [
+      "Sistemas externos que afectan al principal",
+      "Componentes del sistema que a su vez tienen propiedades de sistema",
+      "Errores dentro del sistema principal",
+      "Las salidas no deseadas del sistema",
+      "Elementos indivisibles sin estructura interna",
+      "Fronteras aislantes del sistema global"
+    ],
+    "answer": 1,
+    "explanation": "Los subsistemas son partes del sistema que poseen estructura propia y pueden analizarse como sistemas independientes."
+  },
+  {
+    "id": 54,
+    "category": "sistemas",
+    "question": "¿Cuál es el principal aporte de Jay Forrester a la teoría de sistemas?",
+    "options": [
+      "La cibernética",
+      "La dinámica de sistemas y el pensamiento sistémico",
+      "La teoría de la información",
+      "La teoría del caos",
+      "La teoría de autómatas celulares",
+      "El concepto de autopoiesis en biología"
+    ],
+    "answer": 1,
+    "explanation": "Jay Forrester desarrolló la Dinámica de Sistemas (System Dynamics) para modelar comportamientos complejos en el tiempo."
+  },
+  {
+    "id": 55,
+    "category": "sistemas",
+    "question": "¿Qué representa un 'bucle de retroalimentación' en dinámica de sistemas?",
+    "options": [
+      "Un error en el modelo",
+      "Una cadena de causas y efectos que regresa al punto de origen",
+      "El tiempo de retraso entre entrada y salida",
+      "La velocidad máxima de procesamiento",
+      "Un ciclo repetitivo que colapsa el sistema",
+      "La cantidad total de flujos de salida"
+    ],
+    "answer": 1,
+    "explanation": "Los bucles (loops) de retroalimentación son cadenas causales circulares que determinan el comportamiento dinámico del sistema."
+  },
+  {
+    "id": 56,
+    "category": "sistemas",
+    "question": "¿Qué es la 'negentropía' o 'entropía negativa'?",
+    "options": [
+      "El desorden máximo de un sistema",
+      "La capacidad de un sistema abierto de importar energía para mantener su organización",
+      "La energía desperdiciada en un proceso",
+      "La velocidad de degradación del sistema",
+      "La tendencia natural hacia la homogeneidad",
+      "El estado de equilibrio termodinámico absoluto"
+    ],
+    "answer": 1,
+    "explanation": "Los sistemas vivos importan entropía negativa (negentropía) del entorno para contrarrestar su propia degradación."
+  },
+  {
+    "id": 57,
+    "category": "sistemas",
+    "question": "En un diagrama de flujos de Forrester, ¿qué representa un 'nivel' (stock)?",
+    "options": [
+      "La velocidad de cambio de una variable",
+      "Una acumulación de recursos en el tiempo",
+      "Una condición de entrada externa",
+      "El tiempo de respuesta del sistema",
+      "La tasa constante de decaimiento",
+      "El límite máximo de la simulación"
+    ],
+    "answer": 1,
+    "explanation": "Los niveles (stocks) son acumulaciones que cambian a través de flujos; son el estado actual del sistema."
+  },
+  {
+    "id": 58,
+    "category": "sistemas",
+    "question": "¿Qué es la 'isomorfía' en la Teoría General de Sistemas?",
+    "options": [
+      "La duplicación de un sistema",
+      "La correspondencia estructural entre sistemas de diferentes dominios",
+      "La transformación irreversible de un sistema",
+      "El tamaño igual de dos sistemas",
+      "El aislamiento termodinámico completo",
+      "La tendencia a la máxima desorganización"
+    ],
+    "answer": 1,
+    "explanation": "Isomorfía: diferentes sistemas presentan estructuras formales similares; permite transferir modelos entre disciplinas."
+  },
+  {
+    "id": 59,
+    "category": "sistemas",
+    "question": "¿Qué concepto de Niklas Luhmann describe sistemas sociales como sistemas de comunicaciones?",
+    "options": [
+      "Autopoiesis en sistemas sociales",
+      "Sinergia comunicativa",
+      "Retroalimentación social",
+      "Morfogénesis cultural",
+      "Homeostasis institucional",
+      "Teleología estructural"
+    ],
+    "answer": 0,
+    "explanation": "Luhmann adoptó la autopoiesis (Maturana/Varela) para describir sistemas sociales que se reproducen mediante comunicaciones."
+  },
+  {
+    "id": 60,
+    "category": "sistemas",
+    "question": "¿Cuál es la diferencia entre 'eficacia' y 'eficiencia' en sistemas?",
+    "options": [
+      "Son sinónimos exactos",
+      "Eficacia logra el objetivo; eficiencia lo logra con mínimos recursos",
+      "Eficiencia logra el objetivo; eficacia usa pocos recursos",
+      "Eficacia mide la velocidad; eficiencia mide la calidad",
+      "Eficacia se refiere a sistemas cerrados; eficiencia a abiertos",
+      "Eficacia evalúa procesos; eficiencia evalúa resultados finales"
+    ],
+    "answer": 1,
+    "explanation": "Eficacia = lograr el objetivo. Eficiencia = lograrlo optimizando los recursos utilizados."
+  },
+  {
+    "id": 61,
+    "category": "sistemas",
+    "question": "¿Qué describe el 'pensamiento sistémico' (Peter Senge)?",
+    "options": [
+      "Analizar cada parte del sistema de forma independiente",
+      "Ver el sistema como un todo, entendiendo interrelaciones y patrones",
+      "Programar sistemas de inteligencia artificial",
+      "Diseñar bases de datos relacionales",
+      "Optimizar procesos puramente algorítmicos",
+      "Eliminar todas las jerarquías organizacionales"
+    ],
+    "answer": 1,
+    "explanation": "Peter Senge popularizó el pensamiento sistémico en 'La Quinta Disciplina': ver totalidades, no partes aisladas."
+  },
+  {
+    "id": 62,
+    "category": "sistemas",
+    "question": "¿Qué es la 'autopoiesis' según Maturana y Varela?",
+    "options": [
+      "La capacidad de un sistema de destruirse a sí mismo",
+      "La propiedad de sistemas vivos de producir y reproducir sus propios componentes",
+      "La transmisión automática de información",
+      "La autorregulación sin retroalimentación",
+      "El aislamiento absoluto de un organismo",
+      "La tendencia hacia el caos determinista"
+    ],
+    "answer": 1,
+    "explanation": "Autopoiesis: los sistemas vivos se autoproduce — generan sus propios componentes mediante su organización interna."
+  },
+  {
+    "id": 63,
+    "category": "sistemas",
+    "question": "En teoría de sistemas, ¿qué es la 'supra-sistema'?",
+    "options": [
+      "Un sistema más pequeño",
+      "El sistema del que forma parte nuestro sistema de estudio",
+      "Un sistema con entropía negativa",
+      "El conjunto de algoritmos de control",
+      "El estado final de equilibrio termodinámico",
+      "La frontera física del sistema bajo estudio"
+    ],
+    "answer": 1,
+    "explanation": "El supra-sistema es el sistema más amplio que contiene al sistema en análisis como uno de sus subsistemas."
+  },
+  {
+    "id": 64,
+    "category": "sistemas",
+    "question": "¿Cuál es el papel de las 'restricciones' (constraints) en teoría de sistemas?",
+    "options": [
+      "Son irrelevantes para el comportamiento del sistema",
+      "Delimitan el espacio de estados posibles del sistema",
+      "Siempre deben eliminarse",
+      "Aumentan la entropía del sistema",
+      "Aceleran los ciclos de retroalimentación",
+      "Eliminan la necesidad de un controlador"
+    ],
+    "answer": 1,
+    "explanation": "Las restricciones limitan las posibilidades del sistema, definiendo su espacio de comportamiento factible."
+  },
+  {
+    "id": 65,
+    "category": "sistemas",
+    "question": "¿Qué es un 'sistema adaptativo complejo' (CAS)?",
+    "options": [
+      "Un sistema con muchos componentes idénticos",
+      "Un sistema donde agentes individuales aprenden y se adaptan, generando comportamiento emergente",
+      "Un sistema con retroalimentación negativa solamente",
+      "Un sistema completamente cerrado al entorno",
+      "Un sistema estático predecible linealmente",
+      "Un modelo computacional sin agentes autónomos"
+    ],
+    "answer": 1,
+    "explanation": "Los CAS (ej: mercados, ecosistemas) tienen agentes que interactúan localmente generando propiedades emergentes globales."
+  },
+  {
+    "id": 66,
+    "category": "sistemas",
+    "question": "¿Qué significa 'resiliencia' en el contexto de sistemas?",
+    "options": [
+      "La velocidad máxima del sistema",
+      "La capacidad de recuperarse ante perturbaciones y mantener su función",
+      "La resistencia a cambios positivos",
+      "La cantidad de subsistemas disponibles",
+      "La rigidez estructural absoluta",
+      "La eliminación total de la entropía"
+    ],
+    "answer": 1,
+    "explanation": "Resiliencia: capacidad de un sistema de absorber perturbaciones, reorganizarse y mantener esencialmente la misma función."
+  },
+  {
+    "id": 67,
+    "category": "sistemas",
+    "question": "¿Qué es un 'atractor' en sistemas dinámicos?",
+    "options": [
+      "Una fuerza que expulsa elementos del sistema",
+      "Un estado o conjunto de estados hacia el que tiende el sistema",
+      "El punto de máxima energía del sistema",
+      "Una variable que no cambia en el tiempo",
+      "El punto de ruptura estructural",
+      "Una variable exclusivamente exógena"
+    ],
+    "answer": 1,
+    "explanation": "Un atractor es el estado final al que converge un sistema dinámico (ej: punto fijo, ciclo límite, atractor extraño)."
+  },
+  {
+    "id": 68,
+    "category": "sistemas",
+    "question": "En la teoría del caos, ¿qué describe el 'efecto mariposa'?",
+    "options": [
+      "La irrelevancia de las condiciones iniciales",
+      "Pequeñas variaciones en condiciones iniciales producen grandes diferencias a largo plazo",
+      "Los sistemas caóticos siempre colapsan",
+      "La imposibilidad de modelar sistemas complejos",
+      "La convergencia forzada hacia un estado único",
+      "La sincronización lineal de subsistemas"
+    ],
+    "answer": 1,
+    "explanation": "El efecto mariposa (Lorenz): sensibilidad extrema a condiciones iniciales — pequeñas causas, grandes efectos."
+  },
+  {
+    "id": 69,
+    "category": "sistemas",
+    "question": "¿Qué representa la 'frontera del sistema'?",
+    "options": [
+      "El límite que separa el sistema de su entorno",
+      "La velocidad de procesamiento máxima",
+      "El número total de componentes",
+      "La cantidad de salidas del sistema",
+      "El centro geográfico de sus operaciones",
+      "La suma total de su retroalimentación interna"
+    ],
+    "answer": 0,
+    "explanation": "La frontera delimita qué pertenece al sistema y qué es entorno; puede ser física, conceptual o funcional."
+  },
+  {
+    "id": 70,
+    "category": "sistemas",
+    "question": "¿Cuál es la diferencia entre un modelo y un sistema real?",
+    "options": [
+      "Son idénticos",
+      "El modelo es una representación simplificada del sistema real con fines de estudio",
+      "El modelo siempre es más complejo",
+      "Los modelos solo existen en sistemas digitales",
+      "Un modelo ignora por completo la retroalimentación",
+      "El sistema real no experimenta entropía"
+    ],
+    "answer": 1,
+    "explanation": "Un modelo abstrae y simplifica la realidad para facilitar su comprensión y análisis; nunca captura toda la complejidad."
+  },
+  {
+    "id": 71,
+    "category": "sistemas",
+    "question": "¿Qué tipo de sistema describe una empresa con proveedores, clientes y regulaciones?",
+    "options": [
+      "Sistema cerrado determinista",
+      "Sistema abierto sociotécnico",
+      "Sistema puramente mecánico",
+      "Sistema aislado termodinámico",
+      "Sistema estocástico sin estado",
+      "Sistema autopoiético biológico"
+    ],
+    "answer": 1,
+    "explanation": "Las organizaciones son sistemas abiertos sociotécnicos: intercambian recursos e información con su entorno."
+  },
+  {
+    "id": 72,
+    "category": "sistemas",
+    "question": "¿Qué es la 'complejidad organizada' según Warren Weaver?",
+    "options": [
+      "Sistemas con muchas partes sin interacción",
+      "Sistemas con muchas variables que interactúan de forma organizada",
+      "Sistemas simples con pocos componentes",
+      "Sistemas caóticos sin orden aparente",
+      "Agregación de variables independientes y aleatorias",
+      "Sistemas completamente desprovistos de jerarquía"
+    ],
+    "answer": 1,
+    "explanation": "Weaver diferenció complejidad desorganizada (estadística) de organizada (variables que interactúan significativamente)."
+  },
+  {
+    "id": 73,
+    "category": "sistemas",
+    "question": "¿Qué concepto de la TGS describe que las partes de un sistema no pueden entenderse de forma aislada?",
+    "options": [
+      "Entropía",
+      "Holismo (o no-sumatividad)",
+      "Morfostasis",
+      "Equifinalidad",
+      "Isomorfismo funcional",
+      "Sincronicidad temporal"
+    ],
+    "answer": 1,
+    "explanation": "El holismo sistémico indica que las propiedades del todo no se deducen de las partes aisladas."
+  },
+  {
+    "id": 74,
+    "category": "sistemas",
+    "question": "¿Cuál es la diferencia entre 'causa lineal' y 'causa circular' (sistémica)?",
+    "options": [
+      "No hay diferencia práctica",
+      "La causa lineal es A→B; la circular es que A afecta B y B retroalimenta a A",
+      "La causa circular solo ocurre en sistemas caóticos",
+      "La causa lineal siempre produce mejores modelos",
+      "La causa circular es unidireccional estocástica",
+      "La causa lineal implica múltiples bucles anidados"
+    ],
+    "answer": 1,
+    "explanation": "El pensamiento sistémico privilegia la causalidad circular (retroalimentación) sobre la lineal unidireccional."
+  },
+  {
+    "id": 75,
+    "category": "sistemas",
+    "question": "¿Qué es un 'sistema de tiempo real'?",
+    "options": [
+      "Un sistema que funciona las 24 horas",
+      "Un sistema que procesa datos y genera respuestas dentro de límites de tiempo definidos",
+      "Un sistema que registra la hora actual",
+      "Un sistema sin retrasos de procesamiento",
+      "Un sistema operado exclusivamente por humanos en turno",
+      "Un sistema de predicción del futuro basado en IA"
+    ],
+    "answer": 1,
+    "explanation": "Sistemas de tiempo real deben responder a eventos dentro de plazos determinados (ej: control de aeronaves, marcapasos)."
+  },
+  {
+    "id": 76,
+    "category": "sistemas",
+    "question": "¿A qué se refiere la 'teleología' en sistemas?",
+    "options": [
+      "El estudio de la comunicación en sistemas",
+      "La orientación del sistema hacia un objetivo o propósito final",
+      "El análisis de la estructura interna",
+      "La medición de la entropía",
+      "El grado de resiliencia estructural",
+      "La capacidad de replicación independiente"
+    ],
+    "answer": 1,
+    "explanation": "Teleología: característica de los sistemas que orientan su comportamiento hacia una meta o estado final."
+  },
+  {
+    "id": 77,
+    "category": "sistemas",
+    "question": "¿Qué aporta el enfoque 'bottom-up' al análisis de sistemas?",
+    "options": [
+      "Analizar primero los objetivos globales",
+      "Construir comprensión partiendo de los componentes individuales hacia el sistema completo",
+      "Ignorar las partes y enfocarse en el todo",
+      "Diseñar el sistema de arriba hacia abajo",
+      "Descomponer el sistema desde su entorno hacia adentro",
+      "Centrarse en las restricciones del supra-sistema primero"
+    ],
+    "answer": 1,
+    "explanation": "El análisis bottom-up parte de los elementos básicos y construye comprensión ascendente hacia el sistema completo."
+  },
+  {
+    "id": 78,
+    "category": "sistemas",
+    "question": "¿Cuál de los siguientes es un ejemplo de sistema determinista?",
+    "options": [
+      "El clima atmosférico",
+      "El comportamiento de una población",
+      "Un reloj mecánico de péndulo",
+      "El mercado de valores",
+      "La evolución de una red neuronal",
+      "Un ecosistema tropical no intervenido"
+    ],
+    "answer": 2,
+    "explanation": "Un péndulo ideal es determinista: su comportamiento futuro se predice exactamente a partir de su estado inicial."
+  },
+  {
+    "id": 79,
+    "category": "sistemas",
+    "question": "En la dinámica de sistemas, ¿qué es un 'flujo' (flow)?",
+    "options": [
+      "Una acumulación de recursos",
+      "La tasa de cambio que modifica los niveles del sistema",
+      "La frontera entre sistemas",
+      "Un tipo especial de retroalimentación positiva",
+      "La variable objetivo de la simulación",
+      "El valor constante inicial del modelo"
+    ],
+    "answer": 1,
+    "explanation": "Los flujos son las tasas que aumentan o disminuyen los niveles (stocks); representan el ritmo de cambio."
+  },
+  {
+    "id": 80,
+    "category": "sistemas",
+    "question": "¿Qué es la 'emergencia' en sistemas complejos?",
+    "options": [
+      "Una falla inesperada del sistema",
+      "Propiedades del sistema que no existen en sus componentes individuales",
+      "La velocidad máxima de respuesta",
+      "El punto de colapso del sistema",
+      "Un mensaje de alerta del controlador central",
+      "La reducción de la complejidad algorítmica"
+    ],
+    "answer": 1,
+    "explanation": "La emergencia son propiedades colectivas que surgen de las interacciones, imposibles de predecir solo desde las partes."
+  },
+  {
+    "id": 81,
+    "category": "sistemas",
+    "question": "¿Qué es la 'variedad' (variety) en cibernética?",
+    "options": [
+      "El número de componentes de un sistema",
+      "El número de estados distintos que puede adoptar un sistema",
+      "La velocidad de cambio del sistema",
+      "La cantidad de entradas del sistema",
+      "La suma de todos los subsistemas cerrados",
+      "La dispersión de los datos estadísticos"
+    ],
+    "answer": 1,
+    "explanation": "Variedad (Ashby): número de estados diferentes que un sistema puede tomar; es medida de complejidad."
+  },
+  {
+    "id": 82,
+    "category": "sistemas",
+    "question": "¿Cuál de los siguientes NO es un tipo de sistema según su relación con el entorno?",
+    "options": [
+      "Sistema abierto",
+      "Sistema cerrado",
+      "Sistema aislado",
+      "Sistema paralelo",
+      "Sistema semicerrado",
+      "Sistema hiper-aislado"
+    ],
+    "answer": 3,
+    "explanation": "Los tipos según relación con el entorno son: abierto (intercambia todo), cerrado (solo energía) y aislado (nada)."
+  },
+  {
+    "id": 83,
+    "category": "sistemas",
+    "question": "¿Qué describe el 'principio de organización jerárquica' en sistemas?",
+    "options": [
+      "Todos los componentes tienen igual importancia",
+      "Los sistemas se organizan en niveles donde cada nivel controla al inferior",
+      "El sistema funciona sin ninguna estructura",
+      "Solo el nivel superior tiene importancia",
+      "La dispersión de control entre componentes paralelos",
+      "La inexistencia de fronteras inter-sistémicas"
+    ],
+    "answer": 1,
+    "explanation": "La jerarquía sistémica: los sistemas se anidan en niveles, donde los superiores regulan el comportamiento de los inferiores."
+  },
+  {
+    "id": 84,
+    "category": "sistemas",
+    "question": "¿Qué es la 'sincronía' en sistemas?",
+    "options": [
+      "El desajuste temporal entre subsistemas",
+      "La coordinación temporal entre partes del sistema para lograr funciones conjuntas",
+      "La velocidad máxima del sistema",
+      "La entropía temporal del sistema",
+      "La dependencia estocástica de variables aisladas",
+      "La anulación de los bucles de retroalimentación"
+    ],
+    "answer": 1,
+    "explanation": "La sincronía es la coordinación en el tiempo de actividades de subsistemas para lograr objetivos del sistema completo."
+  },
+  {
+    "id": 85,
+    "category": "sistemas",
+    "question": "¿A qué se llama 'interfaz' en teoría de sistemas?",
+    "options": [
+      "La velocidad de procesamiento",
+      "El punto o zona de interacción entre dos sistemas o subsistemas",
+      "El conjunto de objetivos del sistema",
+      "La estructura interna del sistema",
+      "El punto de falla crítica",
+      "La variable dependiente principal"
+    ],
+    "answer": 1,
+    "explanation": "La interfaz es el punto de contacto e intercambio entre sistemas; define cómo se comunican e interactúan."
+  },
+  {
+    "id": 86,
+    "category": "sistemas",
+    "question": "En los sistemas de información, ¿qué distingue 'dato' de 'información'?",
+    "options": [
+      "Son exactamente lo mismo",
+      "El dato es crudo; la información es datos procesados con significado y contexto",
+      "La información siempre es cuantitativa",
+      "Los datos solo existen en sistemas digitales",
+      "La información requiere de sensores físicos; los datos no",
+      "El dato es información estructurada jerárquicamente"
+    ],
+    "answer": 1,
+    "explanation": "Dato: hecho crudo sin interpretar. Información: datos procesados que tienen significado para quien los recibe."
+  },
+  {
+    "id": 87,
+    "category": "sistemas",
+    "question": "¿Qué es el 'conocimiento' en la jerarquía DIKW?",
+    "options": [
+      "Sinónimo de datos",
+      "Información comprendida, organizada y usada para tomar decisiones",
+      "Solo el conocimiento tácito",
+      "El nivel más básico de la jerarquía",
+      "El volumen total de datos almacenados",
+      "La velocidad de procesamiento algorítmico"
+    ],
+    "answer": 1,
+    "explanation": "DIKW: Datos → Información → Conocimiento → Sabiduría. El conocimiento es información contextualizada y aplicable."
+  },
+  {
+    "id": 88,
+    "category": "sistemas",
+    "question": "¿Cuál de estos es un ejemplo de 'lazo de retroalimentación negativa' en la vida cotidiana?",
+    "options": [
+      "El pánico bancario que se autoalimenta",
+      "El termostato que regula la temperatura de un cuarto",
+      "La reacción en cadena nuclear",
+      "El crecimiento exponencial de una población",
+      "Una epidemia propagándose sin restricciones",
+      "El efecto bola de nieve en un mercado alcista"
+    ],
+    "answer": 1,
+    "explanation": "El termostato detecta desviación de temperatura y activa calefacción o aire para corregirla — retroalimentación negativa."
+  },
+  {
+    "id": 89,
+    "category": "sistemas",
+    "question": "¿Cuál es el concepto central del libro 'La Quinta Disciplina' de Peter Senge?",
+    "options": [
+      "La gestión por objetivos",
+      "El pensamiento sistémico como disciplina integradora de las organizaciones",
+      "La cibernética aplicada a empresas",
+      "El control estadístico de procesos",
+      "La división jerárquica de tareas y funciones",
+      "La eliminación de los recursos redundantes"
+    ],
+    "answer": 1,
+    "explanation": "Senge propone 5 disciplinas; la quinta y central es el pensamiento sistémico que integra las demás."
+  },
+  {
+    "id": 90,
+    "category": "sistemas",
+    "question": "¿Qué es un 'modelo mental' en el contexto del pensamiento sistémico?",
+    "options": [
+      "Un algoritmo de inteligencia artificial",
+      "Los supuestos profundos e imágenes que tenemos sobre cómo funciona el mundo",
+      "Un diagrama de flujos de datos",
+      "Un sistema de información empresarial",
+      "Un modelo matemático lineal y determinista",
+      "El diseño de la base de datos subyacente"
+    ],
+    "answer": 1,
+    "explanation": "Los modelos mentales (Senge) son supuestos implícitos que influyen cómo vemos el mundo y tomamos decisiones."
+  },
+  {
+    "id": 91,
+    "category": "sistemas",
+    "question": "¿Cuáles son los componentes básicos de un Sistema de Información (SI)?",
+    "options": [
+      "Solo hardware y software",
+      "Personas, procesos, datos, hardware y software",
+      "Solo datos y algoritmos",
+      "Hardware, redes e internet",
+      "Exclusivamente el equipo de desarrollo de software",
+      "Servidores en la nube y clientes locales únicamente"
+    ],
+    "answer": 1,
+    "explanation": "Un SI integra personas, procesos, datos/información, hardware y software para apoyar la toma de decisiones."
+  },
+  {
+    "id": 92,
+    "category": "sistemas",
+    "question": "¿Cuál es la diferencia entre un ERP y un CRM?",
+    "options": [
+      "No hay diferencia",
+      "ERP integra procesos internos; CRM gestiona relaciones con clientes",
+      "CRM integra toda la empresa; ERP solo ventas",
+      "Ambos son tipos de bases de datos",
+      "ERP es solo para recursos humanos; CRM para inventario",
+      "ERP gestiona redes físicas; CRM aplicaciones en la nube"
+    ],
+    "answer": 1,
+    "explanation": "ERP (Enterprise Resource Planning): integra operaciones internas. CRM (Customer Relationship Management): gestiona clientes."
+  },
+  {
+    "id": 93,
+    "category": "sistemas",
+    "question": "¿Qué es un Sistema de Soporte de Decisiones (DSS)?",
+    "options": [
+      "Un sistema que toma decisiones automáticamente",
+      "Un sistema que ayuda a los gerentes a tomar decisiones semi-estructuradas",
+      "Solo una base de datos",
+      "Un sistema de control de producción",
+      "Un antivirus que previene intrusiones corporativas",
+      "Un sistema operativo diseñado para servidores de alta carga"
+    ],
+    "answer": 1,
+    "explanation": "Un DSS provee información, modelos y herramientas analíticas para apoyar decisiones gerenciales complejas."
+  },
+  {
+    "id": 94,
+    "category": "sistemas",
+    "question": "¿Qué es la 'integridad de datos' en un sistema de información?",
+    "options": [
+      "La velocidad de consulta",
+      "La garantía de que los datos son correctos, consistentes y no alterados indebidamente",
+      "El tamaño de la base de datos",
+      "El número de usuarios del sistema",
+      "La compresión de la base de datos para ahorrar espacio",
+      "La capacidad de procesar transacciones en tiempo real"
+    ],
+    "answer": 1,
+    "explanation": "Integridad de datos: garantía de exactitud, consistencia y confiabilidad de los datos a lo largo del tiempo."
+  },
+  {
+    "id": 95,
+    "category": "sistemas",
+    "question": "¿Cuáles son las fases del ciclo de vida de un sistema de información (SDLC)?",
+    "options": [
+      "Diseño, construcción, pruebas",
+      "Planificación, análisis, diseño, implementación, mantenimiento",
+      "Solo análisis y programación",
+      "Instalación, configuración, uso",
+      "Hardware, software, y validación",
+      "Ventas, mercadotecnia, e implementación técnica"
+    ],
+    "answer": 1,
+    "explanation": "El SDLC clásico incluye: planificación → análisis → diseño → implementación → pruebas → mantenimiento."
+  },
+  {
+    "id": 96,
+    "category": "sistemas",
+    "question": "¿Qué es la 'arquitectura cliente-servidor'?",
+    "options": [
+      "Un solo computador que hace todo",
+      "Modelo donde los clientes solicitan servicios y el servidor los provee a través de una red",
+      "Dos computadores idénticos",
+      "Una red sin jerarquía",
+      "Un sistema de respaldo en la nube estático",
+      "Una red P2P (Peer-to-Peer) descentralizada"
+    ],
+    "answer": 1,
+    "explanation": "En cliente-servidor, los clientes solicitan recursos/servicios y el servidor los procesa y entrega sobre una red."
+  },
+  {
+    "id": 97,
+    "category": "sistemas",
+    "question": "¿Qué es la 'disponibilidad' (availability) en sistemas de información?",
+    "options": [
+      "El número de usuarios simultáneos",
+      "La proporción de tiempo que el sistema está operativo y accesible",
+      "La velocidad de respuesta",
+      "El espacio de almacenamiento disponible",
+      "La capacidad gráfica de la interfaz del usuario",
+      "La tasa de transmisión máxima de los routers"
+    ],
+    "answer": 1,
+    "explanation": "Disponibilidad = tiempo operativo / tiempo total; se expresa en porcentaje (ej: 99.9% = 8.7 horas caídas/año)."
+  },
+  {
+    "id": 98,
+    "category": "sistemas",
+    "question": "¿Qué es el 'BPM' (Business Process Management)?",
+    "options": [
+      "Un lenguaje de programación",
+      "La disciplina para diseñar, modelar, ejecutar, monitorear y optimizar procesos de negocio",
+      "Un tipo de base de datos",
+      "Un protocolo de red",
+      "Una metodología para ensamblaje de hardware",
+      "Un estándar de compresión de archivos multimedia"
+    ],
+    "answer": 1,
+    "explanation": "BPM es la gestión integral de procesos de negocio: modelado (BPMN), ejecución, monitoreo y mejora continua."
+  },
+  {
+    "id": 99,
+    "category": "sistemas",
+    "question": "¿Qué significa 'escalabilidad' en un sistema de software?",
+    "options": [
+      "La facilidad de aprender a usar el sistema",
+      "La capacidad de manejar creciente carga de trabajo sin degradar el rendimiento",
+      "El tamaño del código fuente",
+      "El número de funciones disponibles",
+      "La actualización automática de su interfaz gráfica",
+      "El grado de ofuscación del código binario"
+    ],
+    "answer": 1,
+    "explanation": "Escalabilidad: capacidad del sistema de crecer (usuarios, datos, transacciones) manteniendo rendimiento aceptable."
+  },
+  {
+    "id": 100,
+    "category": "sistemas",
+    "question": "¿Qué es la 'trazabilidad' en un sistema de información?",
+    "options": [
+      "La velocidad de rastreo de datos",
+      "La capacidad de seguir el historial de cambios y el ciclo de vida de datos o decisiones",
+      "El diseño de diagramas del sistema",
+      "La seguridad del sistema",
+      "La habilidad de compilar código fuente velozmente",
+      "La tolerancia a fallos del hardware subyacente"
+    ],
+    "answer": 1,
+    "explanation": "Trazabilidad: capacidad de rastrear el origen, transformaciones y uso de datos o requerimientos a lo largo del tiempo."
+  }
+]

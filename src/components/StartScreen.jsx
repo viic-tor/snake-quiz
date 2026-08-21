@@ -12,6 +12,7 @@
 import { useState, useEffect } from "react";
 import Leaderboard from "./Leaderboard";
 import RulesModal from "./RulesModal";
+import PowerupModal from "./PowerupModal";
 import QuestionImporter from "./QuestionImporter";
 import MenuSnakeCanvas from "./MenuSnakeCanvas";
 import { DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
@@ -30,6 +31,7 @@ export default function StartScreen({ onStart }) {
   const [snakeColor,     setSnakeColor]     = useState(null); // null = color del modo
   const [showLb,         setShowLb]         = useState(false);
   const [showRules,      setShowRules]      = useState(false);
+  const [showPowerups,   setShowPowerups]   = useState(false);
   const [showImporter,   setShowImporter]   = useState(false);
   const [customMeta,     setCustomMeta]     = useState(() => getCustomMeta());
   const [hasCustom,      setHasCustom]      = useState(() => hasCustomQuestions());
@@ -284,8 +286,11 @@ export default function StartScreen({ onStart }) {
             <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
               <span className="icon-wrap icon-rotate-hover" style={{marginRight: 4}}><BookOpen size={16}/></span> Reglas
             </button>
+            <button id="show-powerups-btn" className="btn btn-secondary" onClick={() => setShowPowerups(true)}>
+              <span className="icon-wrap icon-pulse" style={{marginRight: 4, color: '#a855f7'}}><Zap size={16}/></span> Modificadores
+            </button>
             <button id="show-lb-full-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
-              <span className="icon-wrap icon-shine" style={{marginRight: 4}}><Crown size={16}/></span> Ranking completo
+              <span className="icon-wrap icon-shine" style={{marginRight: 4}}><Crown size={16}/></span> Ranking
             </button>
           </div>
         </aside>
@@ -498,7 +503,8 @@ export default function StartScreen({ onStart }) {
 
       {/* Modales */}
       {showLb       && <Leaderboard     onClose={() => setShowLb(false)}       initialMode={difficulty} />}
-      {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} />}
+      {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} answerCount={answerCount} />}
+      {showPowerups && <PowerupModal    onClose={() => setShowPowerups(false)}  difficulty={difficulty} answerCount={answerCount} />}
       {showImporter && <QuestionImporter onClose={() => setShowImporter(false)} onImported={handleImported} />}
     </div>
   );

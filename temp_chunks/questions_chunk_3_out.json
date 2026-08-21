@@ -1,0 +1,752 @@
+[
+  {
+    "id": 151,
+    "category": "prog",
+    "question": "¿Cuáles son las propiedades ACID en bases de datos?",
+    "options": [
+      "Agilidad, Consistencia, Integridad, Disponibilidad",
+      "Atomicidad, Consistencia, Aislamiento, Durabilidad",
+      "Autenticación, Control, Integridad, Datos",
+      "Acceso, Concurrencia, Indexación, Distribución",
+      "Atomicidad, Concurrencia, Integridad, Distribución",
+      "Asociatividad, Consistencia, Independencia, Disponibilidad"
+    ],
+    "answer": 1,
+    "explanation": "ACID garantiza transacciones confiables: Atomicidad (todo o nada), Consistencia, Aislamiento y Durabilidad."
+  },
+  {
+    "id": 152,
+    "category": "prog",
+    "question": "¿Qué es la 'normalización' en bases de datos relacionales?",
+    "options": [
+      "Hacer la base de datos más pequeña",
+      "Proceso de organizar tablas para reducir redundancia y dependencias anómalas, siguiendo formas normales",
+      "Convertir datos a números",
+      "Agregar índices a las tablas",
+      "Proceso de agrupar todas las tablas en una sola para acelerar las consultas",
+      "Optimización de las consultas SQL mediante vistas materializadas"
+    ],
+    "answer": 1,
+    "explanation": "Normalización: aplicar formas normales (1NF, 2NF, 3NF, BCNF) para eliminar redundancia y anomalías en datos."
+  },
+  {
+    "id": 153,
+    "category": "prog",
+    "question": "¿Qué es una 'clave primaria' (Primary Key)?",
+    "options": [
+      "La primera columna de una tabla",
+      "Atributo o combinación que identifica de forma única cada fila en una tabla, sin valores nulos ni duplicados",
+      "La clave de cifrado de la base de datos",
+      "El índice principal de búsqueda",
+      "Un campo exclusivo para relacionar tablas externas sin afectar los datos internos",
+      "Atributo auto-incremental que siempre debe ser un número entero"
+    ],
+    "answer": 1,
+    "explanation": "PK: identificador único por fila, no nulo, inmutable. Puede ser simple (un campo) o compuesta (varios campos)."
+  },
+  {
+    "id": 154,
+    "category": "prog",
+    "question": "¿Qué hace la sentencia SQL `JOIN`?",
+    "options": [
+      "Elimina filas de una tabla",
+      "Combina filas de dos o más tablas basándose en una condición de relación",
+      "Agrega una nueva columna",
+      "Ordena los registros",
+      "Concatena múltiples bases de datos en un solo esquema",
+      "Filtra registros de una tabla utilizando subconsultas correlacionadas"
+    ],
+    "answer": 1,
+    "explanation": "JOIN combina tablas por condición (normalmente clave foránea = clave primaria); tipos: INNER, LEFT, RIGHT, FULL."
+  },
+  {
+    "id": 155,
+    "category": "prog",
+    "question": "¿Qué es un 'índice' (index) en bases de datos?",
+    "options": [
+      "El número de tabla",
+      "Estructura de datos auxiliar que acelera las búsquedas a costa de espacio adicional y tiempo de escritura",
+      "La clave primaria",
+      "Un tipo de relación",
+      "Una restricción que previene la inserción de datos duplicados",
+      "Un bloque de memoria reservado para transacciones en espera"
+    ],
+    "answer": 1,
+    "explanation": "Los índices (B-Tree, Hash) aceleran las consultas SELECT pero ralentizan INSERT/UPDATE/DELETE y usan espacio."
+  },
+  {
+    "id": 156,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre SQL y NoSQL?",
+    "options": [
+      "NoSQL no usa consultas",
+      "SQL es relacional y estructurado; NoSQL es no relacional, flexible en esquema, escalable horizontalmente",
+      "SQL siempre es más rápido",
+      "NoSQL no puede almacenar datos complejos",
+      "SQL está obsoleto; NoSQL es el nuevo estándar para bases de datos transaccionales",
+      "SQL escala horizontalmente por defecto; NoSQL está limitado a escalado vertical"
+    ],
+    "answer": 1,
+    "explanation": "SQL: relacional, esquema rígido, ACID. NoSQL: documentos/clave-valor/grafo/columnar, esquema flexible, escala horizontal."
+  },
+  {
+    "id": 157,
+    "category": "prog",
+    "question": "¿Qué es un 'trigger' (disparador) en SQL?",
+    "options": [
+      "Un tipo de índice",
+      "Procedimiento almacenado que se ejecuta automáticamente ante eventos (INSERT, UPDATE, DELETE) en una tabla",
+      "Una restricción de integridad",
+      "Un tipo de JOIN",
+      "Una función programada para ejecutarse a una hora específica del día",
+      "Un evento de hardware que alerta al administrador de caídas de conexión"
+    ],
+    "answer": 1,
+    "explanation": "Trigger: código SQL que se ejecuta automáticamente antes o después de eventos DML en una tabla."
+  },
+  {
+    "id": 158,
+    "category": "prog",
+    "question": "¿Qué es una 'vista' (VIEW) en SQL?",
+    "options": [
+      "Una captura de pantalla de la base de datos",
+      "Consulta guardada que se comporta como una tabla virtual; no almacena datos por sí misma",
+      "Una tabla temporal",
+      "Un índice de búsqueda",
+      "Una copia física de seguridad de una o varias tablas",
+      "Una partición de la base de datos para optimizar lecturas"
+    ],
+    "answer": 1,
+    "explanation": "Una vista es una SELECT guardada; simplifica consultas complejas y puede controlar el acceso a los datos."
+  },
+  {
+    "id": 159,
+    "category": "prog",
+    "question": "¿Qué es el 'teorema CAP' en bases de datos distribuidas?",
+    "options": [
+      "Una fórmula de optimización",
+      "Un sistema distribuido solo puede garantizar 2 de 3: Consistencia, Disponibilidad, Tolerancia a particiones",
+      "Un tipo de normalización",
+      "Un algoritmo de replicación",
+      "Ley que establece el límite máximo de particiones en un clúster de servidores",
+      "Un sistema que garantiza que los datos siempre estarán cifrados en tránsito y en reposo"
+    ],
+    "answer": 1,
+    "explanation": "CAP (Brewer): en redes distribuidas, no es posible garantizar simultáneamente Consistency, Availability y Partition tolerance."
+  },
+  {
+    "id": 160,
+    "category": "prog",
+    "question": "¿Qué es un 'stored procedure' (procedimiento almacenado)?",
+    "options": [
+      "Una tabla de configuración",
+      "Conjunto de instrucciones SQL precompiladas almacenadas en la base de datos y ejecutadas bajo demanda",
+      "Un tipo de índice",
+      "Una restricción de clave foránea",
+      "Un respaldo automático de la base de datos guardado en el servidor",
+      "Un registro temporal de consultas lentas usado para depuración"
+    ],
+    "answer": 1,
+    "explanation": "Los stored procedures encapsulan lógica de negocio en la BD, mejoran rendimiento (precompilados) y seguridad."
+  },
+  {
+    "id": 161,
+    "category": "prog",
+    "question": "¿Quién es considerado el padre de la computación moderna?",
+    "options": [
+      "Bill Gates",
+      "Alan Turing",
+      "John von Neumann",
+      "Charles Babbage",
+      "Ada Lovelace",
+      "Claude Shannon"
+    ],
+    "answer": 1,
+    "explanation": "Alan Turing formalizó los conceptos de algoritmo y computación con la 'Máquina de Turing' (1936)."
+  },
+  {
+    "id": 162,
+    "category": "prog",
+    "question": "¿Cuál fue la primera computadora electrónica de propósito general?",
+    "options": [
+      "IBM PC",
+      "ENIAC (1945)",
+      "Apple I",
+      "Z3 de Zuse",
+      "Colossus",
+      "UNIVAC I"
+    ],
+    "answer": 1,
+    "explanation": "ENIAC (1945, Eckert y Mauchly): primera computadora electrónica de propósito general; usaba 18,000 válvulas de vacío."
+  },
+  {
+    "id": 163,
+    "category": "prog",
+    "question": "¿Qué aportó la arquitectura Von Neumann a la computación?",
+    "options": [
+      "El transistor",
+      "El modelo de computadora con CPU, memoria y programa almacenado en la misma memoria",
+      "El primer sistema operativo",
+      "El lenguaje ensamblador",
+      "La separación física entre la memoria de datos y la memoria de instrucciones",
+      "La invención de los buses serie para la transferencia rápida de datos"
+    ],
+    "answer": 1,
+    "explanation": "Von Neumann propuso el programa almacenado: instrucciones y datos en la misma memoria, base de las computadoras modernas."
+  },
+  {
+    "id": 164,
+    "category": "prog",
+    "question": "¿En qué año se creó el lenguaje de programación C?",
+    "options": [
+      "1959",
+      "1972",
+      "1985",
+      "1991",
+      "1965",
+      "1980"
+    ],
+    "answer": 1,
+    "explanation": "C fue desarrollado por Dennis Ritchie en Bell Labs en 1972; es la base de C++, Java, C# y muchos otros lenguajes."
+  },
+  {
+    "id": 165,
+    "category": "prog",
+    "question": "¿Quién creó el World Wide Web (WWW)?",
+    "options": [
+      "Vint Cerf",
+      "Tim Berners-Lee",
+      "Bill Gates",
+      "Marc Andreessen",
+      "Linus Torvalds",
+      "Ted Nelson"
+    ],
+    "answer": 1,
+    "explanation": "Tim Berners-Lee inventó la Web en 1989-1991 en el CERN, definiendo HTML, HTTP y URL."
+  },
+  {
+    "id": 166,
+    "category": "prog",
+    "question": "¿Qué fue el 'Bug' histórico de Grace Hopper?",
+    "options": [
+      "Un error de algoritmo en Fortran",
+      "Una polilla real encontrada en el Mark II (1947) que causó un fallo — origen del término 'bug' en programación",
+      "Un virus de computadora",
+      "Un error en la arquitectura Von Neumann",
+      "Un cable desconectado en el ENIAC que tomó días encontrar",
+      "Un error de desbordamiento en un cálculo balístico"
+    ],
+    "answer": 1,
+    "explanation": "En 1947 el equipo de Hopper encontró una polilla en el relé del Mark II; lo pegaron al diario como el primer 'bug' documentado."
+  },
+  {
+    "id": 167,
+    "category": "prog",
+    "question": "¿Qué es la 'Ley de Moore'?",
+    "options": [
+      "Los precios del software se duplican cada 2 años",
+      "El número de transistores en un chip se duplica aproximadamente cada 2 años manteniendo el costo",
+      "La velocidad de internet se duplica cada año",
+      "Los discos duros aumentan capacidad cada 6 meses",
+      "El rendimiento del software se reduce a la mitad cada 2 años debido a la ineficiencia",
+      "El consumo de energía de un procesador se reduce en un 50% cada generación"
+    ],
+    "answer": 1,
+    "explanation": "Gordon Moore predijo en 1965 que los transistores por chip se duplicarían cada ~2 años; se cumplió por décadas."
+  },
+  {
+    "id": 168,
+    "category": "prog",
+    "question": "¿Cuándo se lanzó el primer iPhone revolucionando los smartphones?",
+    "options": [
+      "2003",
+      "2005",
+      "2007",
+      "2009",
+      "2001",
+      "2010"
+    ],
+    "answer": 2,
+    "explanation": "Steve Jobs presentó el primer iPhone el 9 de enero de 2007, integrando teléfono, iPod y navegador internet."
+  },
+  {
+    "id": 169,
+    "category": "prog",
+    "question": "¿Qué fue ARPANET?",
+    "options": [
+      "El primer procesador Intel",
+      "La red precursora de Internet, financiada por el Departamento de Defensa de EE.UU. (1969)",
+      "El primer sistema operativo",
+      "El primer lenguaje de alto nivel",
+      "Una red satelital de comunicación global",
+      "El primer protocolo de cifrado para telecomunicaciones militares"
+    ],
+    "answer": 1,
+    "explanation": "ARPANET (1969): primera red de conmutación de paquetes; conectó 4 universidades y sentó bases de Internet."
+  },
+  {
+    "id": 170,
+    "category": "prog",
+    "question": "¿Qué es el 'software libre' según la Free Software Foundation?",
+    "options": [
+      "Software gratuito sin restricciones comerciales",
+      "Software que respeta 4 libertades: usar, estudiar, modificar y distribuir",
+      "Software sin licencia",
+      "Software de código cerrado",
+      "Software que solo puede ser modificado por organizaciones sin fines de lucro",
+      "Software cuyos derechos de autor han expirado"
+    ],
+    "answer": 1,
+    "explanation": "RMS definió las 4 libertades (FSF, 1985): correr, estudiar, redistribuir y mejorar el software. Libre ≠ gratuito."
+  },
+  {
+    "id": 171,
+    "category": "prog",
+    "question": "¿Qué paradigma usa Python principalmente?",
+    "options": [
+      "Solo programación funcional",
+      "Multi-paradigma: imperativo, orientado a objetos y funcional",
+      "Solo orientado a objetos",
+      "Solo scripting web",
+      "Puramente lógico y declarativo",
+      "Paradigma orientado a eventos exclusivamente"
+    ],
+    "answer": 1,
+    "explanation": "Python es multi-paradigma: permite OOP (clases), funcional (lambdas, map/filter) e imperativo (bucles, secuencias)."
+  },
+  {
+    "id": 172,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre HTTP y HTTPS?",
+    "options": [
+      "Son idénticos",
+      "HTTPS cifra la comunicación con TLS/SSL; HTTP transmite datos en texto plano",
+      "HTTP es más rápido siempre",
+      "HTTPS solo funciona en móviles",
+      "HTTPS es la versión para transmisión de video; HTTP es solo para texto",
+      "HTTP permite bases de datos relacionales y HTTPS solo NoSQL"
+    ],
+    "answer": 1,
+    "explanation": "HTTPS agrega una capa TLS/SSL sobre HTTP: cifra datos en tránsito, verifica identidad del servidor."
+  },
+  {
+    "id": 173,
+    "category": "prog",
+    "question": "¿Qué es la 'computación en la nube'?",
+    "options": [
+      "Computación meteorológica",
+      "Provisión de recursos informáticos (servidores, almacenamiento, software) vía internet bajo demanda",
+      "Computación sin energía eléctrica",
+      "Una red de computadoras local",
+      "Un tipo de mainframe utilizado exclusivamente por bancos",
+      "Un método para enfriar centros de datos usando condensación atmosférica"
+    ],
+    "answer": 1,
+    "explanation": "Cloud computing: acceso bajo demanda a recursos TI a través de internet (IaaS, PaaS, SaaS); modelos: público, privado, híbrido."
+  },
+  {
+    "id": 174,
+    "category": "prog",
+    "question": "¿Qué es la 'virtualización'?",
+    "options": [
+      "La realidad virtual en videojuegos",
+      "Tecnología que permite ejecutar múltiples sistemas operativos sobre un mismo hardware físico",
+      "Un tipo de red inalámbrica",
+      "El diseño de interfaces 3D",
+      "El proceso de compilar código fuente en bytecode ejecutable",
+      "Un protocolo para aumentar la velocidad de la memoria RAM emulando disco"
+    ],
+    "answer": 1,
+    "explanation": "Virtualización: el hipervisor abstrae el hardware permitiendo múltiples VMs; base de la nube y los servidores modernos."
+  },
+  {
+    "id": 175,
+    "category": "prog",
+    "question": "¿Qué es 'DevOps'?",
+    "options": [
+      "Un lenguaje de programación",
+      "Cultura y conjunto de prácticas que combinan desarrollo (Dev) y operaciones (Ops) para acelerar entregas",
+      "Un sistema operativo",
+      "Un tipo de base de datos",
+      "Una herramienta específica de pruebas unitarias automatizadas",
+      "El departamento encargado de administrar redes locales"
+    ],
+    "answer": 1,
+    "explanation": "DevOps elimina silos entre desarrollo y operaciones; usa automatización (CI/CD), infraestructura como código y monitoreo."
+  },
+  {
+    "id": 176,
+    "category": "prog",
+    "question": "¿Qué es 'Docker' en el contexto de software?",
+    "options": [
+      "Un lenguaje de programación",
+      "Plataforma de contenedores que empaqueta aplicaciones con sus dependencias para ejecutarlas en cualquier entorno",
+      "Un sistema de control de versiones",
+      "Un framework web",
+      "Una máquina virtual completa con su propio sistema operativo huésped independiente",
+      "Un protocolo de red para orquestación de bases de datos"
+    ],
+    "answer": 1,
+    "explanation": "Docker empaqueta aplicaciones en contenedores ligeros, garantizando consistencia entre entornos dev/staging/prod."
+  },
+  {
+    "id": 177,
+    "category": "prog",
+    "question": "¿Qué es la 'inteligencia artificial'?",
+    "options": [
+      "Solo robots",
+      "Rama de la informática que crea sistemas capaces de realizar tareas que requieren inteligencia humana",
+      "Un lenguaje de programación",
+      "Solo aprendizaje automático",
+      "Un simulador cuántico para predecir fluctuaciones del mercado",
+      "Hardware especializado que emula neuronas biológicas a nivel atómico"
+    ],
+    "answer": 1,
+    "explanation": "IA: campo que estudia cómo crear sistemas que perciban, razonen, aprendan y actúen de forma inteligente."
+  },
+  {
+    "id": 178,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre 'aprendizaje supervisado' y 'no supervisado'?",
+    "options": [
+      "Solo la velocidad de entrenamiento",
+      "Supervisado usa datos etiquetados; no supervisado encuentra patrones en datos sin etiquetar",
+      "No supervisado siempre es más preciso",
+      "Solo el lenguaje de programación utilizado",
+      "El supervisado requiere intervención humana en tiempo real; el no supervisado es totalmente autónomo",
+      "El supervisado se usa en robótica; el no supervisado solo en minería de textos"
+    ],
+    "answer": 1,
+    "explanation": "Supervisado: ejemplos con respuesta correcta (clasificación, regresión). No supervisado: el modelo descubre estructura (clustering)."
+  },
+  {
+    "id": 179,
+    "category": "prog",
+    "question": "¿Qué es una 'red neuronal artificial'?",
+    "options": [
+      "Un tipo de base de datos",
+      "Modelo inspirado en el cerebro: capas de nodos (neuronas) conectados con pesos que aprenden de los datos",
+      "Un lenguaje de programación",
+      "Un protocolo de red",
+      "Un clúster de servidores físicos interconectados mediante fibra óptica de alta velocidad",
+      "Un algoritmo de búsqueda en grafos cíclicos"
+    ],
+    "answer": 1,
+    "explanation": "Las RNA aprenden ajustando pesos entre neuronas mediante backpropagation; son la base del deep learning."
+  },
+  {
+    "id": 180,
+    "category": "prog",
+    "question": "¿Qué es la 'ciberseguridad'?",
+    "options": [
+      "Solo la protección de contraseñas",
+      "Práctica de proteger sistemas, redes y programas de ataques digitales, acceso no autorizado y daños",
+      "El diseño de sistemas operativos seguros",
+      "Solo el uso de antivirus",
+      "La disciplina de diseñar hardware resistente a interferencias electromagnéticas",
+      "Un framework ágil para el desarrollo de aplicaciones blockchain"
+    ],
+    "answer": 1,
+    "explanation": "Ciberseguridad cubre: confidencialidad, integridad y disponibilidad (CIA triad) de activos digitales y su infraestructura."
+  },
+  {
+    "id": 181,
+    "category": "prog",
+    "question": "¿Qué es el 'phishing'?",
+    "options": [
+      "Un tipo de virus",
+      "Técnica de engaño donde el atacante se hace pasar por una entidad legítima para robar datos o credenciales",
+      "Un algoritmo de cifrado",
+      "Un tipo de firewall",
+      "La intercepción de tráfico en una red inalámbrica pública",
+      "Un ataque de denegación de servicio distribuido"
+    ],
+    "answer": 1,
+    "explanation": "Phishing: ataque de ingeniería social vía correo/web falsos que imitan entidades reales para obtener datos sensibles."
+  },
+  {
+    "id": 182,
+    "category": "prog",
+    "question": "¿Qué es el 'cifrado asimétrico' (criptografía de clave pública)?",
+    "options": [
+      "Un cifrado con una sola clave",
+      "Cifrado con par de claves: pública (cifra) y privada (descifra); la clave privada nunca se comparte",
+      "Un cifrado obsoleto",
+      "Un protocolo de red",
+      "Cifrado que usa algoritmos diferentes según la longitud del mensaje original",
+      "Un método donde ambas partes negocian una única clave secreta simétrica en tiempo real"
+    ],
+    "answer": 1,
+    "explanation": "RSA y ECC usan claves distintas para cifrar/descifrar; la clave pública se comparte libremente, la privada permanece secreta."
+  },
+  {
+    "id": 183,
+    "category": "sistemas",
+    "question": "¿Qué es un 'sistema embebido' (embedded system)?",
+    "options": [
+      "Un sistema operativo dentro de otro",
+      "Sistema de cómputo integrado en un dispositivo de hardware para una función específica y dedicada",
+      "Un sistema en la nube",
+      "Un sistema de base de datos distribuida",
+      "Una red de computadoras interconectadas en una placa base común",
+      "Un compilador oculto en el código fuente de un programa"
+    ],
+    "answer": 1,
+    "explanation": "Sistemas embebidos: microcontroladores/microprocesadores integrados en dispositivos (ej: lavadoras, autos, marcapasos)."
+  },
+  {
+    "id": 184,
+    "category": "sistemas",
+    "question": "¿Qué es el 'Internet de las Cosas' (IoT)?",
+    "options": [
+      "Una red solo de computadoras",
+      "Red de objetos físicos con sensores, software y conectividad que intercambian datos a través de internet",
+      "El protocolo IPv6",
+      "Un sistema de inteligencia artificial",
+      "Un protocolo de enrutamiento para dispositivos móviles 5G",
+      "El metaverso y las redes sociales de realidad aumentada"
+    ],
+    "answer": 1,
+    "explanation": "IoT conecta dispositivos físicos cotidianos (termostatos, vehículos, sensores industriales) entre sí y con sistemas de datos."
+  },
+  {
+    "id": 185,
+    "category": "sistemas",
+    "question": "¿Qué es la 'cadena de suministro' (supply chain) como sistema?",
+    "options": [
+      "Solo los proveedores de materias primas",
+      "Sistema de organizaciones, actividades, personas, recursos e información que mueven un producto del origen al consumidor",
+      "El departamento de logística de una empresa",
+      "Un protocolo de comunicación empresarial",
+      "La línea de ensamblaje automatizada en una fábrica",
+      "Un modelo de base de datos jerárquico para inventario"
+    ],
+    "answer": 1,
+    "explanation": "La cadena de suministro es un sistema interorganizacional con flujos de materiales, información y finanzas desde proveedor hasta cliente."
+  },
+  {
+    "id": 186,
+    "category": "sistemas",
+    "question": "¿Qué es la 'gestión del conocimiento' como sistema organizacional?",
+    "options": [
+      "Archivar documentos digitalmente",
+      "Sistema de procesos para crear, capturar, distribuir y aplicar el conocimiento colectivo de la organización",
+      "El departamento de IT",
+      "Un tipo de base de datos",
+      "Un software de recursos humanos para capacitación",
+      "El proceso de registrar patentes y propiedad intelectual"
+    ],
+    "answer": 1,
+    "explanation": "La GC es un sistema sociotécnico que gestiona activos de conocimiento (tácito y explícito) para crear valor organizacional."
+  },
+  {
+    "id": 187,
+    "category": "sistemas",
+    "question": "¿Qué describe el modelo 'entrada-proceso-salida' (IPO) en sistemas?",
+    "options": [
+      "Solo el hardware de una computadora",
+      "El ciclo básico de cualquier sistema: recibe entradas, las procesa y produce salidas",
+      "Un protocolo de red",
+      "Un algoritmo de ordenamiento",
+      "La arquitectura de procesadores secuenciales",
+      "Un patrón de diseño de software para interfaces de usuario"
+    ],
+    "answer": 1,
+    "explanation": "El modelo IPO es la abstracción más básica: todo sistema recibe insumos (entradas), los transforma (proceso) y genera resultados (salidas)."
+  },
+  {
+    "id": 188,
+    "category": "sistemas",
+    "question": "¿Qué es el 'pensamiento de diseño' (Design Thinking) desde la perspectiva sistémica?",
+    "options": [
+      "Solo diseño gráfico",
+      "Enfoque centrado en el ser humano que aborda problemas complejos de forma iterativa: empatizar, definir, idear, prototipar, evaluar",
+      "Un método de programación",
+      "Un tipo de análisis estadístico",
+      "La creación de esquemas UML para bases de datos",
+      "Una técnica para optimizar consultas de bases de datos complejas"
+    ],
+    "answer": 1,
+    "explanation": "Design Thinking trata problemas como sistemas: itera comprendiendo el sistema (empatía), definiendo el problema y probando soluciones."
+  },
+  {
+    "id": 189,
+    "category": "sistemas",
+    "question": "¿Qué es la 'teoría de colas' (queuing theory) en sistemas?",
+    "options": [
+      "El estudio de las pilas de datos",
+      "Rama matemática que estudia la formación de esperas en sistemas con llegadas y servicios aleatorios",
+      "Un tipo de estructura de datos",
+      "El diseño de bases de datos",
+      "El análisis de sistemas en un bucle infinito",
+      "La teoría de procesamiento asíncrono en sistemas operativos"
+    ],
+    "answer": 1,
+    "explanation": "La teoría de colas modela sistemas de espera (hospitales, call centers, redes): analiza tiempos de espera y utilización de servidores."
+  },
+  {
+    "id": 190,
+    "category": "sistemas",
+    "question": "¿Qué es la 'teoría de juegos' aplicada a sistemas?",
+    "options": [
+      "El estudio de videojuegos",
+      "Estudio matemático de la toma de decisiones estratégicas entre actores racionales cuyos resultados dependen de las elecciones de todos",
+      "Un tipo de simulación",
+      "La teoría de grafos",
+      "El diseño de interfaces gamificadas para usuarios",
+      "Un método algorítmico para resolver tableros de ajedrez complejos"
+    ],
+    "answer": 1,
+    "explanation": "Teoría de juegos (Nash): modela interacciones estratégicas en sistemas donde el resultado de cada agente depende de las decisiones de los demás."
+  },
+  {
+    "id": 191,
+    "category": "sistemas",
+    "question": "¿Cuál es la diferencia entre 'análisis' y 'síntesis' en el estudio de sistemas?",
+    "options": [
+      "Son lo mismo",
+      "Análisis descompone el sistema en partes; síntesis integra las partes para entender el todo",
+      "Síntesis descompone; análisis integra",
+      "El análisis es cuantitativo; la síntesis cualitativa",
+      "El análisis ocurre en tiempo de compilación y la síntesis en tiempo de ejecución",
+      "Análisis se aplica al software y síntesis al hardware"
+    ],
+    "answer": 1,
+    "explanation": "Análisis: divide el sistema para estudiar sus partes. Síntesis (enfoque sistémico): integra el todo para entender propiedades emergentes."
+  },
+  {
+    "id": 192,
+    "category": "sistemas",
+    "question": "¿Qué es la 'sostenibilidad' desde la perspectiva de sistemas?",
+    "options": [
+      "Solo el cuidado del medioambiente",
+      "La capacidad de un sistema de mantener su funcionamiento a largo plazo sin agotar los recursos de los que depende",
+      "La durabilidad de los materiales",
+      "Un tipo de energía renovable",
+      "El uso exclusivo de fuentes de energía renovable en servidores",
+      "El número de años que un servidor puede operar sin mantenimiento preventivo"
+    ],
+    "answer": 1,
+    "explanation": "Sostenibilidad sistémica: el sistema mantiene su operación en el tiempo sin comprometer la base de recursos (ambiental, social, económico)."
+  },
+  {
+    "id": 193,
+    "category": "sistemas",
+    "question": "¿Qué es el 'diagrama de causa-efecto' (Ishikawa o espina de pescado) en sistemas?",
+    "options": [
+      "Un diagrama de flujo de datos",
+      "Herramienta visual para identificar causas raíz de un problema, organizadas en categorías",
+      "Un diagrama de red",
+      "Un tipo de árbol de decisión",
+      "Un modelo que muestra la latencia en las conexiones de red",
+      "Una gráfica para visualizar cuellos de botella en la compilación de código"
+    ],
+    "answer": 1,
+    "explanation": "El diagrama Ishikawa organiza causas potenciales de un problema en categorías (6M); facilita el análisis sistémico de causas raíz."
+  },
+  {
+    "id": 194,
+    "category": "sistemas",
+    "question": "¿Qué es la 'simulación' en el contexto de sistemas?",
+    "options": [
+      "Una imitación gráfica",
+      "Técnica de modelado que reproduce el comportamiento de un sistema para experimentar y predecir sin riesgo en el sistema real",
+      "Un tipo de análisis estadístico",
+      "Un algoritmo de búsqueda",
+      "El uso de entornos virtuales para pruebas de usabilidad",
+      "Un ataque controlado de ciberseguridad a una infraestructura"
+    ],
+    "answer": 1,
+    "explanation": "La simulación crea modelos ejecutables del sistema real para experimentar escenarios, optimizar y predecir sin costos del sistema real."
+  },
+  {
+    "id": 195,
+    "category": "sistemas",
+    "question": "¿Qué es el 'punto de apalancamiento' (leverage point) en sistemas (Donella Meadows)?",
+    "options": [
+      "El componente más costoso del sistema",
+      "El lugar del sistema donde una pequeña intervención produce grandes cambios en el comportamiento total",
+      "El punto de máxima entropía",
+      "El subsistema más complejo",
+      "La conexión de red más lenta que reduce el rendimiento",
+      "El momento en que un proyecto supera su presupuesto inicial"
+    ],
+    "answer": 1,
+    "explanation": "Meadows identificó 12 puntos de apalancamiento donde intervenciones pequeñas tienen impacto grande en el sistema (reglas, metas, paradigmas)."
+  },
+  {
+    "id": 196,
+    "category": "sistemas",
+    "question": "¿Qué describe la 'trampa de la toma de posición' en pensamiento sistémico?",
+    "options": [
+      "Tomar demasiadas decisiones a la vez",
+      "El error de ver el sistema desde solo una perspectiva, perdiendo la visión global de las interconexiones",
+      "Un tipo de retroalimentación positiva",
+      "La incapacidad de definir los límites del sistema",
+      "Cuando un proceso de software entra en un interbloqueo irresoluble",
+      "La asignación de recursos a subsistemas secundarios ignorando los cuellos de botella críticos"
+    ],
+    "answer": 1,
+    "explanation": "La visión parcial lleva a soluciones localmente óptimas que empeoran el sistema global; el pensamiento sistémico exige visión holística."
+  },
+  {
+    "id": 197,
+    "category": "sistemas",
+    "question": "¿Cuál es el concepto central de 'Thinking in Systems' de Donella Meadows?",
+    "options": [
+      "Los sistemas se auto-destruyen inevitablemente",
+      "Los sistemas muestran comportamientos contraintuitivos; comprender stocks, flujos y bucles es esencial para intervenir efectivamente",
+      "Los sistemas siempre tienden al equilibrio",
+      "Solo los ingenieros entienden los sistemas",
+      "La reducción de la complejidad es la única forma de gestionar sistemas a gran escala",
+      "El control centralizado siempre es superior a los sistemas descentralizados"
+    ],
+    "answer": 1,
+    "explanation": "Meadows enfatiza que los sistemas tienen sus propias dinámicas (retrasos, bucles); las intervenciones ignorantes pueden empeorar el problema."
+  },
+  {
+    "id": 198,
+    "category": "sistemas",
+    "question": "¿Qué es la 'complejidad accidental' vs 'complejidad esencial'?",
+    "options": [
+      "No existe tal distinción",
+      "La esencial proviene del problema mismo; la accidental la introduce nuestra implementación o proceso",
+      "La accidental es más difícil de eliminar",
+      "La esencial solo existe en sistemas de software",
+      "La esencial es calculada mediante Big O; la accidental se descubre en producción",
+      "La accidental se refiere a bugs, mientras que la esencial se refiere a fallos de hardware"
+    ],
+    "answer": 1,
+    "explanation": "Brooks (1986): la complejidad esencial es inherente al problema; la accidental surge de malas decisiones de diseño e implementación."
+  },
+  {
+    "id": 199,
+    "category": "sistemas",
+    "question": "¿Qué es un 'sistema sociotécnico'?",
+    "options": [
+      "Un sistema solo de personas",
+      "Sistema que integra componentes técnicos y sociales en interdependencia; la tecnología y las personas co-evolucionan",
+      "Un sistema robotizado sin personas",
+      "Un sistema de redes sociales",
+      "Una plataforma de comunicación empresarial",
+      "Una interfaz gráfica de usuario adaptada para redes sociales"
+    ],
+    "answer": 1,
+    "explanation": "Los sistemas sociotécnicos (Trist, Emery) reconocen la interdependencia entre tecnología y las personas que la usan y diseñan."
+  },
+  {
+    "id": 200,
+    "category": "sistemas",
+    "question": "¿Qué principio establece que 'el mapa no es el territorio' en sistemas?",
+    "options": [
+      "Que los mapas son inútiles",
+      "Que los modelos son representaciones simplificadas de la realidad; nunca la capturan en su totalidad",
+      "Que solo los modelos físicos son válidos",
+      "Que la realidad es un sistema cerrado",
+      "Que la infraestructura de red física difiere de su topología lógica",
+      "Que los diagramas UML no deben usarse en metodologías ágiles"
+    ],
+    "answer": 1,
+    "explanation": "Korzybski: ningún modelo o mapa captura toda la complejidad del sistema real; siempre hay aspectos no representados."
+  }
+]

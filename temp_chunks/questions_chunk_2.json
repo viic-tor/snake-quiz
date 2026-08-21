@@ -1,0 +1,652 @@
+[
+  {
+    "id": 101,
+    "category": "sistemas",
+    "question": "¿Cuál es la principal diferencia entre sistemas OLTP y OLAP?",
+    "options": [
+      "Solo el lenguaje de consulta",
+      "OLTP maneja transacciones operativas en tiempo real; OLAP analiza grandes volúmenes históricos",
+      "OLAP es más seguro",
+      "No hay diferencia práctica"
+    ],
+    "answer": 1,
+    "explanation": "OLTP (transaccional): muchas operaciones pequeñas. OLAP (analítico): consultas complejas sobre grandes volúmenes de datos."
+  },
+  {
+    "id": 102,
+    "category": "sistemas",
+    "question": "¿Qué es un 'sistema legado'?",
+    "options": [
+      "Un sistema de nueva generación",
+      "Sistema antiguo crítico para la organización, difícil de reemplazar pero con deuda técnica",
+      "Un sistema de código abierto",
+      "Un sistema de gestión heredada familiar"
+    ],
+    "answer": 1,
+    "explanation": "Sistemas legado: tecnología anticuada pero crítica; reemplazarlos es costoso y arriesgado para la organización."
+  },
+  {
+    "id": 103,
+    "category": "sistemas",
+    "question": "¿Qué describe el modelo de las '3 capas' en sistemas de información?",
+    "options": [
+      "Hardware, firmware, software",
+      "Presentación (UI), lógica de negocio y datos",
+      "Red, servidor y cliente",
+      "Entrada, procesamiento y salida"
+    ],
+    "answer": 1,
+    "explanation": "Las 3 capas: presentación (interfaz), negocio (reglas y procesos) y datos (persistencia); separación de responsabilidades."
+  },
+  {
+    "id": 104,
+    "category": "sistemas",
+    "question": "¿Cuál es el rol de un 'analista de sistemas'?",
+    "options": [
+      "Solo programar el sistema",
+      "Analizar requerimientos, diseñar soluciones y servir de puente entre usuarios y desarrolladores",
+      "Administrar la red",
+      "Gestionar la base de datos"
+    ],
+    "answer": 1,
+    "explanation": "El analista de sistemas traduce necesidades del negocio en especificaciones técnicas y guía el proceso de desarrollo."
+  },
+  {
+    "id": 105,
+    "category": "sistemas",
+    "question": "¿Qué es un 'caso de uso' en el análisis de sistemas?",
+    "options": [
+      "Un error documentado",
+      "Una descripción de cómo un actor interactúa con el sistema para lograr un objetivo",
+      "El código fuente de una función",
+      "Un diagrama de base de datos"
+    ],
+    "answer": 1,
+    "explanation": "Los casos de uso (Jacobson/UML) describen la secuencia de interacciones entre actores y el sistema para un objetivo."
+  },
+  {
+    "id": 106,
+    "category": "sistemas",
+    "question": "¿Qué es un 'Data Warehouse' (almacén de datos)?",
+    "options": [
+      "Un servidor de archivos ordinario",
+      "Repositorio centralizado de datos históricos integrados para análisis y reporting",
+      "Una base de datos transaccional",
+      "Un sistema de respaldo de datos"
+    ],
+    "answer": 1,
+    "explanation": "Un Data Warehouse integra datos de múltiples fuentes, históricos y orientados a análisis para soporte de decisiones."
+  },
+  {
+    "id": 107,
+    "category": "sistemas",
+    "question": "¿Qué es la 'interoperabilidad' entre sistemas?",
+    "options": [
+      "La velocidad de conexión",
+      "La capacidad de diferentes sistemas de intercambiar y usar información mutuamente",
+      "El número de usuarios compartidos",
+      "La compatibilidad de hardware solamente"
+    ],
+    "answer": 1,
+    "explanation": "Interoperabilidad: capacidad de sistemas distintos de comunicarse, intercambiar datos y usar servicios entre sí."
+  },
+  {
+    "id": 108,
+    "category": "sistemas",
+    "question": "¿Cuál es la función de un 'middleware'?",
+    "options": [
+      "Gestionar la interfaz de usuario",
+      "Software que conecta e integra diferentes aplicaciones o sistemas",
+      "Gestionar la memoria del sistema operativo",
+      "Un lenguaje de programación intermedio"
+    ],
+    "answer": 1,
+    "explanation": "El middleware actúa como capa de comunicación entre aplicaciones distintas, facilitando su integración."
+  },
+  {
+    "id": 109,
+    "category": "sistemas",
+    "question": "¿Qué es un 'API' (Application Programming Interface)?",
+    "options": [
+      "Un tipo de base de datos",
+      "Conjunto de definiciones que permiten a una aplicación comunicarse con otra",
+      "Un sistema operativo",
+      "Un protocolo de red"
+    ],
+    "answer": 1,
+    "explanation": "Una API define cómo aplicaciones se comunican: expone funcionalidades sin revelar implementación interna."
+  },
+  {
+    "id": 110,
+    "category": "sistemas",
+    "question": "¿Qué es la 'arquitectura de microservicios'?",
+    "options": [
+      "Un sistema monolítico pequeño",
+      "Diseño donde la aplicación se divide en servicios pequeños independientes con responsabilidad única",
+      "Un tipo de base de datos distribuida",
+      "Un protocolo de comunicación"
+    ],
+    "answer": 1,
+    "explanation": "Microservicios: aplicación como colección de servicios pequeños, desplegables independientemente, comunicándose vía API."
+  },
+  {
+    "id": 111,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre un lenguaje compilado y uno interpretado?",
+    "options": [
+      "No hay diferencia en rendimiento",
+      "El compilado traduce todo el código antes de ejecutar; el interpretado lo ejecuta línea a línea",
+      "Los interpretados son siempre más rápidos",
+      "Los compilados no producen errores"
+    ],
+    "answer": 1,
+    "explanation": "Compilado (C, Java): traduce a código máquina antes de ejecutar. Interpretado (Python, JS): ejecuta instrucción por instrucción."
+  },
+  {
+    "id": 112,
+    "category": "prog",
+    "question": "¿Qué es una variable en programación?",
+    "options": [
+      "Un valor fijo que nunca cambia",
+      "Un espacio en memoria con un nombre que almacena un valor que puede cambiar",
+      "Una función sin parámetros",
+      "Un tipo de bucle"
+    ],
+    "answer": 1,
+    "explanation": "Una variable nombra una ubicación en memoria que almacena un valor modificable durante la ejecución del programa."
+  },
+  {
+    "id": 113,
+    "category": "prog",
+    "question": "¿Qué es la recursión en programación?",
+    "options": [
+      "Un bucle infinito no controlado",
+      "Una función que se llama a sí misma con un caso base que la detiene",
+      "Un tipo de herencia en OOP",
+      "Una estructura de datos lineal"
+    ],
+    "answer": 1,
+    "explanation": "Recursión: función que se llama a sí misma. Debe tener caso base (que detiene la recursión) y caso recursivo."
+  },
+  {
+    "id": 114,
+    "category": "prog",
+    "question": "¿Qué es la 'complejidad temporal' de un algoritmo (notación Big-O)?",
+    "options": [
+      "El tiempo exacto de ejecución en segundos",
+      "Cómo crece el tiempo de ejecución en función del tamaño de la entrada",
+      "La cantidad de memoria que usa",
+      "El número de líneas de código"
+    ],
+    "answer": 1,
+    "explanation": "Big-O describe el comportamiento del tiempo de ejecución en el peor caso en función del tamaño de entrada n."
+  },
+  {
+    "id": 115,
+    "category": "prog",
+    "question": "¿Cuál es la complejidad de búsqueda en un arreglo desordenado?",
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n²)"
+    ],
+    "answer": 2,
+    "explanation": "Búsqueda lineal en arreglo desordenado: en el peor caso revisar todos los n elementos → O(n)."
+  },
+  {
+    "id": 116,
+    "category": "prog",
+    "question": "¿Cuál es la ventaja de la búsqueda binaria sobre la lineal?",
+    "options": [
+      "Funciona en arreglos desordenados",
+      "Es O(log n) en vez de O(n), pero requiere que el arreglo esté ordenado",
+      "Usa menos memoria",
+      "Es más fácil de programar"
+    ],
+    "answer": 1,
+    "explanation": "Búsqueda binaria divide el espacio a la mitad en cada paso: O(log n), pero exige el arreglo ordenado previamente."
+  },
+  {
+    "id": 117,
+    "category": "prog",
+    "question": "¿Qué es un 'stack' (pila)?",
+    "options": [
+      "Una lista donde insertas al inicio y extraes al final",
+      "Estructura LIFO: el último elemento insertado es el primero en salir",
+      "Una lista doblemente enlazada",
+      "Una tabla de hash"
+    ],
+    "answer": 1,
+    "explanation": "Stack (LIFO - Last In First Out): operaciones push (apilar) y pop (desapilar) en el mismo extremo."
+  },
+  {
+    "id": 118,
+    "category": "prog",
+    "question": "¿Qué es una 'cola' (queue) en programación?",
+    "options": [
+      "Una pila invertida",
+      "Estructura FIFO: el primero en entrar es el primero en salir",
+      "Un árbol binario",
+      "Una tabla hash"
+    ],
+    "answer": 1,
+    "explanation": "Queue (FIFO - First In First Out): enqueue (insertar al final), dequeue (extraer del frente) — como una fila."
+  },
+  {
+    "id": 119,
+    "category": "prog",
+    "question": "¿Qué es la 'herencia' en programación orientada a objetos?",
+    "options": [
+      "Copiar el código de otra clase",
+      "Mecanismo donde una clase hija adquiere propiedades y métodos de una clase padre",
+      "La capacidad de modificar el estado interno",
+      "Un tipo de bucle especial"
+    ],
+    "answer": 1,
+    "explanation": "Herencia: una clase puede extender otra, reutilizando y especializando su comportamiento sin duplicar código."
+  },
+  {
+    "id": 120,
+    "category": "prog",
+    "question": "¿Qué es el 'polimorfismo' en OOP?",
+    "options": [
+      "Tener múltiples constructores",
+      "La capacidad de que objetos de distintas clases respondan al mismo mensaje de forma diferente",
+      "Encapsular datos privados",
+      "La herencia múltiple"
+    ],
+    "answer": 1,
+    "explanation": "Polimorfismo: diferentes clases implementan el mismo método de forma distinta; permite tratar objetos de forma uniforme."
+  },
+  {
+    "id": 121,
+    "category": "prog",
+    "question": "¿Qué es la 'encapsulación' en OOP?",
+    "options": [
+      "Hacer todo público",
+      "Ocultar los detalles internos de un objeto y exponer solo lo necesario a través de una interfaz",
+      "Heredar de múltiples clases",
+      "Crear instancias de objetos"
+    ],
+    "answer": 1,
+    "explanation": "Encapsulación: los datos internos se protegen (private/protected) y se acceden solo a través de métodos públicos."
+  },
+  {
+    "id": 122,
+    "category": "prog",
+    "question": "¿Qué es una 'función de orden superior'?",
+    "options": [
+      "Una función muy larga",
+      "Una función que acepta funciones como parámetros o devuelve funciones",
+      "Una función sin retorno",
+      "Una función con muchos parámetros"
+    ],
+    "answer": 1,
+    "explanation": "Funciones de orden superior (map, filter, reduce) reciben o devuelven funciones; son centrales en programación funcional."
+  },
+  {
+    "id": 123,
+    "category": "prog",
+    "question": "¿Qué es un 'árbol binario de búsqueda' (BST)?",
+    "options": [
+      "Un árbol con exactamente 2 nodos",
+      "Árbol donde cada nodo tiene máx 2 hijos: izquierdo < nodo < derecho",
+      "Un grafo sin ciclos",
+      "Una lista enlazada doble"
+    ],
+    "answer": 1,
+    "explanation": "BST: árbol con propiedad de orden — nodo izquierdo < nodo < nodo derecho, facilitando búsqueda eficiente O(log n) promedio."
+  },
+  {
+    "id": 124,
+    "category": "prog",
+    "question": "¿Qué es la 'abstracción' en programación?",
+    "options": [
+      "Ocultar todo el código",
+      "Simplificar sistemas complejos mostrando solo los aspectos esenciales y ocultando detalles irrelevantes",
+      "Duplicar funciones",
+      "Crear interfaces gráficas"
+    ],
+    "answer": 1,
+    "explanation": "Abstracción: representar entidades con sus características esenciales ignorando detalles no relevantes para el contexto."
+  },
+  {
+    "id": 125,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre `==` y `===` en JavaScript?",
+    "options": [
+      "Son idénticos",
+      "=== compara valor y tipo; == solo valor (con conversión de tipo automática)",
+      "=== es más lento",
+      "== solo funciona con números"
+    ],
+    "answer": 1,
+    "explanation": "=== (estricta): compara valor Y tipo. == (abstracta): convierte tipos antes de comparar (puede causar bugs inesperados)."
+  },
+  {
+    "id": 126,
+    "category": "prog",
+    "question": "¿Qué es una 'promesa' (Promise) en JavaScript?",
+    "options": [
+      "Un comentario en el código",
+      "Objeto que representa la eventual finalización (o falla) de una operación asíncrona",
+      "Un tipo de bucle",
+      "Una variable global"
+    ],
+    "answer": 1,
+    "explanation": "Las Promises representan valores que estarán disponibles en el futuro; tienen estados: pending, fulfilled, rejected."
+  },
+  {
+    "id": 127,
+    "category": "prog",
+    "question": "¿Qué es la 'notación húngara' en programación?",
+    "options": [
+      "Un lenguaje de programación europeo",
+      "Convención de nombres donde el prefijo indica el tipo de la variable (ej: strNombre, intEdad)",
+      "Un tipo de comentario",
+      "Un estándar de base de datos"
+    ],
+    "answer": 1,
+    "explanation": "Notación húngara: prefijos que indican el tipo de dato (str, int, bool, etc.); útil en lenguajes de tipado débil."
+  },
+  {
+    "id": 128,
+    "category": "prog",
+    "question": "¿Qué es el 'principio DRY' en programación?",
+    "options": [
+      "Delete Redundant Yields",
+      "Don't Repeat Yourself: evitar duplicación de código o lógica",
+      "Dynamic Reference Yielding",
+      "Distributed Routing Yoke"
+    ],
+    "answer": 1,
+    "explanation": "DRY: cada pieza de conocimiento o lógica debe tener una única representación en el sistema."
+  },
+  {
+    "id": 129,
+    "category": "prog",
+    "question": "¿Qué es un 'grafo' en ciencias de la computación?",
+    "options": [
+      "Solo un diagrama visual",
+      "Estructura de datos con nodos (vértices) y aristas (edges) que los conectan",
+      "Un árbol con más de 2 hijos por nodo",
+      "Una función matemática"
+    ],
+    "answer": 1,
+    "explanation": "Un grafo G=(V,E) tiene vértices V y aristas E; puede ser dirigido/no dirigido, ponderado/no ponderado."
+  },
+  {
+    "id": 130,
+    "category": "prog",
+    "question": "¿Cuál es el objetivo del algoritmo de 'ordenamiento por mezcla' (Merge Sort)?",
+    "options": [
+      "Ordenar en O(n²)",
+      "Dividir el arreglo, ordenar mitades y combinar → O(n log n) garantizado",
+      "Ordenar sin usar memoria extra",
+      "Ordenar de mayor a menor únicamente"
+    ],
+    "answer": 1,
+    "explanation": "Merge Sort: divide y vence con complejidad O(n log n) en todos los casos; es estable pero usa O(n) memoria adicional."
+  },
+  {
+    "id": 131,
+    "category": "prog",
+    "question": "¿Qué es el 'principio SOLID' en OOP?",
+    "options": [
+      "Un lenguaje de programación",
+      "Conjunto de 5 principios de diseño para código orientado a objetos mantenible y extensible",
+      "Un patrón de diseño específico",
+      "Un framework de testing"
+    ],
+    "answer": 1,
+    "explanation": "SOLID: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion."
+  },
+  {
+    "id": 132,
+    "category": "prog",
+    "question": "¿Qué es un 'patrón de diseño'?",
+    "options": [
+      "Un estilo de interfaz gráfica",
+      "Solución reutilizable a un problema común en diseño de software",
+      "Un tipo de base de datos",
+      "Un lenguaje de marcado"
+    ],
+    "answer": 1,
+    "explanation": "Los patrones de diseño (GoF) son soluciones probadas y reutilizables a problemas recurrentes en diseño de software."
+  },
+  {
+    "id": 133,
+    "category": "prog",
+    "question": "¿Qué hace el patrón 'Observer' (Observador)?",
+    "options": [
+      "Crea una única instancia de una clase",
+      "Define dependencia uno-a-muchos: cuando un objeto cambia, notifica automáticamente a sus dependientes",
+      "Adapta interfaces incompatibles",
+      "Encapsula algoritmos intercambiables"
+    ],
+    "answer": 1,
+    "explanation": "Observer: sujeto notifica a múltiples observadores cuando cambia su estado; base de la programación reactiva."
+  },
+  {
+    "id": 134,
+    "category": "prog",
+    "question": "¿Qué es el 'control de versiones' (ej: Git)?",
+    "options": [
+      "Un sistema para compilar código",
+      "Sistema que registra cambios en archivos y permite revertir, comparar y colaborar",
+      "Un editor de código",
+      "Un sistema operativo"
+    ],
+    "answer": 1,
+    "explanation": "Git registra el historial completo de cambios, permite ramas paralelas de desarrollo y facilita la colaboración."
+  },
+  {
+    "id": 135,
+    "category": "prog",
+    "question": "¿Qué es la 'programación funcional'?",
+    "options": [
+      "Programar con funciones de bajo nivel",
+      "Paradigma que trata la computación como evaluación de funciones matemáticas, sin estado mutable",
+      "Un tipo de OOP",
+      "Programación orientada a eventos"
+    ],
+    "answer": 1,
+    "explanation": "Programación funcional: funciones puras sin efectos secundarios, inmutabilidad de datos, composición de funciones."
+  },
+  {
+    "id": 136,
+    "category": "prog",
+    "question": "¿Qué es un 'deadlock' (bloqueo mutuo) en sistemas concurrentes?",
+    "options": [
+      "Un error de sintaxis",
+      "Estado donde dos o más procesos esperan indefinidamente recursos que el otro retiene",
+      "Un tipo de recursión infinita",
+      "Un error de memoria"
+    ],
+    "answer": 1,
+    "explanation": "Deadlock: proceso A espera recurso de B; B espera recurso de A; ninguno avanza — bloqueo circular permanente."
+  },
+  {
+    "id": 137,
+    "category": "prog",
+    "question": "¿Qué es la 'programación orientada a eventos'?",
+    "options": [
+      "Programar sin funciones",
+      "Paradigma donde el flujo se determina por eventos (clic, tecla, mensaje) en lugar de secuencias fijas",
+      "Un tipo de base de datos",
+      "La programación en tiempo real"
+    ],
+    "answer": 1,
+    "explanation": "En POE, el programa reacciona a eventos externos; es la base de interfaces gráficas, servidores web y IoT."
+  },
+  {
+    "id": 138,
+    "category": "prog",
+    "question": "¿Qué es el 'garbage collector' (recolector de basura)?",
+    "options": [
+      "Un antivirus",
+      "Mecanismo automático que libera memoria no utilizada, eliminando objetos sin referencias",
+      "Un optimizador de código",
+      "Un tipo de puntero"
+    ],
+    "answer": 1,
+    "explanation": "El GC detecta y libera objetos sin referencias accesibles; evita fugas de memoria en lenguajes como Java, Python, C#."
+  },
+  {
+    "id": 139,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre compilación 'AOT' y 'JIT'?",
+    "options": [
+      "No hay diferencia",
+      "AOT compila antes de ejecutar; JIT compila en tiempo de ejecución optimizando el código que más se usa",
+      "JIT siempre es más lento",
+      "AOT solo funciona en móviles"
+    ],
+    "answer": 1,
+    "explanation": "AOT (Ahead-of-Time): compilación previa total. JIT (Just-in-Time): compila fragmentos en ejecución para optimizar."
+  },
+  {
+    "id": 140,
+    "category": "prog",
+    "question": "¿Qué es la 'inyección de dependencias' (Dependency Injection)?",
+    "options": [
+      "Un tipo de ataque de seguridad",
+      "Técnica donde las dependencias de un objeto se suministran externamente en lugar de ser creadas por él",
+      "Un framework de testing",
+      "Un lenguaje de consulta"
+    ],
+    "answer": 1,
+    "explanation": "DI desacopla clases: las dependencias se pasan desde afuera, facilitando pruebas unitarias y mantenimiento."
+  },
+  {
+    "id": 141,
+    "category": "prog",
+    "question": "¿Qué es un 'test unitario'?",
+    "options": [
+      "Una prueba de toda la aplicación",
+      "Prueba que verifica el comportamiento de una unidad aislada de código (función, método, clase)",
+      "Un tipo de despliegue",
+      "Una revisión de código manual"
+    ],
+    "answer": 1,
+    "explanation": "Los tests unitarios prueban unidades pequeñas de forma aislada; son rápidos, automatizados y fundamentales en TDD."
+  },
+  {
+    "id": 142,
+    "category": "prog",
+    "question": "¿Qué es la 'integración continua' (CI)?",
+    "options": [
+      "Integrar código una vez al año",
+      "Práctica de fusionar cambios de código frecuentemente, con builds y tests automáticos en cada integración",
+      "Un tipo de base de datos",
+      "Un protocolo de red"
+    ],
+    "answer": 1,
+    "explanation": "CI: los desarrolladores integran código frecuentemente; cada push dispara build automático y suite de tests."
+  },
+  {
+    "id": 143,
+    "category": "prog",
+    "question": "¿Qué hace la instrucción `break` en un bucle?",
+    "options": [
+      "Pausa el bucle temporalmente",
+      "Termina inmediatamente la ejecución del bucle y continúa después de él",
+      "Reinicia el bucle desde el principio",
+      "Salta a la siguiente iteración"
+    ],
+    "answer": 1,
+    "explanation": "break: termina el bucle por completo. continue: salta al inicio de la siguiente iteración (no termina el bucle)."
+  },
+  {
+    "id": 144,
+    "category": "prog",
+    "question": "¿Qué es un 'puntero' en lenguajes como C/C++?",
+    "options": [
+      "Un tipo de bucle",
+      "Una variable que almacena la dirección de memoria de otra variable",
+      "Un tipo de función",
+      "Un operador lógico"
+    ],
+    "answer": 1,
+    "explanation": "Un puntero almacena una dirección de memoria, permitiendo acceso directo y manipulación de la memoria del sistema."
+  },
+  {
+    "id": 145,
+    "category": "prog",
+    "question": "¿Qué es la 'sobrecarga de operadores' (operator overloading)?",
+    "options": [
+      "Usar demasiados operadores",
+      "Definir un comportamiento personalizado para operadores (+, -, ==) aplicados a objetos definidos por el usuario",
+      "Un error de compilación",
+      "Un tipo de herencia"
+    ],
+    "answer": 1,
+    "explanation": "Sobrecarga: los operadores estándar (+, ==, etc.) pueden redefinirse para clases propias con comportamiento adecuado."
+  },
+  {
+    "id": 146,
+    "category": "prog",
+    "question": "¿Cuál es la diferencia entre 'paso por valor' y 'paso por referencia'?",
+    "options": [
+      "No hay diferencia",
+      "Por valor copia el dato; por referencia pasa la dirección de memoria (los cambios afectan el original)",
+      "Por referencia siempre es más rápido",
+      "Por valor solo funciona con números"
+    ],
+    "answer": 1,
+    "explanation": "Por valor: la función recibe una copia. Por referencia: recibe la dirección — modificaciones afectan la variable original."
+  },
+  {
+    "id": 147,
+    "category": "prog",
+    "question": "¿Qué es la 'programación reactiva'?",
+    "options": [
+      "Programar para sistemas lentos",
+      "Paradigma orientado a flujos de datos asíncronos y la propagación de cambios",
+      "Un tipo de OOP",
+      "La programación en tiempo real"
+    ],
+    "answer": 1,
+    "explanation": "Programación reactiva: los programas reaccionan a flujos de datos (streams) y cambios de estado en tiempo real."
+  },
+  {
+    "id": 148,
+    "category": "prog",
+    "question": "¿Qué es un 'tipo de dato abstracto' (ADT)?",
+    "options": [
+      "Un tipo de dato que no existe en memoria",
+      "Definición matemática de un tipo de dato por sus valores posibles y operaciones, sin especificar implementación",
+      "Solo los tipos de datos de Java",
+      "Una variable sin tipo definido"
+    ],
+    "answer": 1,
+    "explanation": "ADT: especificación de qué hace un tipo de dato (interfaz), separada de cómo está implementado (encapsulación)."
+  },
+  {
+    "id": 149,
+    "category": "prog",
+    "question": "¿Qué algoritmo usa la estrategia 'divide y vence'?",
+    "options": [
+      "Bubble Sort",
+      "Quick Sort",
+      "Ordenamiento por inserción",
+      "Ordenamiento por selección"
+    ],
+    "answer": 1,
+    "explanation": "Quick Sort (y Merge Sort) usan divide y vence: dividir en subproblemas, resolver y combinar → O(n log n) promedio."
+  },
+  {
+    "id": 150,
+    "category": "prog",
+    "question": "¿Qué es la 'memoización'?",
+    "options": [
+      "Memorizar el código de un programa",
+      "Técnica de optimización que almacena resultados de llamadas costosas para reutilizarlos en llamadas con los mismos argumentos",
+      "Un tipo de bucle",
+      "Una estructura de datos"
+    ],
+    "answer": 1,
+    "explanation": "Memoización: cachear resultados de funciones puras para evitar recalcularlos; base de la programación dinámica."
+  }
+]

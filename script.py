@@ -1,4 +1,13 @@
-/**
+import json
+import re
+
+with open('src/hooks/useSnakeGame.js', 'r', encoding='utf-8') as f:
+    code = f.read()
+
+# We will just write a new script to completely replace it locally and then write it out.
+# This avoids any regex issues.
+
+new_code = """/**
  * @file useSnakeGame.js
  * @description Hook principal del juego Snake Quiz.
  */
@@ -10,16 +19,16 @@ import { soundEngine } from "../utils/SoundEngine";
 export const GRID_SIZE = 20;
 
 export const POWERUP_CONFIG = {
-  common_double_points: { id: "common_double_points", name: "Puntos Dobles", description: "Multiplica por 2 todos los puntos ganados por 20 segundos.", rarity: "common", color: "#10b981", icon: "⭐", iconId: "Star", type: "time", duration: 20000, despawn: 10000, weight: 40 },
-  common_super_apple: { id: "common_super_apple", name: "Súper Manzana", description: "Te otorga el equivalente a comer 3 manzanas de golpe.", rarity: "common", color: "#10b981", icon: "🍎", iconId: "Apple", type: "instant", despawn: 10000, weight: 40 },
-  rare_shrink: { id: "rare_shrink", name: "Encogedor", description: "Reduce el tamaño de tu serpiente a la mitad al instante.", rarity: "rare", color: "#3b82f6", icon: "✂️", iconId: "Minimize2", type: "instant", despawn: 8000, weight: 30 },
-  rare_magnet: { id: "rare_magnet", name: "Imán Magnético", description: "Atrae las comidas hacia ti si pasas cerca por 15 segundos.", rarity: "rare", color: "#3b82f6", icon: "🧲", iconId: "Magnet", type: "time", duration: 15000, despawn: 8000, weight: 30 },
-  epic_slowmo: { id: "epic_slowmo", name: "Cámara Lenta", description: "Reduce drásticamente la velocidad del juego por 10 segundos.", rarity: "epic", color: "#a855f7", icon: "⏱️", iconId: "Clock", type: "time", duration: 10000, despawn: 7000, weight: 15 },
-  epic_ghost: { id: "epic_ghost", name: "Fantasma", description: "Vuelve tu cuerpo intangible, permitiéndote atravesarte a ti mismo por 10 segundos.", rarity: "epic", color: "#a855f7", icon: "👻", iconId: "Ghost", type: "time", duration: 10000, despawn: 7000, weight: 15 },
-  legendary_bouncer: { id: "legendary_bouncer", name: "Rebotador", description: "Chocar con las paredes en modo difícil te hará rebotar en lugar de matarte.", rarity: "legendary", color: "#eab308", icon: "🧱", iconId: "Activity", type: "time", duration: 15000, despawn: 6000, weight: 10, hardOnly: true },
-  legendary_xray: { id: "legendary_xray", name: "Rayos X", description: "Filtra 2 opciones incorrectas de tu próxima pregunta de quiz.", rarity: "legendary", color: "#eab308", icon: "👁️", iconId: "ScanEye", type: "passive", despawn: 6000, weight: 10 },
-  mythic_streak_saver: { id: "mythic_streak_saver", name: "Escudo Protector", description: "Te protege de perder una vida y la racha al equivocarte en un quiz.", rarity: "mythic", color: "#ef4444", icon: "🛡️", iconId: "ShieldAlert", type: "passive", despawn: 5000, weight: 5 },
-  mythic_freeze: { id: "mythic_freeze", name: "Congelador de Tiempo", description: "Pausa el temporizador en la próxima pregunta de quiz.", rarity: "mythic", color: "#ef4444", icon: "⏳", iconId: "Snowflake", type: "passive", despawn: 5000, weight: 5, hardOnly: true },
+  common_double_points: { id: "common_double_points", rarity: "common", color: "#10b981", icon: "⭐", type: "time", duration: 20000, despawn: 10000, weight: 40 },
+  common_super_apple: { id: "common_super_apple", rarity: "common", color: "#10b981", icon: "🍎", type: "instant", despawn: 10000, weight: 40 },
+  rare_shrink: { id: "rare_shrink", rarity: "rare", color: "#3b82f6", icon: "✂️", type: "instant", despawn: 8000, weight: 30 },
+  rare_magnet: { id: "rare_magnet", rarity: "rare", color: "#3b82f6", icon: "🧲", type: "time", duration: 15000, despawn: 8000, weight: 30 },
+  epic_slowmo: { id: "epic_slowmo", rarity: "epic", color: "#a855f7", icon: "⏱️", type: "time", duration: 10000, despawn: 7000, weight: 15 },
+  epic_ghost: { id: "epic_ghost", rarity: "epic", color: "#a855f7", icon: "👻", type: "time", duration: 10000, despawn: 7000, weight: 15 },
+  legendary_bouncer: { id: "legendary_bouncer", rarity: "legendary", color: "#eab308", icon: "🧱", type: "time", duration: 15000, despawn: 6000, weight: 10, hardOnly: true },
+  legendary_xray: { id: "legendary_xray", rarity: "legendary", color: "#eab308", icon: "👁️", type: "passive", despawn: 6000, weight: 10 },
+  mythic_streak_saver: { id: "mythic_streak_saver", rarity: "mythic", color: "#ef4444", icon: "🛡️", type: "passive", despawn: 5000, weight: 5 },
+  mythic_freeze: { id: "mythic_freeze", rarity: "mythic", color: "#ef4444", icon: "⏳", type: "passive", despawn: 5000, weight: 5, hardOnly: true },
 };
 
 const getRandomPowerup = (lastId, isHard) => {
@@ -33,16 +42,7 @@ const getRandomPowerup = (lastId, isHard) => {
   return options[0];
 };
 
-const getNewThreshold = (difficulty = "easy", answerCount = 4) => {
-  let min = 300;
-  let max = 1200;
-  if (difficulty === "hard") {
-    if (answerCount === 4) { min = 400; max = 1500; } // Difícil
-    else if (answerCount === 5) { min = 500; max = 1800; } // Pro
-    else if (answerCount === 6) { min = 600; max = 2200; } // Pro Max
-  }
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
+const getNewThreshold = () => Math.floor(Math.random() * (1500 - 300 + 1)) + 300;
 
 export const DIFFICULTY_CONFIG = {
   easy: {
@@ -144,7 +144,7 @@ const buildInitialState = (difficulty = "easy", answerCount = 4) => {
     activePowerups: [],
     passivePowerups: [],
     scoreSinceLastPowerup: 0,
-    powerupScoreThreshold: getNewThreshold(difficulty, answerCount),
+    powerupScoreThreshold: getNewThreshold(),
     lastPowerupSpawnedId: null,
     slowmoRecoveryTicks: 0,
   };
@@ -474,7 +474,7 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
          const spawnPos = randomCell(nextSnake, [nextFood]);
          newBoardPowerup = { ...newPowerup, x: spawnPos.x, y: spawnPos.y, remainingDespawn: newPowerup.despawn };
          newScoreSinceLastPowerup = 0;
-         nextThreshold = getNewThreshold(prev.difficulty, prev.answerCount);
+         nextThreshold = getNewThreshold();
          nextLastPowerupId = newPowerup.id;
          soundEngine.powerupAppear();
       }
@@ -531,3 +531,7 @@ export default function useSnakeGame(difficulty = "easy", answerCount = 4) {
 
   return { state, startGame, togglePause, answerQuestion, setDirection };
 }
+"""
+
+with open('src/hooks/useSnakeGame.js', 'w', encoding='utf-8') as f:
+    f.write(new_code)

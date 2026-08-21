@@ -595,44 +595,62 @@ body {
 .overlay-content h2 { font-family: "Orbitron", sans-serif; font-size: clamp(0.9rem, 3vw, 1.4rem); }
 .overlay-content p { color: var(--text-secondary); font-size: clamp(0.72rem, 2vw, 0.9rem); }
 
-/* ── D-pad ──────────────────────────────────────────────────────────────────*/
-.dpad-wrap {
+/* ── ACTIVE POWERUPS BAR ──────────────────────────────────────────────────*/
+.active-powerups-bar {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   flex-shrink: 0;
+  margin-top: 1rem;
+  min-height: 44px;
+  flex-wrap: wrap;
+  padding: 0 1rem;
 }
 
-.dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 42px);
-  grid-template-rows: repeat(3, 42px);
-  gap: 3px;
+.no-powerups-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  letter-spacing: 0.05em;
+  opacity: 0.7;
 }
 
-.dpad-btn {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  font-size: 0.9rem;
+.active-powerup-badge {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition);
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  transition: all 0.2s;
+  animation: bounce-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.dpad-btn:hover  { background: var(--bg-surface); color: var(--accent-green); border-color: var(--accent-green); }
-.dpad-btn:active { transform: scale(0.88); background: var(--bg-surface); }
-.dpad-up     { grid-column: 2; grid-row: 1; }
-.dpad-left   { grid-column: 1; grid-row: 2; }
-.dpad-center { grid-column: 2; grid-row: 2; background: var(--bg-mid); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: default; }
-.dpad-right  { grid-column: 3; grid-row: 2; }
-.dpad-down   { grid-column: 2; grid-row: 3; }
+.active-powerup-badge.rarity-common {
+  border-color: #00ff88;
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.3);
+}
+
+.active-powerup-badge.rarity-rare {
+  border-color: #00c8ff;
+  box-shadow: 0 0 8px rgba(0, 200, 255, 0.3);
+}
+
+.active-powerup-badge.rarity-epic {
+  border-color: #a855f7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
+}
+
+.active-powerup-badge .powerup-icon {
+  font-size: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* ── STATS PANEL ─────────────────────────────────────────────────────────────*/
 .stats-panel {
@@ -1298,7 +1316,6 @@ body {
 /* ── Responsiveness básica ─────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .stats-panel { display: none; }
-  .dpad-wrap { display: flex; }
   .game-main { padding: 0.5rem; }
 }
 
@@ -1867,6 +1884,13 @@ body {
   .lb-modal { padding: 1rem; }
   .lb-entry { padding: 0.4rem 0.5rem; font-size: 0.78rem; }
   .lb-rank  { width: 24px; font-size: 0.78rem; }
+  
+  /* Rules / Powerup Modals */
+  .rules-modal { padding: 1rem; }
+  .powerup-card { padding: 0.75rem; flex-direction: column; align-items: flex-start; text-align: left; }
+  .powerup-card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .powerup-card-title { font-size: 0.95rem; }
+  .powerup-card-desc { font-size: 0.75rem; }
 
   /* GameOver */
   .gameover-modal { padding: 1.5rem 1rem; }
