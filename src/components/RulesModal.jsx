@@ -11,10 +11,10 @@ export default function RulesModal({ onClose, difficulty = "easy", answerCount =
   const isHard = difficulty === "hard";
 
   const getThresholdText = () => {
-    if (!isHard) return "300 y 1200pts";
-    if (answerCount === 4) return "400 y 1500pts";
-    if (answerCount === 5) return "500 y 1800pts";
-    return "600 y 2200pts";
+    if (!isHard) return "100 y 300pts";
+    if (answerCount === 4) return "150 y 400pts";
+    if (answerCount === 5) return "200 y 500pts";
+    return "250 y 600pts";
   };
 
   return (
@@ -52,11 +52,11 @@ export default function RulesModal({ onClose, difficulty = "easy", answerCount =
             <ul className="rules-list">
               <li>
                 <span className="rule-tag food"><span className="icon-wrap"><Apple size={14} /></span> Comer</span>
-                <span><b>{isHard ? "10 + (Nivel × 5)" : "20 + (Nivel × 10)"}</b> puntos {isHard && <span className="diff-x2">×2</span>}</span>
+                <span><b>{isHard ? "5 + (Nivel × 2.5)" : "10 + (Nivel × 5)"}</b> puntos {isHard && <span className="diff-x2">×2</span>}</span>
               </li>
               <li>
                 <span className="rule-tag correct"><span className="icon-wrap"><CheckCircle size={14} /></span> Quiz correcto</span>
-                <span><b>{isHard ? "100 + (Nivel × 25)" : "200 + (Nivel × 50)"}</b> pts bonus {isHard && <span className="diff-x2">×2</span>}</span>
+                <span><b>{isHard ? "50 + (Nivel × 12.5)" : "100 + (Nivel × 25)"}</b> pts bonus {isHard && <span className="diff-x2">×2</span>}</span>
               </li>
               <li>
                 <span className="rule-tag wrong"><span className="icon-wrap"><XCircle size={14} /></span> Quiz incorrecto</span>
@@ -124,6 +124,15 @@ export default function RulesModal({ onClose, difficulty = "easy", answerCount =
             <ul className="rules-list">
               <li>Sube cada <b>10 comidas</b>.</li>
               <li>Mayor nivel → más puntos por comida y por quiz.</li>
+            </ul>
+          </section>
+
+          <section className="rules-section">
+            <h3><span className="icon-wrap icon-shine" style={{marginRight: 4, color: '#fbbf24'}}><Crown /></span> Tienda y Economía</h3>
+            <ul className="rules-list">
+              <li>Recoge <b style={{color: '#fbbf24'}}>Monedas (🪙)</b> que aparecen aleatoriamente al comer.</li>
+              <li>Tienen un <b>20% de probabilidad</b> de generarse y otorgan +1 moneda a tu perfil.</li>
+              <li>Usa tus monedas en la Tienda (Menú Principal) para desbloquear y equipar <b>Skins Exclusivas</b>.</li>
             </ul>
           </section>
 

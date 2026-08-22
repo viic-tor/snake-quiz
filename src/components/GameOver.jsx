@@ -14,7 +14,7 @@ import { saveScore, getLeaderboard } from "../utils/leaderboard";
 import { hasCustomQuestions, getCustomMeta } from "../utils/questionStore";
 import { updatePlayerStatsAsync } from "../utils/playerStats";
 import Leaderboard from "./Leaderboard";
-import { Medal, Skull, Flame, Circle, FolderOpen, Star, Apple, Brain, CheckCircle, Target, RefreshCw, Crown, Home } from "lucide-react";
+import { Medal, Skull, Flame, Circle, FolderOpen, Star, Apple, Brain, CheckCircle, Target, RefreshCw, Crown, Home, Coins } from "lucide-react";
 
 export default function GameOver({ state, playerName, onRestart, onMenu }) {
   const [lbPosition, setLbPosition]   = useState(null);
@@ -119,6 +119,7 @@ export default function GameOver({ state, playerName, onRestart, onMenu }) {
         <div className="gameover-stats">
           {[
             { icon: <Star className="icon-shine" />, label: "Puntuación", value: state.score.toLocaleString(), cls: isHard ? "" : "score-val" },
+            { icon: <Coins className="icon-shine" color="#eab308" />, label: "Monedas Recolectadas", value: `+${state.sessionCoins || 0}`, cls: "score-val" },
             { icon: <Medal className="icon-shine" />, label: "Nivel",      value: state.level },
             { icon: <Apple className="icon-bounce-in" />, label: "Comidas",    value: state.foodEaten },
             { icon: <Brain className="icon-float" />, label: "Preguntas",  value: state.questionsAnswered },

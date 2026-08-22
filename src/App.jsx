@@ -8,16 +8,19 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import StartScreen from "./components/StartScreen";
 import MenuSnakeCanvas from "./components/MenuSnakeCanvas";
+import MaintenanceCanvas from "./components/MaintenanceCanvas";
 import GameBoard from "./components/GameBoard";
 import StatsPanel from "./components/StatsPanel";
 import QuizModal from "./components/QuizModal";
 import GameOver from "./components/GameOver";
 import Leaderboard from "./components/Leaderboard";
 import RulesModal from "./components/RulesModal";
+import MissionHUD from "./components/MissionHUD";
+import PowerupIcon from "./components/PowerupIcon";
 import useSnakeGame, { DIFFICULTY_CONFIG } from "./hooks/useSnakeGame";
 import SwipeZone from "./components/SwipeZone";
 import { soundEngine } from "./utils/SoundEngine";
-import { Skull, Heart, Star, Medal, Apple, Brain, Zap, CheckCircle, XCircle, Flame, Worm, User, Play, Pause, BookOpen, Crown, Home, Volume2, VolumeX } from "lucide-react";
+import { Skull, Heart, Star, Medal, Apple, Brain, Zap, CheckCircle, XCircle, Flame, Worm, User, Play, Pause, BookOpen, Crown, Home, Volume2, VolumeX, Coins, Gem } from "lucide-react";
 
 const VIEWS = { START: "start", GAME: "game", GAMEOVER: "gameover" };
 
@@ -177,6 +180,11 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
               <Star fill="#ffd700" color="#ffd700" size={20} /> {state.score.toLocaleString()}
             </div>
 
+            {/* Monedas (solo móvil) */}
+            <div className="right-stat mobile-only-stat mobile-puntos" style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '6px', fontSize: '1.2rem', color: '#eab308', fontWeight: 'bold'}}>
+              <Coins color="#eab308" size={20} /> +{state.sessionCoins}
+            </div>
+
             <div className="stats-grid-mobile">
               {/* Racha */}
               <div className="right-stat">
@@ -230,6 +238,79 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
                 </span>
               </div>
             </div>
+            
+            {/* Desktop Only Extra Sections for right column */}
+            <div className="desktop-extra-stats">
+              <div className="stat-divider" style={{ margin: '12px 0' }} />
+
+              {/* Bonus vida */}
+              <div className="stat-item bonus-item" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Gem size={16} /> Bonus ❤️ (cada {cfg.bonusLifeAt} aciertos)
+                </span>
+                <div className="stat-progress-bg" style={{ marginTop: '4px' }}>
+                  <div className="stat-progress-fill" style={{ width: `${Math.min(100, Math.round(((state.consecutiveCorrect % cfg.bonusLifeAt) / Math.max(cfg.bonusLifeAt, 1)) * 100))}%`, background: '#a855f7' }} />
+                </div>
+                <span className="stat-hint" style={{ marginTop: '2px' }}>
+                  {cfg.bonusLifeAt - (state.consecutiveCorrect % cfg.bonusLifeAt || cfg.bonusLifeAt)} correctas seguidas para +1 Vida
+                </span>
+              </div>
+
+              {/* Power-ups */}
+              <div className="stat-item powerups-container" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <span className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Zap size={16} /> Power-ups
+                </span>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  {state.passivePowerups?.map(p => (
+                    <div key={p.id} style={{ border: `1px solid ${p.color}`, padding: '4px 8px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '4px', background: `${p.color}22` }}>
+                      <PowerupIcon iconId={p.iconId} size={14} color={p.color} />
+                      <span style={{ fontSize: '11px', color: p.color, fontWeight: 'bold' }}>{p.id === 'mythic_streak_saver' ? 'Escudo' : p.id === 'mythic_freeze' ? 'Congelar' : 'Rayos X'}</span>
+                    </div>
+                  ))}
+                  {state.activePowerups?.map(p => (
+                    <div key={p.id} style={{ border: `1px solid ${p.color}`, padding: '4px 8px', borderRadius: '6px', display: 'flex', flexDirection: 'column', gap: '2px', background: `${p.color}22`, position: 'relative', overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', zIndex: 1, position: 'relative' }}>
+                         <PowerupIcon iconId={p.iconId} size={14} color={p.color} />
+                         <span style={{ fontSize: '11px', color: 'white', fontWeight: 'bold' }}>{Math.ceil(p.remainingDuration / 1000)}s</span>
+                      </div>
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, height: '3px', background: p.color, width: `${(p.remainingDuration / p.duration) * 100}%` }} />
+                    </div>
+                  ))}
+                  {(!state.passivePowerups?.length && !state.activePowerups?.length) && (
+                    <span className="stat-hint" style={{ opacity: 0.5 }}>Ningún poder activo</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="stat-divider" style={{ margin: '12px 0' }} />
+
+              {/* Preguntas Detalle */}
+              <div className="stat-item" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <span className="stat-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Brain size={16} /> Preguntas
+                </span>
+                <div className="quiz-stat-row" style={{ display: 'flex', gap: '12px', alignItems: 'center', fontWeight: 'bold' }}>
+                  <span className="correct-count" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#00ff88' }}>
+                    <CheckCircle size={14} /> Bien {state.questionsCorrect}
+                  </span>
+                  <span style={{ opacity: 0.4, color: 'white', fontWeight: 'normal' }}>/</span>
+                  <span className="wrong-count" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#ff4757' }}>
+                    <XCircle size={14} /> Mal {state.questionsAnswered - state.questionsCorrect}
+                  </span>
+                </div>
+                {state.questionsAnswered > 0 && (
+                  <div className="accuracy-bar" style={{ marginTop: '8px' }}>
+                    <span className="stat-label">
+                      Precisión {Math.round((state.questionsCorrect / state.questionsAnswered) * 100)}%
+                    </span>
+                    <div className="stat-progress-bg" style={{ marginTop: '4px' }}>
+                      <div className="stat-progress-fill" style={{ width: `${Math.min(100, Math.round((state.questionsCorrect / Math.max(state.questionsAnswered, 1)) * 100))}%`, background: cfg.color.accent }} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </aside>
       </main>
@@ -241,7 +322,7 @@ function GameView({ playerName, difficulty, answerCount, snakeColor, onGameOver,
           onAnswer={answerQuestion}
           questionsAnswered={state.questionsAnswered}
           questionsCorrect={state.questionsCorrect}
-          timeLimit={cfg.quizTimeLimit}
+          timeLimit={state.passivePowerups.some(p => p.id === "common_extra_time") ? Math.floor(cfg.quizTimeLimit * 1.3) : cfg.quizTimeLimit}
           difficulty={difficulty}
         />
       )}
@@ -292,14 +373,14 @@ export default function App() {
 
   if (isMaintenance) {
     return (
-      <div className="menu-dashboard">
-        <MenuSnakeCanvas color="#00ff88" />
+      <div className="menu-dashboard" style={{ position: 'relative', overflow: 'hidden' }}>
+        <MaintenanceCanvas />
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', position: 'relative', zIndex: 10, padding: '1rem' }}>
           <div style={{ textAlign: 'center', background: 'rgba(10,10,10,0.85)', padding: '2rem', borderRadius: '16px', border: '2px solid #00ff88', boxShadow: '0 0 30px rgba(0,255,136,0.3)', backdropFilter: 'blur(10px)', maxWidth: '90vw' }}>
             <h1 className="title-glitch" style={{ fontSize: 'clamp(2rem, 8vw, 3.5rem)', marginBottom: '1rem', color: '#00ff88', textShadow: '0 0 15px #00ff88', margin: 0 }}>
               EN MANTENIMIENTO 🐍
             </h1>
-            <p style={{ color: '#aaa', fontSize: 'clamp(1rem, 4vw, 1.2rem)', marginTop: '1rem' }}>Estamos realizando mejoras. ¡Vuelve pronto!</p>
+            <p style={{ color: '#aaa', fontSize: 'clamp(1rem, 4vw, 1.2rem)', marginTop: '1rem' }}>Estamos mejorando los biomas y mecánicas. ¡Vuelve pronto!</p>
           </div>
         </div>
       </div>
@@ -332,7 +413,13 @@ export default function App() {
           difficulty={difficulty}
           answerCount={answerCount}
           snakeColor={snakeColor}
-          onGameOver={(s) => { setFinalState(s); setView(VIEWS.GAMEOVER); }}
+          onGameOver={(s) => { 
+            import("./utils/shopStore").then(({ addCoins }) => {
+              addCoins(playerName, s.sessionCoins);
+            });
+            setFinalState(s); 
+            setView(VIEWS.GAMEOVER); 
+          }}
           onMenu={() => setView(VIEWS.START)}
         />
       )}

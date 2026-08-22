@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useRef } from "react";
+import { renderSnakeSegment } from "../utils/renderHelpers";
 
 const CELL = 20;
 const SPEED = 130; // ms por paso
@@ -17,7 +18,7 @@ function randomDir() {
   return dirs[Math.floor(Math.random() * dirs.length)];
 }
 
-export default function MenuSnakeCanvas({ color = "#00ff88" }) {
+export default function MenuSnakeCanvas({ color = "#00ff88", skinId = "google", baseColor = "#4ade80" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -132,13 +133,19 @@ export default function MenuSnakeCanvas({ color = "#00ff88" }) {
       // Serpiente
       const len = snake.length;
       snake.forEach((seg, i) => {
-        const alpha = i === 0 ? 0.55 : Math.max(0.08, (0.45 * (1 - i / len)));
+        const isHead = i === 0;
+        const x = seg.x * CELL;
+        const y = seg.y * CELL;
+        
+        let segDir = dir;
+        if (!isHead && i > 0) {
+           segDir = { x: snake[i-1].x - seg.x, y: snake[i-1].y - seg.y };
+        }
+
+        const alpha = isHead ? 0.65 : Math.max(0.1, (0.55 * (1 - i / len)));
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = color;
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2, 4);
-        else ctx.rect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2);
-        ctx.fill();
+        
+        renderSnakeSegment(ctx, skinId, isHead, x, y, CELL, t, i, baseColor, segDir);
       });
 
       ctx.globalAlpha = 1;
@@ -149,7 +156,7 @@ export default function MenuSnakeCanvas({ color = "#00ff88" }) {
       cancelAnimationFrame(animId);
       ro.disconnect();
     };
-  }, [color]);
+  }, [color, skinId, baseColor]);
 
   return (
     <canvas

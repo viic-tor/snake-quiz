@@ -9,7 +9,8 @@
 import { useEffect, useRef } from "react";
 import { GRID_SIZE, DIFFICULTY_CONFIG } from "../hooks/useSnakeGame";
 import PowerupIcon from "./PowerupIcon";
-
+import { renderSnakeSegment } from "../utils/renderHelpers";
+import { BIOMES } from "../data/biomes";
 const LOGICAL = 400; // resolución interna fija (20 × 20px)
 const CELL    = LOGICAL / GRID_SIZE; // 20px
 
@@ -20,16 +21,47 @@ function draw(ctx, state, t, W, snakeColor) {
   const C = { ...cfg.color };
 
   // Override del color de la culebra si el usuario eligió uno
+  let skinId = "google";
   if (snakeColor) {
-    C.snake    = snakeColor;
-    // snakeDim: version más oscura del color elegido (70% de opacidad)
-    C.snakeDim = snakeColor + "b3";
+    skinId = snakeColor;
+    if (skinId === "google") {
+      C.snake = "#4ade80"; C.snakeDim = "#22c55e";
+    } else if (skinId === "pixel") {
+      C.snake = "#eab308"; C.snakeDim = "#ca8a04";
+    } else if (skinId === "rainbow") {
+      C.snake = "#ec4899"; C.snakeDim = "#be185d";
+    } else if (skinId === "cosmic") {
+      C.snake = "#c084fc"; C.snakeDim = "#7e22ce";
+    } else if (skinId === "blackhole") {
+      C.snake = "#111827"; C.snakeDim = "#000000";
+    } else {
+      C.snake    = snakeColor;
+      C.snakeDim = snakeColor + "b3";
+    }
   }
+
+  // Determine baseColor from localstorage or use a default since we don't have it directly.
+  // We can pass baseColor through props later, for now we will read it if needed.
+  // Actually, we can get it from localstorage economy of the last played name.
+  let baseColor = "#4ade80";
+  try {
+    const lastName = localStorage.getItem("snake-quiz-last-name");
+    if (lastName) {
+      const ecoStr = localStorage.getItem(`snake-quiz-economy-${lastName}`);
+      if (ecoStr) {
+        try {
+          baseColor = JSON.parse(ecoStr).baseColor || baseColor;
+        } catch(e) {}
+      }
+    }
+  } catch (e) {}
 
   const hasSlowmo = state.activePowerups?.some(p => p.id === "epic_slowmo");
 
+  const biome = BIOMES[state.biomeIndex || 0] || BIOMES[0];
+
   // ── Fondo ─────────────────────────────────────────────────────────────────
-  ctx.fillStyle = C.boardBg;
+  ctx.fillStyle = biome.boardBg;
   ctx.fillRect(0, 0, W, W);
 
   if (hasSlowmo) {
@@ -51,7 +83,7 @@ function draw(ctx, state, t, W, snakeColor) {
   // ── Grid ──────────────────────────────────────────────────────────────────
   ctx.strokeStyle = hasSlowmo 
     ? "rgba(0,255,255,0.1)" 
-    : isHard ? "rgba(255,100,50,0.05)" : "rgba(255,255,255,0.03)";
+    : isHard ? biome.gridHard : biome.grid;
   ctx.lineWidth = 0.5;
   for (let i = 0; i <= GRID_SIZE; i++) {
     ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, W); ctx.stroke();
@@ -61,10 +93,10 @@ function draw(ctx, state, t, W, snakeColor) {
   // ── Borde peligroso en modo difícil ──────────────────────────────────────
   if (isHard) {
     const pulse = 0.5 + 0.5 * Math.sin(t / 400);
-    ctx.strokeStyle = `rgba(255,50,50,${0.3 + pulse * 0.3})`;
+    ctx.strokeStyle = `rgba(${biome.borderHard},${0.3 + pulse * 0.3})`;
     ctx.lineWidth = 3;
     ctx.strokeRect(1, 1, W - 2, W - 2);
-    ctx.fillStyle = `rgba(255,80,50,${0.4 + pulse * 0.3})`;
+    ctx.fillStyle = `rgba(${biome.borderHard},${0.4 + pulse * 0.3})`;
     const cs = 10;
     [[0,0],[W-cs,0],[0,W-cs],[W-cs,W-cs]].forEach(([x,y]) => {
       ctx.fillRect(x, y, cs, cs);
@@ -104,13 +136,32 @@ function draw(ctx, state, t, W, snakeColor) {
     ctx.fillStyle = pGrad;
     ctx.beginPath(); ctx.arc(px, py, pR * 2.5, 0, Math.PI * 2); ctx.fill();
 
-    
     ctx.strokeStyle = p.color;
     ctx.lineWidth = 2;
     ctx.beginPath();
     const ratio = Math.max(0, p.remainingDespawn / p.despawn);
     ctx.arc(px, py, pR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ratio);
     ctx.stroke();
+  }
+
+  // ── Coin en tablero ───────────────────────────────────────────────────────
+  if (state.boardCoin) {
+    const c = state.boardCoin;
+    const cx = c.x * CELL + CELL / 2;
+    const cy = c.y * CELL + CELL / 2;
+    const cPulse = 1 + 0.15 * Math.sin(t / 150);
+    const cR = (CELL / 2 - 2) * cPulse;
+
+    const cGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, cR * 2.5);
+    cGrad.addColorStop(0, "#fbbf2488"); // amber-400
+    cGrad.addColorStop(1, "transparent");
+    ctx.fillStyle = cGrad;
+    ctx.beginPath(); ctx.arc(cx, cy, cR * 2.5, 0, Math.PI * 2); ctx.fill();
+
+    ctx.font = `${Math.floor(CELL * 0.9 * cPulse)}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("🪙", cx, cy);
   }
 
   // ── Serpiente ─────────────────────────────────────────────────────────────
@@ -124,39 +175,18 @@ function draw(ctx, state, t, W, snakeColor) {
     const isHead = i === 0;
     const x = seg.x * CELL;
     const y = seg.y * CELL;
+    
+    // Calcular dirección
+    let dir = state.dir || {x: 1, y: 0};
+    if (!isHead && i > 0) {
+       dir = { x: state.snake[i-1].x - seg.x, y: state.snake[i-1].y - seg.y };
+    }
+
     let alpha = isHead ? 1 : Math.max(0.35, 1 - (i / len) * 0.6);
     if (hasGhost) alpha = isHead ? 0.7 : 0.2;
-    const r = isHead ? Math.max(4, CELL * 0.35) : Math.max(2, CELL * 0.2);
-    const color = isHead ? C.snake : C.snakeDim;
-
-    if (isHead) {
-      const glow = ctx.createRadialGradient(x+CELL/2, y+CELL/2, 0, x+CELL/2, y+CELL/2, CELL * 1.2);
-      glow.addColorStop(0, color + "44");
-      glow.addColorStop(1, "transparent");
-      ctx.fillStyle = glow;
-      ctx.beginPath(); ctx.arc(x+CELL/2, y+CELL/2, CELL * 1.2, 0, Math.PI * 2); ctx.fill();
-    }
-
     ctx.globalAlpha = alpha;
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    if (ctx.roundRect) ctx.roundRect(x+1, y+1, CELL-2, CELL-2, r);
-    else ctx.rect(x+1, y+1, CELL-2, CELL-2);
-    ctx.fill();
 
-    if (isHead) {
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = "#0a0a0f";
-      ctx.beginPath();
-      ctx.arc(x + eyeOff, y + eyeOff, eyeR, 0, Math.PI * 2);
-      ctx.arc(x + CELL - eyeOff, y + eyeOff, eyeR, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "rgba(255,255,255,0.8)";
-      ctx.beginPath();
-      ctx.arc(x + eyeOff + eyeR * 0.3, y + eyeOff - eyeR * 0.3, eyeR * 0.45, 0, Math.PI * 2);
-      ctx.arc(x + CELL - eyeOff + eyeR * 0.3, y + eyeOff - eyeR * 0.3, eyeR * 0.45, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    renderSnakeSegment(ctx, skinId, isHead, x, y, CELL, t, i, baseColor, dir);
 
     ctx.globalAlpha = 1;
   });

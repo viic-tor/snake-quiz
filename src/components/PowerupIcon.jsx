@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Apple, Minimize2, Magnet, Clock, Ghost, Activity, ScanEye, ShieldAlert, Snowflake } from 'lucide-react';
+import { Star, Apple, Minimize2, Magnet, Clock, Ghost, Activity, ScanEye, ShieldAlert, Snowflake, Heart, Zap, Hourglass, Sparkles, Flame, Shield, Hammer, CircleDashed, Brain } from 'lucide-react';
 
 const iconMap = {
   Star,
@@ -11,7 +11,16 @@ const iconMap = {
   Activity,
   ScanEye,
   ShieldAlert,
-  Snowflake
+  Snowflake,
+  Heart,
+  Zap,
+  Hourglass,
+  Sparkles,
+  Flame,
+  Shield,
+  Hammer,
+  CircleDashed,
+  Brain
 };
 
 export default function PowerupIcon({ iconId, size = 24, color = "currentColor", ...props }) {

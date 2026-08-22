@@ -5,10 +5,10 @@ import PowerupIcon from './PowerupIcon';
 export default function PowerupModal({ onClose, difficulty = "easy", answerCount = 4 }) {
   const isHard = difficulty === "hard";
   const getThresholdText = () => {
-    if (!isHard) return "300 y 1200pts";
-    if (answerCount === 4) return "400 y 1500pts";
-    if (answerCount === 5) return "500 y 1800pts";
-    return "600 y 2200pts";
+    if (!isHard) return "50 y 150pts";
+    if (answerCount === 4) return "75 y 200pts";
+    if (answerCount === 5) return "100 y 250pts";
+    return "125 y 300pts";
   };
 
   const powerupsList = Object.values(POWERUP_CONFIG).sort((a, b) => {

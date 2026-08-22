@@ -200,7 +200,37 @@ export async function loginPlayer(username, password) {
     throw new Error("Contraseña incorrecta.");
   }
 
-  return data;
+  // Si las columnas no existen, devolvemos default
+  return {
+    ...data,
+    coins: data.coins || 0,
+    unlocked_skins: data.unlocked_skins || ['google'],
+    base_color: data.base_color || '#4ade80'
+  };
+}
+
+/**
+ * Guarda el progreso económico del jugador.
+ * @param {string} username
+ * @param {number} coins
+ * @param {string[]} unlockedSkins
+ * @param {string} [baseColor="#4ade80"]
+ */
+export async function updatePlayerProfile(username, coins, unlockedSkins, baseColor = "#4ade80") {
+  if (!supabase) return;
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      coins: coins,
+      unlocked_skins: unlockedSkins,
+      base_color: baseColor
+    })
+    .eq("username", username);
+
+  if (error) {
+    console.warn("No se pudo guardar la economía en Supabase (puede que falten las columnas 'coins' y 'unlocked_skins'). Guardando en local.", error);
+  }
 }
 
 /**

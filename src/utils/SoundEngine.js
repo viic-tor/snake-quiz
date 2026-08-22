@@ -161,6 +161,10 @@ class SoundEngine {
   }
 
 
+  playCoin() {
+    this._playTone(988, 'sine', 0.1, 0.2, 1319);
+  }
+
   stopBGM() {
     this.isBgmPlaying = false;
     if (this.bgmInterval) {

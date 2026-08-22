@@ -625,7 +625,6 @@ body {
   border-radius: 50%;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
   transition: all 0.2s;
   animation: bounce-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
@@ -3049,3 +3048,63 @@ body {
     display: block;
   }
 }
+
+/* Shop Layout Responsive */
+.shop-layout {
+  display: flex;
+  height: 60vh;
+  min-height: 400px;
+}
+
+.shop-preview-panel {
+  flex: 0 0 35%;
+  background: rgba(0,0,0,0.3);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+
+.shop-products-panel {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .shop-layout {
+    flex-direction: column;
+    height: 70vh;
+  }
+  .shop-preview-panel {
+    flex: 0 0 auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 1rem;
+    height: 250px;
+  }
+  .shop-products-panel {
+    padding: 1rem;
+  }
+}
+
+.desktop-extra-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .desktop-extra-stats {
+    display: none !important;
+  }
+  .active-powerups-bar {
+    display: flex !important;
+  }
+}
+@media (min-width: 901px) {
+  .active-powerups-bar {
+    display: none !important;
+  }
+}
+

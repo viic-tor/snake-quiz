@@ -20,7 +20,10 @@ import { getCustomMeta, hasCustomQuestions, clearCustomQuestions } from "../util
 import { getLeaderboardLocal, getLeaderboard } from "../utils/leaderboard";
 import { SUPABASE_ENABLED, loginPlayer, registerPlayer } from "../utils/supabase";
 import { getPlayerStats, syncAllPlayerStats, getAccuracy } from "../utils/playerStats";
-import { Settings, Circle, AlertTriangle, BookOpen, Crown, Flame, Gamepad2, Brain, Heart, Zap, BarChart2, Skull, Sparkles, Loader2, Lightbulb, TrendingUp, Target, Medal, FolderOpen, RefreshCw, X, ArrowRight, CheckCircle, Worm, Cloud } from "lucide-react";
+import { getPlayerEconomy, savePlayerEconomy } from "../utils/shopStore";
+import { Settings, Circle, AlertTriangle, BookOpen, Crown, Flame, Gamepad2, Brain, Heart, Zap, BarChart2, Skull, Sparkles, Loader2, Lightbulb, TrendingUp, Target, Medal, FolderOpen, RefreshCw, X, ArrowRight, CheckCircle, Worm, Cloud, ShoppingCart, Shirt, Coins } from "lucide-react";
+import ShopModal from "./ShopModal";
+import SkinsModal from "./SkinsModal";
 
 export default function StartScreen({ onStart }) {
   const [name,           setName]           = useState(() => localStorage.getItem("snake-quiz-last-name") || "");
@@ -28,7 +31,9 @@ export default function StartScreen({ onStart }) {
   const [authLoading,    setAuthLoading]    = useState(false);
   const [difficulty,     setDifficulty]     = useState("easy");
   const [answerCount,    setAnswerCount]    = useState(4);
-  const [snakeColor,     setSnakeColor]     = useState(null); // null = color del modo
+  const [snakeColor,     setSnakeColor]     = useState(() => localStorage.getItem("snake-quiz-last-skin") || "google");
+  const [isShopOpen,     setIsShopOpen]     = useState(false);
+  const [isSkinsOpen,    setIsSkinsOpen]    = useState(false);
   const [showLb,         setShowLb]         = useState(false);
   const [showRules,      setShowRules]      = useState(false);
   const [showPowerups,   setShowPowerups]   = useState(false);
@@ -41,6 +46,7 @@ export default function StartScreen({ onStart }) {
   const [playerStats,    setPlayerStats]    = useState(() => getPlayerStats(localStorage.getItem("snake-quiz-last-name") || "", "easy"));
   const [statsLoading,   setStatsLoading]   = useState(false);
   const [profileLoadedMsg, setProfileLoadedMsg] = useState("");
+  const [economy,        setEconomy]        = useState(() => getPlayerEconomy(localStorage.getItem("snake-quiz-last-name") || ""));
 
   const handleImported = (stats) => {
     setCustomMeta(stats || getCustomMeta());
@@ -69,6 +75,7 @@ export default function StartScreen({ onStart }) {
   useEffect(() => {
     const trimmed = name.trim();
     setPlayerStats(getPlayerStats(trimmed, fullDifficulty));
+    setEconomy(getPlayerEconomy(trimmed));
   }, [name, fullDifficulty]);
 
   const handleLoadProfile = async () => {
@@ -89,7 +96,16 @@ export default function StartScreen({ onStart }) {
       setError("");
       
       try {
-        await loginPlayer(trimmed, password);
+        const userData = await loginPlayer(trimmed, password);
+        if (userData) {
+          const loadedEco = { 
+            coins: userData.coins || 0, 
+            unlockedSkins: userData.unlocked_skins || ['google'],
+            baseColor: userData.base_color || '#4ade80'
+          };
+          savePlayerEconomy(trimmed, loadedEco);
+          setEconomy(loadedEco);
+        }
       } catch (err) {
         setStatsLoading(false);
         setError(err.message === "Usuario no encontrado." ? "El perfil no existe." : "Contraseña incorrecta.");
@@ -111,7 +127,7 @@ export default function StartScreen({ onStart }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleStart = async (e) => {
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) { setError("Por favor ingresa tu nombre."); return; }
@@ -128,7 +144,12 @@ export default function StartScreen({ onStart }) {
         if (err.message === "Usuario no encontrado.") {
           // Si no existe, lo registra automáticamente
           try {
-            await registerPlayer(trimmed, password);
+            const newUserData = await registerPlayer(trimmed, password);
+            if (newUserData) {
+               const initEco = { coins: 0, unlockedSkins: ['google'], baseColor: '#4ade80' };
+               savePlayerEconomy(trimmed, initEco);
+               setEconomy(initEco);
+            }
           } catch (regErr) {
             setAuthLoading(false);
             setError(regErr.message || "Error al crear perfil.");
@@ -144,6 +165,7 @@ export default function StartScreen({ onStart }) {
     }
 
     localStorage.setItem("snake-quiz-last-name", trimmed);
+    localStorage.setItem("snake-quiz-last-skin", snakeColor);
     onStart(trimmed, difficulty, answerCount, snakeColor);
   };
 
@@ -165,9 +187,8 @@ export default function StartScreen({ onStart }) {
 
   return (
     <div className={`menu-dashboard ${isHard ? "menu-dashboard-hard" : ""}`}>
-
       {/* Fondo animado */}
-      <MenuSnakeCanvas color={isHard ? "#ff6b35" : "#00ff88"} />
+      <MenuSnakeCanvas color={isHard ? "#ff6b35" : "#00ff88"} skinId={snakeColor} baseColor={economy.baseColor} />
 
       {/* ── Grid principal ─────────────────────────────────────────────── */}
       <div className="menu-grid">
@@ -233,65 +254,30 @@ export default function StartScreen({ onStart }) {
             </div>
           </div>
 
-          {/* Color de la culebra */}
-          <div className="menu-section section-color-culebra">
-            <p className="menu-section-label">Color de la culebra</p>
-            <div className="menu-color-swatches">
-              {/* Opción "auto" = color del modo */}
-              <button
-                type="button"
-                className={`menu-swatch menu-swatch-auto ${snakeColor === null ? "menu-swatch-active" : ""}`}
-                onClick={() => setSnakeColor(null)}
-                title="Color automático del modo"
-              >
-                <span className="icon-wrap"><Gamepad2 /></span>
-                <span className="menu-swatch-label">Auto</span>
+          {/* Menús secundarios agrupados */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+            {/* Primera fila: Tienda y Skins */}
+            <div className="menu-secondary">
+              <button className="btn btn-secondary" onClick={() => setIsShopOpen(true)}>
+                <span className="icon-wrap icon-pulse" style={{marginRight: 4, color: '#facc15'}}><ShoppingCart size={16}/></span> Tienda
               </button>
-              {[
-                { color: "#00ff88", label: "Verde",   title: "Verde neón" },
-                { color: "#00cfff", label: "Cyan",    title: "Cyan eléctrico" },
-                { color: "#a855f7", label: "Violeta", title: "Violeta" },
-                { color: "#f59e0b", label: "Dorado",  title: "Dorado" },
-                { color: "#ff6b35", label: "Naranja", title: "Naranja fuego" },
-                { color: "#ff2d78", label: "Rosa",    title: "Rosa neón" },
-                { color: "#ffffff", label: "Blanco",  title: "Blanco" },
-                { color: "#ff4444", label: "Rojo",    title: "Rojo" },
-                { color: "#ffff00", label: "Amari.",  title: "Amarillo" },
-                { color: "#3b82f6", label: "Azul",    title: "Azul" },
-                { color: "#10b981", label: "Esmer.",  title: "Esmeralda" },
-              ].map(({ color, label, title }) => (
-                <button
-                  key={color}
-                  type="button"
-                  className={`menu-swatch ${snakeColor === color ? "menu-swatch-active" : ""}`}
-                  style={{ "--swatch-color": color }}
-                  onClick={() => setSnakeColor(color)}
-                  title={title}
-                >
-                  <span className="menu-swatch-dot" />
-                  <span className="menu-swatch-label">{label}</span>
-                </button>
-              ))}
+              <button className="btn btn-secondary" onClick={() => setIsSkinsOpen(true)}>
+                <span className="icon-wrap icon-shine" style={{marginRight: 4, color: '#38bdf8'}}><Shirt size={16}/></span> Skins
+              </button>
             </div>
-            {snakeColor && (
-              <p className="menu-color-preview">
-                Vista previa:&nbsp;
-                <span style={{ color: snakeColor, fontWeight: 700 }}>■■■■■</span>
-              </p>
-            )}
-          </div>
-
-          {/* Botones secundarios */}
-          <div className="menu-secondary section-botones-secundarios">
-            <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
-              <span className="icon-wrap icon-rotate-hover" style={{marginRight: 4}}><BookOpen size={16}/></span> Reglas
-            </button>
-            <button id="show-powerups-btn" className="btn btn-secondary" onClick={() => setShowPowerups(true)}>
-              <span className="icon-wrap icon-pulse" style={{marginRight: 4, color: '#a855f7'}}><Zap size={16}/></span> Modificadores
-            </button>
-            <button id="show-lb-full-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
-              <span className="icon-wrap icon-shine" style={{marginRight: 4}}><Crown size={16}/></span> Ranking
-            </button>
+            
+            {/* Segunda fila: Reglas, Modificadores, Ranking */}
+            <div className="menu-secondary section-botones-secundarios">
+              <button id="show-rules-btn" className="btn btn-secondary" onClick={() => setShowRules(true)}>
+                <span className="icon-wrap icon-rotate-hover" style={{marginRight: 4}}><BookOpen size={16}/></span> Reglas
+              </button>
+              <button id="show-powerups-btn" className="btn btn-secondary" onClick={() => setShowPowerups(true)}>
+                <span className="icon-wrap icon-pulse" style={{marginRight: 4, color: '#a855f7'}}><Zap size={16}/></span> Modifs
+              </button>
+              <button id="show-lb-full-btn" className="btn btn-secondary" onClick={() => setShowLb(true)}>
+                <span className="icon-wrap icon-shine" style={{marginRight: 4}}><Crown size={16}/></span> Ranking
+              </button>
+            </div>
           </div>
         </aside>
 
@@ -323,7 +309,7 @@ export default function StartScreen({ onStart }) {
           </div>
 
           {/* Formulario de inicio */}
-          <form className="menu-form" onSubmit={handleSubmit} noValidate>
+          <form className="menu-form" onSubmit={handleStart} noValidate>
             <label htmlFor="player-name" className="menu-form-label">Tu nombre</label>
             <input
               id="player-name"
@@ -396,8 +382,16 @@ export default function StartScreen({ onStart }) {
         {/* ══ COLUMNA DERECHA — Stats & Leaderboard ══ */}
         <aside id="section-right" className="menu-col menu-col-right">
 
-          {/* Tus estadísticas personales */}
-          <p className="menu-col-title"><span className="icon-wrap"><TrendingUp /></span> Tus Estadísticas</p>
+          {/* Tus estadísticas personales y HUD Monedas */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+            <p className="menu-col-title" style={{ margin: 0 }}>
+              <span className="icon-wrap"><TrendingUp /></span> Tus Estadísticas
+            </p>
+            <div className="menu-coins-hud" style={{ position: 'static', padding: '6px 12px', background: 'rgba(0,0,0,0.4)', borderRadius: '20px', border: '1px solid rgba(250,204,21,0.3)' }}>
+              <span className="icon-wrap icon-pulse" style={{ color: '#facc15', marginRight: '6px' }}><Coins size={16}/></span>
+              <span className="menu-coins-amount" style={{ fontSize: '1rem', color: '#facc15', fontWeight: 'bold' }}>{economy.coins}</span>
+            </div>
+          </div>
           <div className="menu-stats-grid">
             <div className="menu-stat-card">
               <span className="menu-stat-icon icon-wrap icon-shine"><Crown /></span>
@@ -506,6 +500,37 @@ export default function StartScreen({ onStart }) {
       {showRules    && <RulesModal      onClose={() => setShowRules(false)}     difficulty={difficulty} answerCount={answerCount} />}
       {showPowerups && <PowerupModal    onClose={() => setShowPowerups(false)}  difficulty={difficulty} answerCount={answerCount} />}
       {showImporter && <QuestionImporter onClose={() => setShowImporter(false)} onImported={handleImported} />}
+      {isShopOpen && (
+        <ShopModal 
+          playerName={name} 
+          currentSkin={snakeColor} 
+          onSelectSkin={(skinId) => {
+            setSnakeColor(skinId);
+            localStorage.setItem("snake-quiz-last-skin", skinId);
+          }} 
+          onClose={() => {
+            setIsShopOpen(false);
+            setEconomy(getPlayerEconomy(name.trim()));
+          }} 
+        />
+      )}
+      {isSkinsOpen && (
+        <SkinsModal 
+          playerName={name} 
+          currentSkin={snakeColor}
+          baseColor={economy.baseColor}
+          onSelectSkin={(skinId) => {
+            setSnakeColor(skinId);
+            localStorage.setItem("snake-quiz-last-skin", skinId);
+          }}
+          onColorChange={(newColor) => {
+             const newEco = { ...economy, baseColor: newColor };
+             savePlayerEconomy(name.trim(), newEco);
+             setEconomy(newEco);
+          }}
+          onClose={() => setIsSkinsOpen(false)} 
+        />
+      )}
     </div>
   );
 }
